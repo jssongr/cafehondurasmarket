@@ -336,9 +336,10 @@ const TCI = {"Carga general":"📦","Perecederos":"🍌","Carga refrigerada":"�
 const TIPOS_VEHICULO = ["Camión rabón (3-5 ton)","Furgón mediano","Cabezal + plataforma","Cabezal + rampla refrigerada (Reefer)","Cama baja (maquinaria)","Volteo"];
 
 const CLIENTE_SUBTIPOS = ["Empresa importadora","Empresa exportadora","Fabricante","Distribuidor","Comercio","Operador logístico"];
-const TRANSPORTISTA_SUBTIPOS = ["Transportista independiente","Empresa con flota de camiones"];
+const TRANSPORTISTA_SUBTIPOS = ["Transportista independiente","Conductor de flota","Empresa con flota de camiones"];
 
-const TI = {cliente:"🏢", transportista:"🚚"};
+const TI = {cliente:"🏢", transportista:"🚚", admin:"🛡️"};
+const COMISION_PCT = 8; // % que NexCarg retiene de cada viaje completado
 
 const SEED_USERS = [
   {id:1,nombre:"Importadora del Istmo",email:"cliente@demo.com",password:"1234",tipo:"cliente",subtipo:"Empresa importadora",
@@ -346,6 +347,8 @@ const SEED_USERS = [
   {id:2,nombre:"Carlos Rodríguez — Transportes CR",email:"transportista@demo.com",password:"1234",tipo:"transportista",
    subtipo:"Empresa con flota de camiones",vehiculo:"Cabezal + plataforma",capacidad:28,placa:"CR-4471",
    verificado:true,selfie:null,doc:null,telefono:"+(506) 8877-2345"},
+  {id:3,nombre:"Administración NexCarg",email:"admin@demo.com",password:"1234",tipo:"admin",subtipo:"Administrador de plataforma",
+   verificado:true,selfie:null,doc:null,telefono:""},
 ];
 
 const SEED_CARGAS = [
@@ -354,19 +357,23 @@ const SEED_CARGAS = [
    fecha:"2026-08-02",vehiculoReq:"Cabezal + plataforma",presupuesto:1450,
    descripcion:"Repuestos industriales paletizados, requiere manejo cuidadoso.",
    estado:"publicada",transportistaId:null,transportistaNombre:null,precioAcordado:null,progreso:0,
-   pago:{estado:"pendiente",monto:null},fechaAsignacion:null,fechaEntrega:null},
+   pago:{estado:"pendiente",monto:null},contrato:null,fechaAsignacion:null,fechaEntrega:null},
   {id:2,clienteId:1,cliente:"Importadora del Istmo",tipoCarga:"Carga refrigerada",peso:9,unidadPeso:"ton",
    paisOrigen:"Costa Rica",ciudadOrigen:"San José",paisDestino:"Panamá",ciudadDestino:"Ciudad de Panamá",
    fecha:"2026-07-25",vehiculoReq:"Cabezal + rampla refrigerada (Reefer)",presupuesto:980,
    descripcion:"Productos lácteos, requiere cadena de frío constante.",
    estado:"en_transito",transportistaId:2,transportistaNombre:"Carlos Rodríguez — Transportes CR",precioAcordado:980,
-   progreso:42,pago:{estado:"retenido",monto:980},fechaAsignacion:"2026-07-24T09:00:00Z",fechaEntrega:null},
+   progreso:42,pago:{estado:"retenido",monto:980},
+   contrato:{firmaCliente:true,firmaTransportista:true,fechaCliente:"2026-07-23T15:00:00Z",fechaTransportista:"2026-07-23T15:05:00Z"},
+   fechaAsignacion:"2026-07-24T09:00:00Z",fechaEntrega:null},
   {id:3,clienteId:1,cliente:"Importadora del Istmo",tipoCarga:"Materiales de construcción",peso:15,unidadPeso:"ton",
    paisOrigen:"Honduras",ciudadOrigen:"Tegucigalpa",paisDestino:"El Salvador",ciudadDestino:"San Salvador",
    fecha:"2026-07-10",vehiculoReq:"Volteo",presupuesto:640,
    descripcion:"Cemento y varilla, entrega puntual requerida.",
    estado:"entregada",transportistaId:2,transportistaNombre:"Carlos Rodríguez — Transportes CR",precioAcordado:640,
-   progreso:100,pago:{estado:"liberado",monto:640},fechaAsignacion:"2026-07-08T09:00:00Z",fechaEntrega:"2026-07-10T18:20:00Z"},
+   progreso:100,pago:{estado:"liberado",monto:640},
+   contrato:{firmaCliente:true,firmaTransportista:true,fechaCliente:"2026-07-08T09:10:00Z",fechaTransportista:"2026-07-08T09:15:00Z"},
+   fechaAsignacion:"2026-07-08T09:00:00Z",fechaEntrega:"2026-07-10T18:20:00Z"},
 ];
 
 const SEED_CONVOS = [
@@ -386,7 +393,16 @@ const SEED_NOTIFS = [
 const SEED_HIST = [
   {id:1,cargaId:3,clienteId:1,cliente:"Importadora del Istmo",transportistaId:2,
    transportista:"Carlos Rodríguez — Transportes CR",tipoCarga:"Materiales de construcción",
-   ruta:"Tegucigalpa (Honduras) → San Salvador (El Salvador)",monto:640,fecha:"2026-07-10",estado:"completado"},
+   ruta:"Tegucigalpa (Honduras) → San Salvador (El Salvador)",monto:640,fecha:"2026-07-10",estado:"completado",
+   calTransportista:{estrellas:5,comentario:"Excelente entrega, muy puntual y cuidadoso con la carga."},
+   calCliente:null},
+];
+
+const SEED_FACTURAS = [
+  {id:1,numero:"NX-0001",cargaId:3,clienteId:1,cliente:"Importadora del Istmo",transportistaId:2,
+   transportista:"Carlos Rodríguez — Transportes CR",tipoCarga:"Materiales de construcción",
+   ruta:"Tegucigalpa (Honduras) → San Salvador (El Salvador)",monto:640,comisionPct:COMISION_PCT,
+   comision:51.2,montoTransportista:588.8,fecha:"2026-07-10"},
 ];
 
 // ─── UTILS ────────────────────────────────────────────────────────────────
@@ -401,6 +417,20 @@ const fmtTime = (ts) => {
 const fmtMoneda = (n) => n==null ? "" : "$" + Number(n).toLocaleString();
 const uid = () => Date.now() + Math.random();
 const rand = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const calcComision = (monto) => {
+  const comision = Number((monto*COMISION_PCT/100).toFixed(2));
+  return {comision, montoTransportista: Number((monto-comision).toFixed(2))};
+};
+const avgRating = (historial, usuario) => {
+  const campo = usuario.tipo==="cliente" ? "calCliente" : "calTransportista";
+  const idCampo = usuario.tipo==="cliente" ? "clienteId" : "transportistaId";
+  const vals = historial.filter(h=>h[idCampo]===usuario.id && h[campo]).map(h=>h[campo].estrellas);
+  if(!vals.length) return null;
+  return vals.reduce((a,b)=>a+b,0)/vals.length;
+};
+const Stars = ({value}) => value==null ? null : (
+  <span style={{color:"#F59E0B",fontSize:11,fontWeight:700}}>★ {value.toFixed(1)}</span>
+);
 
 // ─── APP ──────────────────────────────────────────────────────────────────
 export default function App() {
@@ -411,8 +441,11 @@ export default function App() {
   const [convos, setConvos] = useState(SEED_CONVOS);
   const [notifs, setNotifs] = useState(SEED_NOTIFS);
   const [historial, setHistorial] = useState(SEED_HIST);
+  const [facturas, setFacturas] = useState(SEED_FACTURAS);
   const [toast, setToast] = useState("");
   const [modalCarga, setModalCarga] = useState(null);
+  const [modalContrato, setModalContrato] = useState(null);
+  const [modalCalificar, setModalCalificar] = useState(null);
   const [showNotifs, setShowNotifs] = useState(false);
 
   const showToast = useCallback((msg) => {
@@ -440,14 +473,7 @@ export default function App() {
         });
         if(entregadas.length){
           setTimeout(()=>{
-            entregadas.forEach(c=>{
-              setHistorial(h=>[{id:uid(),cargaId:c.id,clienteId:c.clienteId,cliente:c.cliente,
-                transportistaId:c.transportistaId,transportista:c.transportistaNombre,tipoCarga:c.tipoCarga,
-                ruta:`${c.ciudadOrigen} (${c.paisOrigen}) → ${c.ciudadDestino} (${c.paisDestino})`,
-                monto:c.precioAcordado,fecha:new Date().toISOString().split("T")[0],estado:"completado"},...h]);
-              addNotif(c.clienteId,"sistema","✅ Carga entregada",`${c.tipoCarga} llegó a ${c.ciudadDestino}. Pago liberado al transportista.`);
-              addNotif(c.transportistaId,"sistema","💰 Pago liberado",`Se liberó ${fmtMoneda(c.precioAcordado)} por la entrega de ${c.tipoCarga}.`);
-            });
+            entregadas.forEach(c=>registrarEntrega(c));
           },0);
         }
         return next;
@@ -456,9 +482,26 @@ export default function App() {
     return ()=>clearInterval(t);
   },[addNotif]);
 
+  const registrarEntrega = useCallback((c) => {
+    const ruta = `${c.ciudadOrigen} (${c.paisOrigen}) → ${c.ciudadDestino} (${c.paisDestino})`;
+    const {comision, montoTransportista} = calcComision(c.precioAcordado);
+    setHistorial(h=>[{id:uid(),cargaId:c.id,clienteId:c.clienteId,cliente:c.cliente,
+      transportistaId:c.transportistaId,transportista:c.transportistaNombre,tipoCarga:c.tipoCarga,
+      ruta,monto:c.precioAcordado,fecha:new Date().toISOString().split("T")[0],estado:"completado",
+      calTransportista:null,calCliente:null},...h]);
+    setFacturas(fs=>[{id:uid(),numero:`NX-${String(fs.length+1).padStart(4,"0")}`,cargaId:c.id,
+      clienteId:c.clienteId,cliente:c.cliente,transportistaId:c.transportistaId,transportista:c.transportistaNombre,
+      tipoCarga:c.tipoCarga,ruta,monto:c.precioAcordado,comisionPct:COMISION_PCT,comision,montoTransportista,
+      fecha:new Date().toISOString().split("T")[0]},...fs]);
+    addNotif(c.clienteId,"sistema","✅ Carga entregada",`${c.tipoCarga} llegó a ${c.ciudadDestino}. Pago liberado al transportista. Ya puedes calificar el viaje.`);
+    addNotif(c.transportistaId,"sistema","💰 Pago liberado",`Se liberó ${fmtMoneda(montoTransportista)} (neto de comisión) por la entrega de ${c.tipoCarga}.`);
+  },[addNotif]);
+
   const asignarCarga = useCallback((cargaId, transportistaId, transportistaNombre, monto) => {
     setCargas(cs=>cs.map(c=>c.id===cargaId?{...c,estado:"asignada",transportistaId,transportistaNombre,
-      precioAcordado:monto,pago:{estado:"retenido",monto},fechaAsignacion:new Date().toISOString()}:c));
+      precioAcordado:monto,pago:{estado:"retenido",monto},
+      contrato:{firmaCliente:false,firmaTransportista:false,fechaCliente:null,fechaTransportista:null},
+      fechaAsignacion:new Date().toISOString()}:c));
   },[]);
 
   const iniciarViaje = useCallback((cargaId) => {
@@ -470,17 +513,27 @@ export default function App() {
       const c = cs.find(x=>x.id===cargaId);
       if(!c) return cs;
       const done = {...c,progreso:100,estado:"entregada",pago:{...c.pago,estado:"liberado"},fechaEntrega:new Date().toISOString()};
-      setTimeout(()=>{
-        setHistorial(h=>[{id:uid(),cargaId:c.id,clienteId:c.clienteId,cliente:c.cliente,
-          transportistaId:c.transportistaId,transportista:c.transportistaNombre,tipoCarga:c.tipoCarga,
-          ruta:`${c.ciudadOrigen} (${c.paisOrigen}) → ${c.ciudadDestino} (${c.paisDestino})`,
-          monto:c.precioAcordado,fecha:new Date().toISOString().split("T")[0],estado:"completado"},...h]);
-        addNotif(c.clienteId,"sistema","✅ Carga entregada",`${c.tipoCarga} llegó a ${c.ciudadDestino}. Pago liberado al transportista.`);
-        addNotif(c.transportistaId,"sistema","💰 Pago liberado",`Se liberó ${fmtMoneda(c.precioAcordado)} por la entrega de ${c.tipoCarga}.`);
-      },0);
+      setTimeout(()=>registrarEntrega(done),0);
       return cs.map(x=>x.id===cargaId?done:x);
     });
-  },[addNotif]);
+  },[registrarEntrega]);
+
+  const firmarContrato = useCallback((cargaId) => {
+    setCargas(cs=>cs.map(c=>{
+      if(c.id!==cargaId||!c.contrato) return c;
+      const campo = usuario.tipo==="cliente" ? "firmaCliente" : "firmaTransportista";
+      const fcampo = usuario.tipo==="cliente" ? "fechaCliente" : "fechaTransportista";
+      return {...c,contrato:{...c.contrato,[campo]:true,[fcampo]:new Date().toISOString()}};
+    }));
+  },[usuario]);
+
+  const calificar = useCallback((historialId, estrellas, comentario) => {
+    setHistorial(hs=>hs.map(h=>{
+      if(h.id!==historialId) return h;
+      const campo = usuario.tipo==="cliente" ? "calTransportista" : "calCliente";
+      return {...h,[campo]:{estrellas,comentario}};
+    }));
+  },[usuario]);
 
   const unreadNotifs = notifs.filter(n=>n.usuarioId===usuario?.id && !n.leida).length;
   const unreadMsgs = convos.filter(c=>c.participantes.includes(usuario?.id) &&
@@ -491,7 +544,7 @@ export default function App() {
   if (!usuario) return (
     <div><style>{CSS}</style>
       <AuthScreen usuarios={usuarios} setUsuarios={setUsuarios}
-        onLogin={u=>{setUsuario(u);setVista("dashboard");}} />
+        onLogin={u=>{setUsuario(u);setVista(u.tipo==="admin"?"adminResumen":"dashboard");}} />
     </div>
   );
 
@@ -524,6 +577,7 @@ export default function App() {
     {id:"seguimiento",icon:"📍",label:"Seguimiento GPS"},
     {id:"mensajes",icon:"💬",label:"Mensajes",badge:unreadMsgs},
     {id:"historial",icon:"📜",label:"Historial"},
+    {id:"facturas",icon:"🧾",label:"Facturación"},
     {id:"perfil",icon:"👤",label:"Mi Perfil"},
   ];
   const NAV_TRANSPORTISTA = [
@@ -533,15 +587,26 @@ export default function App() {
     {id:"seguimiento",icon:"📍",label:"Seguimiento GPS"},
     {id:"mensajes",icon:"💬",label:"Mensajes",badge:unreadMsgs},
     {id:"historial",icon:"📜",label:"Historial"},
+    {id:"facturas",icon:"🧾",label:"Facturación"},
     {id:"perfil",icon:"👤",label:"Mi Perfil"},
   ];
+  const NAV_ADMIN = [
+    {id:"adminResumen",icon:"📊",label:"Resumen"},
+    {id:"adminUsuarios",icon:"👥",label:"Usuarios"},
+    {id:"adminViajes",icon:"🚚",label:"Viajes"},
+    {id:"adminFacturas",icon:"🧾",label:"Facturación"},
+    {id:"perfil",icon:"👤",label:"Mi Perfil"},
+  ];
+  const nav = usuario.tipo==="cliente" ? NAV_CLIENTE : usuario.tipo==="transportista" ? NAV_TRANSPORTISTA : NAV_ADMIN;
+
+  const cargaDeContrato = modalContrato ? cargas.find(c=>c.id===modalContrato) : null;
+  const histDeCalificar = modalCalificar ? historial.find(h=>h.id===modalCalificar) : null;
 
   return (
     <div>
       <style>{CSS}</style>
       <div className="layout">
-        <Sidebar usuario={usuario} vista={vista} setVista={setVista}
-          nav={usuario.tipo==="cliente"?NAV_CLIENTE:NAV_TRANSPORTISTA}
+        <Sidebar usuario={usuario} vista={vista} setVista={setVista} nav={nav} historial={historial}
           onLogout={()=>{setUsuario(null);setVista("dashboard");}} />
         <div className="main">
           <TopBar vista={vista} usuario={usuario}
@@ -551,24 +616,30 @@ export default function App() {
             {vista==="dashboard" && <Dashboard usuario={usuario} cargas={cargas}
               historial={historial} notifs={notifs} setVista={setVista} />}
             {vista==="disponibles" && usuario.tipo==="transportista" && <CargasDisponibles cargas={cargas} usuario={usuario}
-              usuarios={usuarios} onDetalle={setModalCarga}
+              usuarios={usuarios} historial={historial} onDetalle={setModalCarga}
               onAceptar={aceptarViajeDirecto}
               onCotizar={abrirOCrearConvo} />}
             {vista==="publicar" && usuario.tipo==="cliente" && <PublicarCarga usuario={usuario} setCargas={setCargas}
               showToast={showToast} />}
             {vista==="miscargas" && usuario.tipo==="cliente" && <MisCargas usuario={usuario} cargas={cargas}
-              setCargas={setCargas} onDetalle={setModalCarga} showToast={showToast} setVista={setVista} />}
+              setCargas={setCargas} onDetalle={setModalCarga} onContrato={setModalContrato} showToast={showToast} setVista={setVista} />}
             {vista==="misviajes" && usuario.tipo==="transportista" && <MisViajes usuario={usuario} cargas={cargas}
-              onDetalle={setModalCarga} iniciarViaje={iniciarViaje} confirmarEntregaManual={confirmarEntregaManual}
+              onDetalle={setModalCarga} onContrato={setModalContrato} iniciarViaje={iniciarViaje} confirmarEntregaManual={confirmarEntregaManual}
               setVista={setVista} showToast={showToast} />}
-            {vista==="seguimiento" && <Seguimiento usuario={usuario} cargas={cargas}
+            {vista==="seguimiento" && <Seguimiento usuario={usuario} cargas={cargas} onContrato={setModalContrato}
               iniciarViaje={iniciarViaje} confirmarEntregaManual={confirmarEntregaManual} />}
             {vista==="mensajes" && <Mensajeria usuario={usuario} convos={convos}
-              setConvos={setConvos} usuarios={usuarios} cargas={cargas}
+              setConvos={setConvos} usuarios={usuarios} cargas={cargas} historial={historial}
               addNotif={addNotif} showToast={showToast} asignarCarga={asignarCarga} />}
-            {vista==="historial" && <Historial usuario={usuario} historial={historial} />}
+            {vista==="historial" && <Historial usuario={usuario} historial={historial} onCalificar={setModalCalificar} />}
+            {vista==="facturas" && usuario.tipo!=="admin" && <Facturacion usuario={usuario} facturas={facturas} />}
             {vista==="perfil" && <Perfil usuario={usuario} setUsuario={setUsuario}
-              setUsuarios={setUsuarios} showToast={showToast} />}
+              setUsuarios={setUsuarios} historial={historial} showToast={showToast} />}
+            {vista==="adminResumen" && usuario.tipo==="admin" && <AdminResumen usuarios={usuarios} cargas={cargas}
+              historial={historial} facturas={facturas} />}
+            {vista==="adminUsuarios" && usuario.tipo==="admin" && <AdminUsuarios usuarios={usuarios} historial={historial} />}
+            {vista==="adminViajes" && usuario.tipo==="admin" && <AdminViajes cargas={cargas} onDetalle={setModalCarga} />}
+            {vista==="adminFacturas" && usuario.tipo==="admin" && <Facturacion usuario={usuario} facturas={facturas} modoAdmin />}
           </div>
         </div>
       </div>
@@ -577,8 +648,13 @@ export default function App() {
           onClose={()=>setShowNotifs(false)} setVista={setVista} />
       )}
       {modalCarga && <ModalCarga carga={modalCarga} onClose={()=>setModalCarga(null)}
-        usuario={usuario} usuarios={usuarios}
+        usuario={usuario} usuarios={usuarios} historial={historial}
         onContactar={()=>{ abrirOCrearConvo(modalCarga); setModalCarga(null); showToast("Chat abierto"); }} />}
+      {cargaDeContrato && <ModalContrato carga={cargaDeContrato} usuario={usuario}
+        onClose={()=>setModalContrato(null)} onFirmar={()=>firmarContrato(cargaDeContrato.id)} />}
+      {histDeCalificar && <ModalCalificar historial={histDeCalificar} usuario={usuario}
+        onClose={()=>setModalCalificar(null)}
+        onSubmit={(estrellas,comentario)=>{ calificar(histDeCalificar.id,estrellas,comentario); setModalCalificar(null); showToast("¡Gracias por tu calificación!"); }} />}
       {toast && <div className="toast">✅ {toast}</div>}
     </div>
   );
@@ -644,7 +720,7 @@ function AuthScreen({usuarios, setUsuarios, onLogin}) {
       <div className="auth-box">
         <div className="auth-top">
           <div style={{fontSize:36,marginBottom:8}}>🚛</div>
-          <h1>CargaConecta</h1>
+          <h1>NexCarg</h1>
           <p>El transporte de carga terrestre de Panamá a México, en un solo lugar</p>
         </div>
         <div className="auth-body">
@@ -661,7 +737,7 @@ function AuthScreen({usuarios, setUsuarios, onLogin}) {
               <div className="field"><label>Contraseña</label>
                 <input type="password" placeholder="••••••" value={form.password} onChange={e=>upd("password",e.target.value)} /></div>
               <button className="btn btn-primary" style={{width:"100%",marginTop:4}} onClick={login}>Entrar a la plataforma</button>
-              <p style={{textAlign:"center",fontSize:11,color:C.grisM,marginTop:10}}>Demo cliente: cliente@demo.com / 1234 · Demo transportista: transportista@demo.com / 1234</p>
+              <p style={{textAlign:"center",fontSize:11,color:C.grisM,marginTop:10}}>Demo cliente: cliente@demo.com / 1234 · Demo transportista: transportista@demo.com / 1234 · Demo admin: admin@demo.com / 1234</p>
             </>
           ) : (
             <>
@@ -780,11 +856,12 @@ function AuthScreen({usuarios, setUsuarios, onLogin}) {
 }
 
 // ─── SIDEBAR ──────────────────────────────────────────────────────────────
-function Sidebar({usuario, vista, setVista, nav, onLogout}) {
+function Sidebar({usuario, vista, setVista, nav, historial, onLogout}) {
+  const rating = usuario.tipo!=="admin" ? avgRating(historial, usuario) : null;
   return (
     <div className="sidebar">
       <div className="sb-logo">
-        <h2>🚛 Carga<br/>Conecta</h2>
+        <h2>🚛 NexCarg</h2>
         <span>Panamá — México</span>
       </div>
       <nav className="sb-nav">
@@ -804,7 +881,10 @@ function Sidebar({usuario, vista, setVista, nav, onLogout}) {
           <div style={{flex:1,minWidth:0}}>
             <div className="sb-uname">{usuario.nombre}</div>
             <div className="sb-urole">{usuario.subtipo}</div>
-            {usuario.verificado && <div className="sb-verif">✅ Verificado</div>}
+            <div style={{display:"flex",gap:6,alignItems:"center",marginTop:1}}>
+              {usuario.verificado && <div className="sb-verif">✅ Verificado</div>}
+              {rating!=null && <span style={{fontSize:9,color:C.ambar,fontWeight:700}}>★ {rating.toFixed(1)}</span>}
+            </div>
           </div>
         </div>
         <button className="sb-logout" onClick={onLogout}>⬅ Cerrar sesión</button>
@@ -817,14 +897,15 @@ function Sidebar({usuario, vista, setVista, nav, onLogout}) {
 const VISTA_LABELS = {
   dashboard:"Panel Principal",disponibles:"Cargas Disponibles",publicar:"Publicar Carga",
   miscargas:"Mis Cargas",misviajes:"Mis Viajes",seguimiento:"Seguimiento GPS",
-  mensajes:"Mensajes",historial:"Historial de Viajes",perfil:"Mi Perfil"
+  mensajes:"Mensajes",historial:"Historial de Viajes",facturas:"Facturación",perfil:"Mi Perfil",
+  adminResumen:"Resumen",adminUsuarios:"Usuarios",adminViajes:"Viajes",adminFacturas:"Facturación"
 };
 function TopBar({vista, usuario, unreadNotifs, showNotifs, setShowNotifs}) {
   return (
     <div className="topbar">
       <div className="topbar-left">
         <h1>{VISTA_LABELS[vista]||vista}</h1>
-        <p>CargaConecta — {usuario.subtipo}</p>
+        <p>NexCarg — {usuario.subtipo}</p>
       </div>
       <div className="topbar-right">
         <button className="notif-btn" onClick={()=>setShowNotifs(!showNotifs)}>
@@ -946,7 +1027,7 @@ function Dashboard({usuario, cargas, historial, notifs, setVista}) {
 }
 
 // ─── CARGAS DISPONIBLES (marketplace del transportista) ───────────────────
-function CargasDisponibles({cargas, usuario, usuarios, onDetalle, onAceptar, onCotizar}) {
+function CargasDisponibles({cargas, usuario, usuarios, historial, onDetalle, onAceptar, onCotizar}) {
   const [f, setF] = useState({paisOrigen:"",paisDestino:"",tipoCarga:"",buscar:""});
   const upd = (k,v)=>setF(x=>({...x,[k]:v}));
   const res = cargas.filter(c=>{
@@ -1001,6 +1082,7 @@ function CargasDisponibles({cargas, usuario, usuarios, onDetalle, onAceptar, onC
                     <div style={{fontSize:12,fontWeight:700,color:C.marino}}>{c.cliente}</div>
                     <span className={`badge ${pub?.verificado?"b-verif":"b-noVerif"}`}>
                       {pub?.verificado?"✅ Verificado":"⚠️ Sin verificar"}</span>
+                    {pub && <Stars value={avgRating(historial,pub)}/>}
                   </div>
                 </div>
                 <div className="lruta">📍 {c.ciudadOrigen}, {c.paisOrigen} <span style={{color:C.naranja}}>→</span> {c.ciudadDestino}, {c.paisDestino}</div>
@@ -1037,7 +1119,7 @@ function PublicarCarga({usuario, setCargas, showToast}) {
       paisOrigen:f.paisOrigen,ciudadOrigen:f.ciudadOrigen,paisDestino:f.paisDestino,ciudadDestino:f.ciudadDestino,
       fecha:f.fecha,vehiculoReq:f.vehiculoReq,presupuesto:f.presupuestoAbierto?null:+f.presupuesto,
       descripcion:f.descripcion,estado:"publicada",transportistaId:null,transportistaNombre:null,
-      precioAcordado:null,progreso:0,pago:{estado:"pendiente",monto:null},fechaAsignacion:null,fechaEntrega:null};
+      precioAcordado:null,progreso:0,pago:{estado:"pendiente",monto:null},contrato:null,fechaAsignacion:null,fechaEntrega:null};
     setCargas(cs=>[...cs,nueva]);
     showToast("¡Carga publicada! Los transportistas ya pueden verla.");
     setF(x=>({...x,peso:"",fecha:"",presupuesto:"",descripcion:""}));
@@ -1092,7 +1174,7 @@ function PublicarCarga({usuario, setCargas, showToast}) {
 }
 
 // ─── MIS CARGAS (cliente) ──────────────────────────────────────────────────
-function MisCargas({usuario, cargas, setCargas, onDetalle, showToast, setVista}) {
+function MisCargas({usuario, cargas, setCargas, onDetalle, onContrato, showToast, setVista}) {
   const mias = cargas.filter(c=>c.clienteId===usuario.id);
   const cancelar = (id) => { setCargas(cs=>cs.map(c=>c.id===id?{...c,estado:"cancelada"}:c)); showToast("Publicación cancelada"); };
   return (
@@ -1112,6 +1194,7 @@ function MisCargas({usuario, cargas, setCargas, onDetalle, showToast, setVista})
               <div style={{display:"flex",gap:7,marginTop:7,flexWrap:"wrap"}}>
                 <button className="btn btn-sm btn-ghost" onClick={()=>onDetalle(c)}>👁 Ver</button>
                 {c.estado==="publicada"&&<button className="btn btn-sm btn-danger" onClick={()=>cancelar(c.id)}>🗑 Cancelar</button>}
+                {c.contrato&&<button className="btn btn-sm btn-ghost" onClick={()=>onContrato(c.id)}>📄 Contrato</button>}
                 {["asignada","en_transito"].includes(c.estado)&&<button className="btn btn-sm btn-oro" onClick={()=>setVista("seguimiento")}>📍 Ver seguimiento</button>}
               </div>
             </div>
@@ -1127,7 +1210,7 @@ function MisCargas({usuario, cargas, setCargas, onDetalle, showToast, setVista})
 }
 
 // ─── MIS VIAJES (transportista) ────────────────────────────────────────────
-function MisViajes({usuario, cargas, onDetalle, iniciarViaje, confirmarEntregaManual, setVista, showToast}) {
+function MisViajes({usuario, cargas, onDetalle, onContrato, iniciarViaje, confirmarEntregaManual, setVista, showToast}) {
   const mios = cargas.filter(c=>c.transportistaId===usuario.id);
   return (
     <>
@@ -1145,7 +1228,10 @@ function MisViajes({usuario, cargas, onDetalle, iniciarViaje, confirmarEntregaMa
               <div style={{fontSize:11,color:C.grisM,marginTop:3}}>🏢 {c.cliente} · Recogida: {c.fecha}</div>
               <div style={{display:"flex",gap:7,marginTop:7,flexWrap:"wrap"}}>
                 <button className="btn btn-sm btn-ghost" onClick={()=>onDetalle(c)}>👁 Ver</button>
-                {c.estado==="asignada"&&<button className="btn btn-sm btn-primary" onClick={()=>{iniciarViaje(c.id);showToast("Viaje iniciado — seguimiento GPS activado");}}>▶️ Iniciar viaje</button>}
+                {c.contrato&&<button className="btn btn-sm btn-ghost" onClick={()=>onContrato(c.id)}>📄 Contrato</button>}
+                {c.estado==="asignada"&&c.contrato&&(c.contrato.firmaCliente&&c.contrato.firmaTransportista
+                  ? <button className="btn btn-sm btn-primary" onClick={()=>{iniciarViaje(c.id);showToast("Viaje iniciado — seguimiento GPS activado");}}>▶️ Iniciar viaje</button>
+                  : <button className="btn btn-sm btn-oro" onClick={()=>onContrato(c.id)}>✍️ Firmar contrato para iniciar</button>)}
                 {c.estado==="en_transito"&&<button className="btn btn-sm btn-oro" onClick={()=>setVista("seguimiento")}>📍 Ver seguimiento</button>}
                 {c.estado==="en_transito"&&<button className="btn btn-sm btn-ghost" onClick={()=>{confirmarEntregaManual(c.id);showToast("Entrega confirmada — pago liberado");}}>✅ Confirmar entrega</button>}
               </div>
@@ -1190,7 +1276,7 @@ function CorridorTrack({carga}) {
   );
 }
 
-function Seguimiento({usuario, cargas, iniciarViaje, confirmarEntregaManual}) {
+function Seguimiento({usuario, cargas, onContrato, iniciarViaje, confirmarEntregaManual}) {
   const mios = cargas.filter(c=>{
     const esParticipante = usuario.tipo==="cliente" ? c.clienteId===usuario.id : c.transportistaId===usuario.id;
     return esParticipante && ["asignada","en_transito"].includes(c.estado);
@@ -1211,7 +1297,9 @@ function Seguimiento({usuario, cargas, iniciarViaje, confirmarEntregaManual}) {
           </div>
           <CorridorTrack carga={c}/>
           {usuario.tipo==="transportista"&&c.estado==="asignada"&&(
-            <button className="btn btn-sm btn-primary" style={{marginTop:10}} onClick={()=>iniciarViaje(c.id)}>▶️ Iniciar viaje</button>
+            c.contrato&&c.contrato.firmaCliente&&c.contrato.firmaTransportista
+              ? <button className="btn btn-sm btn-primary" style={{marginTop:10}} onClick={()=>iniciarViaje(c.id)}>▶️ Iniciar viaje</button>
+              : <button className="btn btn-sm btn-oro" style={{marginTop:10}} onClick={()=>onContrato(c.id)}>✍️ Firmar contrato para iniciar</button>
           )}
           {usuario.tipo==="transportista"&&c.estado==="en_transito"&&(
             <button className="btn btn-sm btn-ghost" style={{marginTop:10}} onClick={()=>confirmarEntregaManual(c.id)}>✅ Confirmar entrega</button>
@@ -1223,7 +1311,7 @@ function Seguimiento({usuario, cargas, iniciarViaje, confirmarEntregaManual}) {
 }
 
 // ─── MENSAJERÍA ───────────────────────────────────────────────────────────
-function Mensajeria({usuario, convos, setConvos, usuarios, cargas, addNotif, showToast, asignarCarga}) {
+function Mensajeria({usuario, convos, setConvos, usuarios, cargas, historial, addNotif, showToast, asignarCarga}) {
   const [selConvo, setSelConvo] = useState(null);
   const [texto, setTexto] = useState("");
   const [ofertaVal, setOfertaVal] = useState("");
@@ -1321,6 +1409,7 @@ function Mensajeria({usuario, convos, setConvos, usuarios, cargas, addNotif, sho
               <div className="ch-name">{otro(convo)?.nombre}</div>
               <div className="ch-role">{otro(convo)?.subtipo}
                 {otro(convo)?.verificado&&" · ✅ Verificado"}
+                {otro(convo)&&avgRating(historial,otro(convo))!=null&&<> · <Stars value={avgRating(historial,otro(convo))}/></>}
               </div>
             </div>
             {carga&&(
@@ -1423,33 +1512,43 @@ function NotifPanel({notifs, onClose, setVista}) {
 }
 
 // ─── HISTORIAL ────────────────────────────────────────────────────────────
-function Historial({usuario, historial}) {
+function Historial({usuario, historial, onCalificar}) {
   const mis = historial.filter(h=>h.clienteId===usuario.id||h.transportistaId===usuario.id);
   return (
     <>
       {mis.length===0&&<div className="empty"><div className="ei">📜</div>
         <p>Sin viajes completados</p><small>Las entregas confirmadas aparecerán aquí</small></div>}
       <div className="tx-list">
-        {mis.map(h=>(
-          <div key={h.id} className="tx-item">
-            <div className="tx-icon">{TCI[h.tipoCarga]||"📦"}</div>
-            <div className="tx-info">
-              <div className="tx-title">{h.tipoCarga} · {usuario.tipo==="cliente"?`Transportado por ${h.transportista}`:`Para ${h.cliente}`}</div>
-              <div className="tx-sub">{h.ruta} · {h.fecha} · <span className="badge b-verif">{h.estado}</span></div>
+        {mis.map(h=>{
+          const miCal = usuario.tipo==="cliente" ? h.calTransportista : h.calCliente;
+          const suCal = usuario.tipo==="cliente" ? h.calCliente : h.calTransportista;
+          return (
+            <div key={h.id} className="tx-item">
+              <div className="tx-icon">{TCI[h.tipoCarga]||"📦"}</div>
+              <div className="tx-info">
+                <div className="tx-title">{h.tipoCarga} · {usuario.tipo==="cliente"?`Transportado por ${h.transportista}`:`Para ${h.cliente}`}</div>
+                <div className="tx-sub">{h.ruta} · {h.fecha} · <span className="badge b-verif">{h.estado}</span></div>
+                {suCal && <div className="tx-sub">Te calificaron: <Stars value={suCal.estrellas}/> "{suCal.comentario}"</div>}
+                <div style={{marginTop:6}}>
+                  {miCal
+                    ? <span style={{fontSize:11,color:C.grisM}}>Tu calificación: <Stars value={miCal.estrellas}/></span>
+                    : <button className="btn btn-sm btn-oro" onClick={()=>onCalificar(h.id)}>⭐ Calificar</button>}
+                </div>
+              </div>
+              <div className="tx-price">
+                <div className="tx-val">{fmtMoneda(h.monto)}</div>
+                <div className="tx-date">Pago liberado</div>
+              </div>
             </div>
-            <div className="tx-price">
-              <div className="tx-val">{fmtMoneda(h.monto)}</div>
-              <div className="tx-date">Pago liberado</div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );
 }
 
 // ─── PERFIL ───────────────────────────────────────────────────────────────
-function Perfil({usuario, setUsuario, setUsuarios, showToast}) {
+function Perfil({usuario, setUsuario, setUsuarios, historial, showToast}) {
   const [nombre, setNombre] = useState(usuario.nombre);
   const [tel, setTel] = useState(usuario.telefono||"");
   const [selfie, setSelfie] = useState(usuario.selfie);
@@ -1479,10 +1578,12 @@ function Perfil({usuario, setUsuario, setUsuarios, showToast}) {
           📷 Cambiar foto
           <input type="file" accept="image/*" style={{display:"none"}} onChange={handleSelfie} />
         </label>
-        <div style={{marginTop:10}}>
+        <div style={{marginTop:10,display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
           <span className={`badge ${usuario.verificado?"b-verif":"b-noVerif"}`}>
             {usuario.verificado?"✅ Cuenta verificada":"⚠️ Cuenta sin verificar"}
           </span>
+          {usuario.tipo!=="admin"&&avgRating(historial,usuario)!=null&&
+            <span className="badge" style={{background:C.ambarL,color:C.amarillo}}><Stars value={avgRating(historial,usuario)}/></span>}
         </div>
       </div>
 
@@ -1509,7 +1610,7 @@ function Perfil({usuario, setUsuario, setUsuarios, showToast}) {
 }
 
 // ─── MODAL DETALLE ─────────────────────────────────────────────────────────
-function ModalCarga({carga:c, onClose, usuario, usuarios, onContactar}) {
+function ModalCarga({carga:c, onClose, usuario, usuarios, historial, onContactar}) {
   const pub = usuarios.find(u=>u.id===c.clienteId);
   const puedeContactar = usuario.tipo==="cliente" ? c.clienteId!==usuario.id : true;
   return (
@@ -1531,8 +1632,11 @@ function ModalCarga({carga:c, onClose, usuario, usuarios, onContactar}) {
             <div style={{fontWeight:700,fontSize:14,color:C.marino}}>{c.cliente}</div>
             <span className={`badge ${pub?.verificado?"b-verif":"b-noVerif"}`}>
               {pub?.verificado?"✅ Verificado":"⚠️ Sin verificar"}</span>
+            {pub && <Stars value={avgRating(historial,pub)}/>}
           </div>
         </div>
+        {c.contrato&&<div className="irow"><span className="ik">Contrato digital</span>
+          <span className="iv">{c.contrato.firmaCliente&&c.contrato.firmaTransportista?"✅ Firmado por ambas partes":"⏳ Pendiente de firma"}</span></div>}
         <div className="irow"><span className="ik">Ruta</span><span className="iv">{c.ciudadOrigen} → {c.ciudadDestino}</span></div>
         <div className="irow"><span className="ik">Peso</span><span className="iv">{c.peso} {c.unidadPeso}</span></div>
         <div className="irow"><span className="ik">Vehículo requerido</span><span className="iv">{c.vehiculoReq}</span></div>
@@ -1548,6 +1652,194 @@ function ModalCarga({carga:c, onClose, usuario, usuarios, onContactar}) {
           </button>
         )}
       </div>
+    </div>
+  );
+}
+
+// ─── CONTRATO DIGITAL ──────────────────────────────────────────────────────
+function ModalContrato({carga:c, usuario, onClose, onFirmar}) {
+  const yaFirme = usuario.tipo==="cliente" ? c.contrato.firmaCliente : c.contrato.firmaTransportista;
+  const ambos = c.contrato.firmaCliente && c.contrato.firmaTransportista;
+  return (
+    <div className="overlay" onClick={onClose}>
+      <div className="modal" onClick={e=>e.stopPropagation()}>
+        <div className="modal-hd">
+          <div>
+            <span className={`badge ${ambos?"b-verif":"b-asignada"}`}>{ambos?"Firmado por ambas partes":"Pendiente de firma"}</span>
+            <h2 style={{marginTop:6}}>📄 Contrato de transporte</h2>
+          </div>
+          <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+        <div style={{background:C.crema,borderRadius:12,padding:16,fontSize:12,lineHeight:1.7,color:C.texto}}>
+          <p>Contrato digital generado por <b>NexCarg</b> entre <b>{c.cliente}</b> ("el Cliente") y <b>{c.transportistaNombre}</b> ("el Transportista") para el transporte de <b>{c.tipoCarga}</b> ({c.peso} {c.unidadPeso}) desde <b>{c.ciudadOrigen}, {c.paisOrigen}</b> hasta <b>{c.ciudadDestino}, {c.paisDestino}</b>, con fecha de recogida <b>{c.fecha}</b>.</p>
+          <p style={{marginTop:8}}>El monto acordado es de <b>{fmtMoneda(c.precioAcordado)}</b>, retenido en garantía (escrow) por NexCarg y liberado al Transportista al confirmarse la entrega. NexCarg retiene una comisión de servicio del {COMISION_PCT}% sobre el monto del viaje.</p>
+          <p style={{marginTop:8}}>Ambas partes se comprometen a coordinar la recogida y entrega dentro de los plazos acordados, y a calificarse mutuamente al finalizar el viaje.</p>
+        </div>
+        <div className="irow"><span className="ik">Cliente</span>
+          <span className="iv">{c.contrato.firmaCliente?`✅ Firmado ${fmtTime(c.contrato.fechaCliente)}`:"⏳ Sin firmar"}</span></div>
+        <div className="irow"><span className="ik">Transportista</span>
+          <span className="iv">{c.contrato.firmaTransportista?`✅ Firmado ${fmtTime(c.contrato.fechaTransportista)}`:"⏳ Sin firmar"}</span></div>
+        {!yaFirme && (
+          <button className="btn btn-primary" style={{width:"100%",marginTop:14}} onClick={onFirmar}>✍️ Firmar contrato</button>
+        )}
+        {yaFirme && !ambos && (
+          <p style={{textAlign:"center",fontSize:11,color:C.grisM,marginTop:14}}>Ya firmaste. Esperando la firma de la otra parte.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── CALIFICACIONES ────────────────────────────────────────────────────────
+function ModalCalificar({historial:h, usuario, onClose, onSubmit}) {
+  const [estrellas, setEstrellas] = useState(0);
+  const [comentario, setComentario] = useState("");
+  const contraparte = usuario.tipo==="cliente" ? h.transportista : h.cliente;
+  return (
+    <div className="overlay" onClick={onClose}>
+      <div className="modal" onClick={e=>e.stopPropagation()}>
+        <div className="modal-hd">
+          <h2>⭐ Calificar a {contraparte}</h2>
+          <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+        <p style={{fontSize:12,color:C.grisM,marginBottom:14}}>{h.tipoCarga} · {h.ruta}</p>
+        <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:16}}>
+          {[1,2,3,4,5].map(n=>(
+            <button key={n} onClick={()=>setEstrellas(n)}
+              style={{background:"none",border:"none",cursor:"pointer",fontSize:30,
+                color:n<=estrellas?C.ambar:C.gris,padding:0,lineHeight:1}}>★</button>
+          ))}
+        </div>
+        <div className="field"><label>Comentario (opcional)</label>
+          <textarea placeholder="¿Cómo fue tu experiencia?" value={comentario} onChange={e=>setComentario(e.target.value)} /></div>
+        <button className="btn btn-primary" style={{width:"100%",opacity:estrellas?1:.5}}
+          disabled={!estrellas} onClick={()=>onSubmit(estrellas,comentario)}>Enviar calificación</button>
+      </div>
+    </div>
+  );
+}
+
+// ─── FACTURACIÓN ────────────────────────────────────────────────────────────
+function Facturacion({usuario, facturas, modoAdmin}) {
+  const mias = modoAdmin ? facturas : facturas.filter(f=>usuario.tipo==="cliente"?f.clienteId===usuario.id:f.transportistaId===usuario.id);
+  const totalComision = mias.reduce((a,f)=>a+f.comision,0);
+  return (
+    <>
+      {modoAdmin && (
+        <div className="stats-row">
+          <div className="stat"><div className="sl">Facturas emitidas</div><div className="sv">{mias.length}</div>
+            <div className="ss">🧾 total</div></div>
+          <div className="stat" style={{borderLeftColor:C.verde}}><div className="sl">Ingresos por comisión</div>
+            <div className="sv">{fmtMoneda(totalComision)}</div><div className="ss">💰 {COMISION_PCT}% por viaje</div></div>
+        </div>
+      )}
+      {mias.length===0&&<div className="empty"><div className="ei">🧾</div>
+        <p>Sin facturas todavía</p><small>Se generan automáticamente al liberarse el pago de un viaje</small></div>}
+      <div className="tx-list">
+        {mias.map(f=>(
+          <div key={f.id} className="tx-item">
+            <div className="tx-icon">{TCI[f.tipoCarga]||"🧾"}</div>
+            <div className="tx-info">
+              <div className="tx-title">{f.numero} · {f.tipoCarga}</div>
+              <div className="tx-sub">{f.ruta} · {f.fecha}</div>
+              {modoAdmin && <div className="tx-sub">{f.cliente} → {f.transportista}</div>}
+              {!modoAdmin && usuario.tipo==="transportista" &&
+                <div className="tx-sub">Bruto {fmtMoneda(f.monto)} − comisión {COMISION_PCT}% ({fmtMoneda(f.comision)})</div>}
+            </div>
+            <div className="tx-price">
+              <div className="tx-val">{modoAdmin?fmtMoneda(f.comision):fmtMoneda(usuario.tipo==="transportista"?f.montoTransportista:f.monto)}</div>
+              <div className="tx-date">{modoAdmin?"comisión":usuario.tipo==="transportista"?"neto recibido":"total pagado"}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+// ─── PANEL ADMINISTRATIVO ───────────────────────────────────────────────────
+function AdminResumen({usuarios, cargas, historial, facturas}) {
+  const users = usuarios.filter(u=>u.tipo!=="admin");
+  const activos = cargas.filter(c=>c.estado==="en_transito").length;
+  const comision = facturas.reduce((a,f)=>a+f.comision,0);
+  return (
+    <>
+      <div className="stats-row">
+        <div className="stat"><div className="sl">Usuarios registrados</div><div className="sv">{users.length}</div>
+          <div className="ss">👥 clientes y transportistas</div></div>
+        <div className="stat" style={{borderLeftColor:C.indigo}}><div className="sl">Viajes en tránsito</div>
+          <div className="sv">{activos}</div><div className="ss">🚚 ahora mismo</div></div>
+        <div className="stat" style={{borderLeftColor:C.verde}}><div className="sl">Viajes completados</div>
+          <div className="sv">{historial.length}</div><div className="ss">✅ entregados</div></div>
+        <div className="stat" style={{borderLeftColor:"#6366f1"}}><div className="sl">Ingresos por comisión</div>
+          <div className="sv">{fmtMoneda(comision)}</div><div className="ss">💰 {COMISION_PCT}% por viaje</div></div>
+      </div>
+      <div className="two-col">
+        <div className="card">
+          <div className="card-title">Usuarios recientes</div>
+          {users.slice(-5).reverse().map(u=>(
+            <div key={u.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",
+              padding:"9px 0",borderBottom:`1px solid ${C.gris}`,fontSize:12}}>
+              <div>{TI[u.tipo]} <strong>{u.nombre}</strong><span style={{color:C.grisM,marginLeft:5}}>· {u.subtipo}</span></div>
+              <span className={`badge ${u.verificado?"b-verif":"b-noVerif"}`}>{u.verificado?"Verificado":"Sin verificar"}</span>
+            </div>
+          ))}
+        </div>
+        <div className="card">
+          <div className="card-title">Viajes recientes</div>
+          {cargas.slice(-5).reverse().map(c=>(
+            <div key={c.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",
+              padding:"9px 0",borderBottom:`1px solid ${C.gris}`,fontSize:12}}>
+              <div>{TCI[c.tipoCarga]} <strong>{c.tipoCarga}</strong><span style={{color:C.grisM,marginLeft:5}}>· {c.paisOrigen} → {c.paisDestino}</span></div>
+              <span className={`badge b-${c.estado}`}>{c.estado.replace("_"," ")}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function AdminUsuarios({usuarios, historial}) {
+  const users = usuarios.filter(u=>u.tipo!=="admin");
+  return (
+    <div style={{display:"flex",flexDirection:"column",gap:12}}>
+      {users.map(u=>(
+        <div key={u.id} style={{background:C.blanco,borderRadius:14,padding:"14px 18px",
+          display:"flex",alignItems:"center",gap:14,boxShadow:"0 2px 8px rgba(15,41,66,.05)",flexWrap:"wrap"}}>
+          <div style={{width:40,height:40,borderRadius:"50%",background:C.gris,display:"flex",
+            alignItems:"center",justifyContent:"center",fontSize:19,overflow:"hidden",flexShrink:0}}>
+            {u.selfie?<img src={u.selfie} style={{width:"100%",height:"100%",objectFit:"cover"}} alt="av"/>:TI[u.tipo]}
+          </div>
+          <div style={{flex:1,minWidth:180}}>
+            <div style={{fontWeight:700,color:C.marino,fontSize:13}}>{u.nombre}</div>
+            <div style={{fontSize:11,color:C.grisM}}>{u.subtipo} · {u.email}</div>
+          </div>
+          <span className={`badge ${u.verificado?"b-verif":"b-noVerif"}`}>{u.verificado?"✅ Verificado":"⚠️ Sin verificar"}</span>
+          <Stars value={avgRating(historial,u)}/>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AdminViajes({cargas, onDetalle}) {
+  return (
+    <div style={{display:"flex",flexDirection:"column",gap:12}}>
+      {cargas.map(c=>(
+        <div key={c.id} style={{background:C.blanco,borderRadius:14,padding:"14px 18px",
+          display:"flex",alignItems:"center",gap:14,boxShadow:"0 2px 8px rgba(15,41,66,.05)",flexWrap:"wrap"}}>
+          <div style={{width:40,height:40,borderRadius:10,background:C.gris,display:"flex",
+            alignItems:"center",justifyContent:"center",fontSize:19,flexShrink:0}}>{TCI[c.tipoCarga]}</div>
+          <div style={{flex:1,minWidth:200}}>
+            <div style={{fontWeight:700,color:C.marino,fontSize:13}}>{c.tipoCarga} · {c.peso} {c.unidadPeso}</div>
+            <div style={{fontSize:11,color:C.grisM}}>{c.cliente} → {c.transportistaNombre||"sin asignar"} · {c.ciudadOrigen} → {c.ciudadDestino}</div>
+          </div>
+          <span className={`badge b-${c.estado}`}>{c.estado.replace("_"," ")}</span>
+          <div style={{fontWeight:700,color:C.naranja,fontFamily:"'Sora',sans-serif"}}>{c.precioAcordado?fmtMoneda(c.precioAcordado):"—"}</div>
+          <button className="btn btn-sm btn-ghost" onClick={()=>onDetalle(c)}>👁 Ver</button>
+        </div>
+      ))}
     </div>
   );
 }
