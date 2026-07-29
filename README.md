@@ -1,6 +1,6 @@
 # NexCarg
 
-Plataforma tecnológica que conecta empresas que necesitan transportar mercancías con transportistas y empresas de transporte, en el corredor Panamá–Costa Rica–Nicaragua–Honduras–El Salvador–Guatemala–México. App nativa para **iPhone, Android y Web** construida con **Expo + React Native** (un solo código para las tres plataformas).
+Plataforma tecnológica que conecta empresas que necesitan transportar mercancías con transportistas y empresas de transporte, en el corredor Panamá–Costa Rica–Nicaragua–Honduras–El Salvador–Guatemala–México. App nativa para **iPhone, Android y Web** construida con **Flutter** (un solo código para las tres plataformas).
 
 Digitaliza la contratación de transporte terrestre: las empresas publican cargas, los transportistas las aceptan o cotizan, ambas partes firman un contrato digital, el pago queda en garantía (escrow) dentro de la plataforma y se libera automáticamente al confirmarse la entrega vía seguimiento GPS.
 
@@ -19,9 +19,10 @@ Digitaliza la contratación de transporte terrestre: las empresas publican carga
 
 ## Stack técnico
 
-- [Expo](https://expo.dev) (SDK 57) + React Native — una sola base de código para iOS, Android y Web.
-- React Navigation (bottom tabs por rol + stacks anidados + pantallas modales para detalle de carga, contrato y calificación).
-- Estado de la app centralizado en `src/state/AppContext.tsx` (sin backend todavía — datos en memoria, listos para conectar a una API real).
+- [Flutter](https://flutter.dev) (SDK estable 3.x) — una sola base de código para iOS, Android y Web.
+- `provider` para estado centralizado (`lib/state/app_state.dart`) — sin backend todavía, datos en memoria, listo para conectar a una API real.
+- Navegación con `Navigator` nativo de Flutter: barra inferior por rol (`lib/navigation/`) + pantallas modales para detalle de carga, contrato, calificación y chat.
+- Tipografía local (Liberation Sans, empaquetada en `assets/fonts/`) para no depender de Google Fonts en tiempo de ejecución.
 
 ## Cuentas de demostración
 
@@ -34,14 +35,17 @@ Digitaliza la contratación de transporte terrestre: las empresas publican carga
 ## Desarrollo local
 
 ```bash
-npm install
-npm run web       # vista previa en el navegador
-npm run ios       # requiere macOS + Xcode, o usa Expo Go en tu iPhone
-npm run android   # requiere Android Studio, o usa Expo Go en tu Android
+flutter pub get
+flutter run -d chrome     # vista previa en el navegador
+flutter run                # dispositivo/emulador conectado (iOS/Android)
 ```
 
-Para probar en tu propio teléfono sin instalar nada más: instala la app **Expo Go** (App Store / Play Store), ejecuta `npm start` y escanea el código QR.
+Para compilar la versión web de producción:
+
+```bash
+flutter build web --release
+```
 
 ### Publicar en las tiendas
 
-Este repositorio construye la app completa, pero publicarla en App Store / Google Play requiere cuentas de desarrollador propias (Apple Developer Program y Google Play Console) y un build con [EAS Build](https://docs.expo.dev/build/introduction/).
+Este repositorio construye la app completa, pero publicarla en App Store / Google Play requiere cuentas de desarrollador propias (Apple Developer Program y Google Play Console) y firmar el build de cada plataforma (`flutter build ipa` / `flutter build appbundle`).
