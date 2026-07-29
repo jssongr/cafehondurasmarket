@@ -1,0 +1,346 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../data/constants.dart';
+import '../../models/models.dart';
+import '../../state/app_state.dart';
+import '../../theme/theme.dart';
+import '../../widgets/app_button.dart';
+import '../../widgets/app_text_field.dart';
+import '../../widgets/select_field.dart';
+import '../../widgets/upload_zone.dart';
+import 'step_indicator.dart';
+
+class AuthScreen extends StatefulWidget {
+  const AuthScreen({super.key});
+
+  @override
+  State<AuthScreen> createState() => _AuthScreenState();
+}
+
+class _AuthScreenState extends State<AuthScreen> {
+  bool _isLogin = true;
+  int _step = 1;
+  String _err = '';
+
+  final _emailCtrl = TextEditingController();
+  final _passCtrl = TextEditingController();
+
+  final _nombreCtrl = TextEditingController();
+  final _regEmailCtrl = TextEditingController();
+  final _regPassCtrl = TextEditingController();
+  final _telefonoCtrl = TextEditingController();
+  final _capacidadCtrl = TextEditingController();
+  final _placaCtrl = TextEditingController();
+
+  TipoUsuario? _tipo;
+  String _subtipo = '';
+  String _vehiculo = tiposVehiculo[0];
+  String? _docImg;
+  bool _scanning = false;
+  bool _scanned = false;
+  String? _selfieImg;
+  bool _selfieScanning = false;
+  bool _selfieOk = false;
+
+  bool get _esTransportista => _tipo == TipoUsuario.transportista;
+  List<String> get _subtipos => _esTransportista ? transportistaSubtipos : clienteSubtipos;
+
+  void _resetReg() {
+    setState(() {
+      _step = 1;
+      _nombreCtrl.clear();
+      _regEmailCtrl.clear();
+      _regPassCtrl.clear();
+      _telefonoCtrl.clear();
+      _tipo = null;
+      _subtipo = '';
+      _docImg = null;
+      _scanned = false;
+      _selfieImg = null;
+      _selfieOk = false;
+    });
+  }
+
+  void _doLogin() {
+    final app = context.read<AppState>();
+    final u = app.login(_emailCtrl.text.trim(), _passCtrl.text);
+    setState(() => _err = u == null ? 'Correo o contraseña incorrectos.' : '');
+  }
+
+  void _handleDoc(String path) {
+    setState(() { _docImg = path; _scanning = true; _scanned = false; });
+    Future.delayed(const Duration(milliseconds: 1800), () {
+      if (!mounted) return;
+      setState(() { _scanning = false; _scanned = true; });
+    });
+  }
+
+  void _handleSelfie(String path) {
+    setState(() { _selfieImg = path; _selfieScanning = true; _selfieOk = false; });
+    Future.delayed(const Duration(milliseconds: 2200), () {
+      if (!mounted) return;
+      setState(() { _selfieScanning = false; _selfieOk = true; });
+    });
+  }
+
+  void _finalizarRegistro() {
+    if (!_selfieOk) { setState(() => _err = 'Completa la verificación facial.'); return; }
+    final app = context.read<AppState>();
+    app.registrar(
+      nombre: _nombreCtrl.text, email: _regEmailCtrl.text, password: _regPassCtrl.text,
+      tipo: _tipo!, subtipo: _subtipo, telefono: _telefonoCtrl.text,
+      vehiculo: _esTransportista ? _vehiculo : null,
+      capacidad: _esTransportista ? double.tryParse(_capacidadCtrl.text) : null,
+      placa: _esTransportista ? _placaCtrl.text : null,
+      selfie: _selfieImg, doc: _docImg,
+    );
+    app.showToast('¡Cuenta verificada creada!');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final app = context.watch<AppState>();
+    return Scaffold(
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(colors: [AppColors.navy, AppColors.navyLight, AppColors.blue], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            ),
+          ),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.xl),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 460),
+                  child: Container(
+                    decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(AppRadius.xl), boxShadow: floatingShadow),
+                    clipBehavior: Clip.antiAlias,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 30, horizontal: AppSpacing.xl),
+                          color: AppColors.navy,
+                          child: const Column(
+                            children: [
+                              Icon(Icons.rocket_launch, size: 34, color: Colors.white),
+                              SizedBox(height: 6),
+                              Text('NexCarg', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.4)),
+                              SizedBox(height: 2),
+                              Text('El transporte de carga terrestre de Panamá a México, en un solo lugar',
+                                  textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Color(0xA6FFFFFF))),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(AppSpacing.xl),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: BoxDecoration(color: AppColors.gris100, borderRadius: BorderRadius.circular(AppRadius.md)),
+                                child: Row(children: [
+                                  Expanded(child: _tabBtn('Iniciar sesión', _isLogin, () => setState(() { _isLogin = true; _err = ''; }))),
+                                  Expanded(child: _tabBtn('Crear cuenta', !_isLogin, () { setState(() { _isLogin = false; _err = ''; }); _resetReg(); })),
+                                ]),
+                              ),
+                              const SizedBox(height: AppSpacing.lg),
+                              if (_err.isNotEmpty)
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(color: AppColors.rojoBg, borderRadius: BorderRadius.circular(AppRadius.sm)),
+                                  child: Row(children: [
+                                    const Icon(Icons.warning, size: 14, color: AppColors.rojo),
+                                    const SizedBox(width: 8),
+                                    Expanded(child: Text(_err, style: const TextStyle(color: AppColors.rojo, fontSize: 12))),
+                                  ]),
+                                ),
+                              if (_isLogin) _loginForm() else _registerForm(app),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _tabBtn(String label, bool on, VoidCallback onTap) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 9),
+          decoration: BoxDecoration(color: on ? AppColors.navy : Colors.transparent, borderRadius: BorderRadius.circular(AppRadius.sm)),
+          alignment: Alignment.center,
+          child: Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: on ? Colors.white : AppColors.grisM)),
+        ),
+      );
+
+  Widget _loginForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AppTextField(label: 'Correo', placeholder: 'correo@ejemplo.com', controller: _emailCtrl, keyboardType: TextInputType.emailAddress),
+        AppTextField(label: 'Contraseña', placeholder: '••••••', controller: _passCtrl, obscureText: true),
+        const SizedBox(height: 4),
+        AppButton(title: 'Entrar a la plataforma', onPressed: _doLogin, fullWidth: true),
+        const SizedBox(height: 12),
+        const Text(
+          'Demo cliente: cliente@demo.com / 1234\nDemo transportista: transportista@demo.com / 1234\nDemo admin: admin@demo.com / 1234',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 10.5, color: AppColors.grisM, height: 1.4),
+        ),
+      ],
+    );
+  }
+
+  Widget _registerForm(AppState app) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        StepIndicator(steps: const ['Datos', 'Documento', 'Selfie'], current: _step),
+        if (_step == 1) _step1(app),
+        if (_step == 2) _step2(),
+        if (_step == 3) _step3(),
+      ],
+    );
+  }
+
+  Widget _step1(AppState app) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AppTextField(label: 'Nombre completo o empresa', placeholder: 'Ej. Transportes del Norte S.A.', controller: _nombreCtrl),
+        AppTextField(label: 'Correo electrónico', placeholder: 'correo@ejemplo.com', controller: _regEmailCtrl, keyboardType: TextInputType.emailAddress),
+        AppTextField(label: 'Contraseña', placeholder: 'Mínimo 6 caracteres', controller: _regPassCtrl, obscureText: true),
+        AppTextField(label: 'Teléfono', placeholder: '+(504) 9xxx-xxxx', controller: _telefonoCtrl, keyboardType: TextInputType.phone),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: Text('¿QUÉ NECESITAS HACER?', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
+        ),
+        Row(children: [
+          Expanded(child: _roleCard(Icons.apartment, 'Cliente', 'Necesito transportar carga', _tipo == TipoUsuario.cliente, () => setState(() { _tipo = TipoUsuario.cliente; _subtipo = ''; }))),
+          const SizedBox(width: 10),
+          Expanded(child: _roleCard(Icons.local_shipping, 'Transportista', 'Tengo camión disponible', _tipo == TipoUsuario.transportista, () => setState(() { _tipo = TipoUsuario.transportista; _subtipo = ''; }))),
+        ]),
+        const SizedBox(height: 12),
+        if (_tipo != null)
+          SelectField(
+            label: _esTransportista ? 'Tipo de transportista' : 'Tipo de empresa',
+            value: _subtipo, options: _subtipos, onChanged: (v) => setState(() => _subtipo = v),
+          ),
+        if (_esTransportista) ...[
+          SelectField(label: 'Tipo de vehículo', value: _vehiculo, options: tiposVehiculo, onChanged: (v) => setState(() => _vehiculo = v)),
+          AppTextField(label: 'Capacidad (toneladas)', placeholder: '28', controller: _capacidadCtrl, keyboardType: TextInputType.number),
+          AppTextField(label: 'Placa del vehículo', placeholder: 'Ej. HN-1234', controller: _placaCtrl),
+        ],
+        AppButton(
+          title: 'Siguiente →', fullWidth: true,
+          onPressed: () {
+            if (_nombreCtrl.text.isEmpty || _regEmailCtrl.text.isEmpty || _regPassCtrl.text.isEmpty || _tipo == null || _subtipo.isEmpty || _telefonoCtrl.text.isEmpty) {
+              setState(() => _err = 'Completa todos los campos.');
+              return;
+            }
+            if (_esTransportista && _capacidadCtrl.text.isEmpty) { setState(() => _err = 'Indica la capacidad del vehículo.'); return; }
+            if (app.usuarios.any((u) => u.email == _regEmailCtrl.text)) { setState(() => _err = 'Este correo ya está registrado.'); return; }
+            setState(() { _err = ''; _step = 2; });
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _step2() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          _esTransportista ? 'Licencia de conducir vigente' : 'Documento de la empresa (RTN / Registro mercantil)',
+          style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          _esTransportista
+              ? 'Sube una foto clara de tu licencia de conducir. Esto nos ayuda a verificar tu identidad como transportista.'
+              : 'Sube una foto o escaneo de tu documento de registro comercial para verificar tu empresa.',
+          style: const TextStyle(fontSize: 12, color: AppColors.grisM, height: 1.4),
+        ),
+        const SizedBox(height: 14),
+        UploadZone(
+          icon: _esTransportista ? Icons.badge : Icons.description,
+          title: 'Subir documento', uploadedTitle: 'Documento cargado', sub: 'Toca para elegir una imagen',
+          image: _docImg, onPicked: _handleDoc,
+          scanning: _scanning, scanningLabel: 'Leyendo datos del documento con IA…',
+          done: _scanned, doneLabel: 'Documento verificado correctamente — datos extraídos',
+        ),
+        const SizedBox(height: 14),
+        Row(children: [
+          Expanded(child: AppButton(title: '← Atrás', variant: AppButtonVariant.ghost, onPressed: () => setState(() => _step = 1))),
+          const SizedBox(width: 8),
+          Expanded(flex: 2, child: AppButton(title: 'Siguiente →', onPressed: () {
+            if (!_scanned) { setState(() => _err = 'Sube tu documento para continuar.'); return; }
+            setState(() { _err = ''; _step = 3; });
+          })),
+        ]),
+      ],
+    );
+  }
+
+  Widget _step3() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text('Selfie para reconocimiento facial', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+        const SizedBox(height: 4),
+        const Text('Tómate una selfie clara mirando de frente. Nuestra IA la comparará con tu documento para confirmar tu identidad.',
+            style: TextStyle(fontSize: 12, color: AppColors.grisM, height: 1.4)),
+        const SizedBox(height: 14),
+        UploadZone(
+          icon: Icons.camera_alt, title: 'Subir selfie', uploadedTitle: 'Selfie cargada', sub: 'Toca para elegir una foto',
+          image: _selfieImg, onPicked: _handleSelfie,
+          scanning: _selfieScanning, scanningLabel: 'Comparando rostro con documento mediante IA…',
+          done: _selfieOk, doneLabel: '¡Identidad verificada! Coincidencia facial confirmada',
+        ),
+        const SizedBox(height: 14),
+        Row(children: [
+          Expanded(child: AppButton(title: '← Atrás', variant: AppButtonVariant.ghost, onPressed: () => setState(() => _step = 2))),
+          const SizedBox(width: 8),
+          Expanded(flex: 2, child: AppButton(title: 'Crear cuenta verificada', onPressed: _selfieOk ? _finalizarRegistro : null)),
+        ]),
+      ],
+    );
+  }
+
+  Widget _roleCard(IconData icon, String label, String sub, bool selected, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          border: Border.all(color: selected ? AppColors.navy : AppColors.gris100, width: 2),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          color: selected ? const Color(0xFFEEF3F8) : null,
+        ),
+        child: Column(children: [
+          Icon(icon, size: 24, color: selected ? AppColors.navy : AppColors.grisM),
+          const SizedBox(height: 4),
+          Text(label, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: selected ? AppColors.navy : AppColors.grisM)),
+          const SizedBox(height: 2),
+          Text(sub, textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, color: AppColors.grisM)),
+        ]),
+      ),
+    );
+  }
+}
