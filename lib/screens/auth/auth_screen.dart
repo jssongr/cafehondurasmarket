@@ -24,6 +24,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
+  bool _recordarme = true;
 
   final _nombreCtrl = TextEditingController();
   final _regEmailCtrl = TextEditingController();
@@ -65,6 +66,21 @@ class _AuthScreenState extends State<AuthScreen> {
     final app = context.read<AppState>();
     final u = app.login(_emailCtrl.text.trim(), _passCtrl.text);
     setState(() => _err = u == null ? 'Correo o contraseña incorrectos.' : '');
+  }
+
+  void _recuperarContrasena() {
+    if (_emailCtrl.text.trim().isEmpty) {
+      setState(() => _err = 'Escribe tu correo arriba para poder enviarte el enlace de recuperación.');
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Revisa tu correo'),
+        content: Text('Si existe una cuenta con ${_emailCtrl.text.trim()}, te enviamos un enlace para restablecer tu contraseña.'),
+        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Entendido'))],
+      ),
+    );
   }
 
   void _handleDoc(String path) {
@@ -193,8 +209,38 @@ class _AuthScreenState extends State<AuthScreen> {
       children: [
         AppTextField(label: 'Correo', placeholder: 'correo@ejemplo.com', controller: _emailCtrl, keyboardType: TextInputType.emailAddress),
         AppTextField(label: 'Contraseña', placeholder: '••••••', controller: _passCtrl, obscureText: true),
-        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Row(children: [
+            SizedBox(
+              width: 22, height: 22,
+              child: Checkbox(
+                value: _recordarme, onChanged: (v) => setState(() => _recordarme = v ?? true),
+                activeColor: AppColors.navy, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text('Recordarme', style: TextStyle(fontSize: 12, color: AppColors.grisM)),
+            const Spacer(),
+            InkWell(
+              onTap: _recuperarContrasena,
+              child: const Text('¿Olvidaste tu contraseña?', style: TextStyle(fontSize: 12, color: AppColors.blue, fontWeight: FontWeight.w600)),
+            ),
+          ]),
+        ),
         AppButton(title: 'Entrar a la plataforma', onPressed: _doLogin, fullWidth: true),
+        const SizedBox(height: 14),
+        Row(children: const [
+          Expanded(child: Divider(color: AppColors.gris100)),
+          Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: Text('o continuá con', style: TextStyle(fontSize: 11, color: AppColors.grisM))),
+          Expanded(child: Divider(color: AppColors.gris100)),
+        ]),
+        const SizedBox(height: 10),
+        Row(children: [
+          Expanded(child: _socialButton('Google', Icons.g_mobiledata)),
+          const SizedBox(width: 8),
+          Expanded(child: _socialButton('Apple', Icons.apple)),
+        ]),
         const SizedBox(height: 12),
         const Text(
           'Demo cliente: cliente@demo.com / 1234\nDemo transportista: transportista@demo.com / 1234\nDemo admin: admin@demo.com / 1234',
@@ -202,6 +248,25 @@ class _AuthScreenState extends State<AuthScreen> {
           style: TextStyle(fontSize: 10.5, color: AppColors.grisM, height: 1.4),
         ),
       ],
+    );
+  }
+
+  Widget _socialButton(String label, IconData icon) {
+    return Opacity(
+      opacity: 0.5,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 11),
+        decoration: BoxDecoration(border: Border.all(color: AppColors.gris100, width: 1.5), borderRadius: BorderRadius.circular(AppRadius.md)),
+        child: Column(children: [
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(icon, size: 18, color: AppColors.grisM),
+            const SizedBox(width: 6),
+            Text(label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.grisM)),
+          ]),
+          const SizedBox(height: 2),
+          const Text('Próximamente', style: TextStyle(fontSize: 9, color: AppColors.grisM)),
+        ]),
+      ),
     );
   }
 

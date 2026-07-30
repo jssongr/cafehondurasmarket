@@ -20,6 +20,18 @@ class AppState extends ChangeNotifier {
   Timer? _toastTimer;
   Timer? _gpsTimer;
 
+  ThemeMode themeMode = ThemeMode.system;
+  void setThemeMode(ThemeMode mode) {
+    themeMode = mode;
+    notifyListeners();
+  }
+
+  String idioma = 'ES';
+  void setIdioma(String v) {
+    idioma = v;
+    notifyListeners();
+  }
+
   AppState() {
     _gpsTimer = Timer.periodic(const Duration(milliseconds: 2600), (_) => _advanceGps());
   }
@@ -84,13 +96,21 @@ class AppState extends ChangeNotifier {
   }) {
     final nuevo = Usuario(
       id: uid(), nombre: nombre, email: email, password: password, tipo: tipo, subtipo: subtipo,
-      telefono: telefono, verificado: true, selfie: selfie, doc: doc,
-      vehiculo: vehiculo, capacidad: capacidad, placa: placa,
+      telefono: telefono, verificado: false, selfie: selfie, doc: doc,
+      vehiculo: vehiculo, capacidad: capacidad, placa: placa, fechaRegistro: DateTime.now(),
     );
     usuarios.add(nuevo);
     usuario = nuevo;
     notifyListeners();
     return nuevo;
+  }
+
+  void aprobarUsuario(int usuarioId) {
+    final u = usuarios.firstWhere((x) => x.id == usuarioId);
+    u.verificado = true;
+    if (usuario?.id == usuarioId) usuario = u;
+    addNotif(usuarioId, 'sistema', 'Cuenta verificada', 'Tu cuenta fue aprobada por un administrador. Ya tenés acceso completo a NexCarg.');
+    notifyListeners();
   }
 
   void logout() {

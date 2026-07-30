@@ -15,11 +15,15 @@ class NexCargApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => AppState(),
-      child: MaterialApp(
-        title: 'NexCarg',
-        debugShowCheckedModeBanner: false,
-        theme: buildAppTheme(),
-        home: const _RootWithToast(),
+      child: Consumer<AppState>(
+        builder: (context, app, _) => MaterialApp(
+          title: 'NexCarg',
+          debugShowCheckedModeBanner: false,
+          theme: buildAppTheme(),
+          darkTheme: buildAppDarkTheme(),
+          themeMode: app.themeMode,
+          home: const _RootWithToast(),
+        ),
       ),
     );
   }

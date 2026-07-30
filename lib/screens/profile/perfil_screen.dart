@@ -14,6 +14,14 @@ import '../../widgets/badge.dart';
 import '../../widgets/screen.dart';
 import '../../widgets/stars.dart';
 
+String _aniosEnPlataforma(DateTime fecha) {
+  final dias = DateTime.now().difference(fecha).inDays;
+  if (dias < 30) return 'se unió hace poco';
+  if (dias < 365) return '${(dias / 30).floor()} meses en la plataforma';
+  final anios = (dias / 365).floor();
+  return '$anios ${anios == 1 ? 'año' : 'años'} en la plataforma';
+}
+
 class PerfilScreen extends StatefulWidget {
   final bool showBack;
   const PerfilScreen({super.key, this.showBack = false});
@@ -82,7 +90,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
-                AppBadge(tone: yo.verificado ? 'verificado' : 'sinVerificar', label: yo.verificado ? 'Cuenta verificada' : 'Sin verificar'),
+                AppBadge(tone: yo.verificado ? 'verificado' : 'sinVerificar', label: yo.verificado ? 'Cuenta verificada' : 'Cuenta en verificación'),
                 if (rating != null) ...[
                   const SizedBox(width: 8),
                   Container(
@@ -93,6 +101,24 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 ],
               ]),
             ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Miembro desde ${yo.fechaRegistro.year} · ${_aniosEnPlataforma(yo.fechaRegistro)}',
+                style: const TextStyle(fontSize: 11.5, color: AppColors.grisM),
+              ),
+            ),
+            if (!yo.verificado)
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                padding: const EdgeInsets.all(12),
+                width: double.infinity,
+                decoration: BoxDecoration(color: AppColors.amberBg, borderRadius: BorderRadius.circular(AppRadius.md)),
+                child: const Text(
+                  'Tu cuenta está en revisión. Un administrador va a validar tus documentos antes de habilitar todas las funciones.',
+                  style: TextStyle(fontSize: 11.5, color: AppColors.amberText, height: 1.4),
+                ),
+              ),
           ]),
         ),
         AppCard(

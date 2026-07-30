@@ -119,3 +119,21 @@ ThemeData buildAppTheme() {
     highlightColor: Colors.transparent,
   );
 }
+
+/// Dark variant. Custom screens in this app render with explicit AppColors
+/// rather than theme lookups, so this currently governs Material-level
+/// chrome (dialogs, switches, text fields) rather than every custom surface.
+ThemeData buildAppDarkTheme() {
+  final base = ThemeData(useMaterial3: true, brightness: Brightness.dark, fontFamily: 'AppSans');
+  return base.copyWith(
+    scaffoldBackgroundColor: const Color(0xFF0B141C),
+    colorScheme: base.colorScheme.copyWith(
+      primary: AppColors.blueLight,
+      secondary: AppColors.amber,
+      surface: const Color(0xFF16232E),
+      error: AppColors.rojo,
+    ),
+    splashFactory: NoSplash.splashFactory,
+    highlightColor: Colors.transparent,
+  );
+}

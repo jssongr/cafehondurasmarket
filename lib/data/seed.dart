@@ -5,16 +5,18 @@ List<Usuario> buildSeedUsers() => [
       Usuario(
         id: 1, nombre: 'Importadora del Istmo', email: 'cliente@demo.com', password: '1234',
         tipo: TipoUsuario.cliente, subtipo: 'Empresa importadora', verificado: true,
-        telefono: '+(507) 6123-4567',
+        telefono: '+(507) 6123-4567', fechaRegistro: DateTime.parse('2024-03-12T00:00:00Z'),
       ),
       Usuario(
         id: 2, nombre: 'Carlos Rodríguez — Transportes CR', email: 'transportista@demo.com', password: '1234',
         tipo: TipoUsuario.transportista, subtipo: 'Empresa con flota de camiones', vehiculo: 'Cabezal + plataforma',
         capacidad: 28, placa: 'CR-4471', verificado: true, telefono: '+(506) 8877-2345',
+        fechaRegistro: DateTime.parse('2023-11-05T00:00:00Z'),
       ),
       Usuario(
         id: 3, nombre: 'Administración NexCarg', email: 'admin@demo.com', password: '1234',
         tipo: TipoUsuario.admin, subtipo: 'Administrador de plataforma', verificado: true, telefono: '',
+        fechaRegistro: DateTime.parse('2023-01-01T00:00:00Z'),
       ),
     ];
 

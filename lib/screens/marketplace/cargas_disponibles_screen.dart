@@ -25,6 +25,7 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
   String _tipoCarga = '';
   final _buscarCtrl = TextEditingController();
   String _buscar = '';
+  bool _ocultarPeligrosas = false;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +36,7 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
       if (_paisOrigen.isNotEmpty && c.paisOrigen != _paisOrigen) return false;
       if (_paisDestino.isNotEmpty && c.paisDestino != _paisDestino) return false;
       if (_tipoCarga.isNotEmpty && c.tipoCarga != _tipoCarga) return false;
+      if (_ocultarPeligrosas && c.peligrosa) return false;
       if (_buscar.isNotEmpty &&
           !c.cliente.toLowerCase().contains(_buscar.toLowerCase()) &&
           !c.tipoCarga.toLowerCase().contains(_buscar.toLowerCase())) return false;
@@ -56,11 +58,19 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
             ]),
             SelectField(label: 'Tipo de carga', value: _tipoCarga, options: tiposCarga, onChanged: (v) => setState(() => _tipoCarga = v), placeholder: 'Todos'),
             AppTextField(label: 'Buscar', placeholder: 'Cliente, tipo de carga…', controller: _buscarCtrl, onChanged: (v) => setState(() => _buscar = v)),
-            if (_paisOrigen.isNotEmpty || _paisDestino.isNotEmpty || _tipoCarga.isNotEmpty || _buscar.isNotEmpty)
+            InkWell(
+              onTap: () => setState(() => _ocultarPeligrosas = !_ocultarPeligrosas),
+              child: Row(children: [
+                Switch(value: _ocultarPeligrosas, onChanged: (v) => setState(() => _ocultarPeligrosas = v), activeTrackColor: AppColors.rojo),
+                const SizedBox(width: 8),
+                const Expanded(child: Text('Ocultar mercancía peligrosa', style: TextStyle(fontSize: 12, color: AppColors.grisM))),
+              ]),
+            ),
+            if (_paisOrigen.isNotEmpty || _paisDestino.isNotEmpty || _tipoCarga.isNotEmpty || _buscar.isNotEmpty || _ocultarPeligrosas)
               Align(
                 alignment: Alignment.centerRight,
                 child: InkWell(
-                  onTap: () => setState(() { _paisOrigen = ''; _paisDestino = ''; _tipoCarga = ''; _buscar = ''; _buscarCtrl.clear(); }),
+                  onTap: () => setState(() { _paisOrigen = ''; _paisDestino = ''; _tipoCarga = ''; _buscar = ''; _buscarCtrl.clear(); _ocultarPeligrosas = false; }),
                   child: const Text('Limpiar filtros', style: TextStyle(fontSize: 12, color: AppColors.blue, fontWeight: FontWeight.w700)),
                 ),
               ),

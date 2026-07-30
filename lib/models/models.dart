@@ -38,6 +38,7 @@ class Usuario {
   final String? vehiculo;
   final double? capacidad;
   final String? placa;
+  final DateTime fechaRegistro;
 
   Usuario({
     required this.id,
@@ -53,7 +54,8 @@ class Usuario {
     this.vehiculo,
     this.capacidad,
     this.placa,
-  });
+    DateTime? fechaRegistro,
+  }) : fechaRegistro = fechaRegistro ?? DateTime.now();
 
   Usuario copyWith({String? nombre, String? telefono, String? selfie}) {
     return Usuario(
@@ -154,6 +156,11 @@ class Carga {
   Contrato? contrato;
   DateTime? fechaAsignacion;
   DateTime? fechaEntrega;
+  double? volumen;
+  String? dimensiones;
+  bool peligrosa;
+  List<String> fotos;
+  List<String> documentos;
 
   Carga({
     required this.id,
@@ -179,7 +186,14 @@ class Carga {
     this.contrato,
     this.fechaAsignacion,
     this.fechaEntrega,
-  }) : pago = pago ?? Pago(estado: EstadoPago.pendiente);
+    this.volumen,
+    this.dimensiones,
+    this.peligrosa = false,
+    List<String>? fotos,
+    List<String>? documentos,
+  })  : pago = pago ?? Pago(estado: EstadoPago.pendiente),
+        fotos = fotos ?? [],
+        documentos = documentos ?? [];
 }
 
 class Mensaje {

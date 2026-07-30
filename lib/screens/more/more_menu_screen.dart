@@ -11,6 +11,7 @@ import '../../widgets/stars.dart';
 import '../facturacion/facturacion_screen.dart';
 import '../historial/historial_screen.dart';
 import '../profile/perfil_screen.dart';
+import '../settings/configuracion_screen.dart';
 import '../tracking/seguimiento_screen.dart';
 
 class _MoreItem {
@@ -35,6 +36,7 @@ class MoreMenuScreen extends StatelessWidget {
       _MoreItem(Icons.access_time, 'Historial de viajes', 'Revisa y califica tus entregas completadas', (_) => const HistorialScreen(showBack: true)),
       _MoreItem(Icons.receipt, 'Facturación', 'Consulta tus facturas y comisiones', (_) => const FacturacionScreen(showBack: true)),
       _MoreItem(Icons.person, 'Mi perfil', 'Datos personales, documentos y verificación', (_) => const PerfilScreen(showBack: true)),
+      _MoreItem(Icons.settings, 'Configuración', 'Apariencia, idioma y ayuda', (_) => const ConfiguracionScreen()),
     ];
 
     return Screen(
@@ -52,7 +54,7 @@ class MoreMenuScreen extends StatelessWidget {
                 Text(yo.nombre, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.navy)),
                 const SizedBox(height: 3),
                 Row(children: [
-                  AppBadge(tone: yo.verificado ? 'verificado' : 'sinVerificar', label: yo.verificado ? 'Verificado' : 'Sin verificar'),
+                  AppBadge(tone: yo.verificado ? 'verificado' : 'sinVerificar', label: yo.verificado ? 'Verificado' : 'En verificación'),
                   if (rating != null) ...[const SizedBox(width: 6), Stars(value: rating)],
                 ]),
               ]),

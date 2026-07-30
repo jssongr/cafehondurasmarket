@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../data/constants.dart';
 import '../../models/models.dart';
@@ -7,9 +8,11 @@ import '../../theme/theme.dart';
 import '../../utils/format.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_card.dart';
+import '../../widgets/app_image.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/screen.dart';
 import '../../widgets/select_field.dart';
+import '../../widgets/upload_zone.dart';
 
 class PublicarCargaScreen extends StatefulWidget {
   const PublicarCargaScreen({super.key});
@@ -31,6 +34,17 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
   bool _abierto = false;
   final _presupuestoCtrl = TextEditingController();
   final _descripcionCtrl = TextEditingController();
+  final _volumenCtrl = TextEditingController();
+  final _dimensionesCtrl = TextEditingController();
+  bool _peligrosa = false;
+  final List<String> _fotos = [];
+  String? _documento;
+
+  Future<void> _agregarFoto() async {
+    final picker = ImagePicker();
+    final file = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+    if (file != null) setState(() => _fotos.add(file.path));
+  }
 
   void _submit() {
     if (_pesoCtrl.text.isEmpty || _fechaCtrl.text.isEmpty) {
@@ -50,6 +64,11 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
       fecha: _fechaCtrl.text, vehiculoReq: _vehiculoReq,
       presupuesto: _abierto ? null : double.tryParse(_presupuestoCtrl.text),
       descripcion: _descripcionCtrl.text, estado: EstadoCarga.publicada,
+      volumen: double.tryParse(_volumenCtrl.text),
+      dimensiones: _dimensionesCtrl.text.isEmpty ? null : _dimensionesCtrl.text,
+      peligrosa: _peligrosa,
+      fotos: List.of(_fotos),
+      documentos: _documento != null ? [_documento!] : [],
     ));
     app.showToast('¡Carga publicada! Los transportistas ya pueden verla.');
     setState(() {
@@ -57,6 +76,11 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
       _fechaCtrl.clear();
       _presupuestoCtrl.clear();
       _descripcionCtrl.clear();
+      _volumenCtrl.clear();
+      _dimensionesCtrl.clear();
+      _peligrosa = false;
+      _fotos.clear();
+      _documento = null;
     });
   }
 
@@ -110,6 +134,22 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
                 ]),
               ),
             ]),
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Expanded(child: AppTextField(label: 'Volumen (m³)', placeholder: '12', controller: _volumenCtrl, keyboardType: TextInputType.number)),
+              const SizedBox(width: 10),
+              Expanded(child: AppTextField(label: 'Dimensiones (L×A×A)', placeholder: '2.4 × 1.2 × 1.5 m', controller: _dimensionesCtrl)),
+            ]),
+            InkWell(
+              onTap: () => setState(() => _peligrosa = !_peligrosa),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                child: Row(children: [
+                  Switch(value: _peligrosa, onChanged: (v) => setState(() => _peligrosa = v), activeTrackColor: AppColors.rojo),
+                  const SizedBox(width: 10),
+                  const Expanded(child: Text('Mercancía peligrosa (requiere manejo especial)', style: TextStyle(fontSize: 12, color: AppColors.grisM))),
+                ]),
+              ),
+            ),
             const SizedBox(height: AppSpacing.md),
             SelectField(label: 'País de origen', value: _paisOrigen, options: paises, onChanged: (v) => setState(() { _paisOrigen = v; _ciudadOrigen = ciudades[v]![0]; })),
             SelectField(label: 'Ciudad de origen', value: _ciudadOrigen, options: ciudades[_paisOrigen]!, onChanged: (v) => setState(() => _ciudadOrigen = v)),
@@ -129,6 +169,60 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
               ),
             ),
             AppTextField(label: 'Descripción', placeholder: 'Detalles de la carga, condiciones de manejo, etc.', controller: _descripcionCtrl, multiline: true),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 5),
+              child: Text('FOTOS DE LA CARGA (OPCIONAL)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
+            ),
+            SizedBox(
+              height: 84,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  for (var i = 0; i < _fotos.length; i++)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Stack(children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          child: AppImage(path: _fotos[i], width: 84, height: 84, fit: BoxFit.cover),
+                        ),
+                        Positioned(
+                          top: 3, right: 3,
+                          child: InkWell(
+                            onTap: () => setState(() => _fotos.removeAt(i)),
+                            child: Container(
+                              width: 20, height: 20,
+                              decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+                              child: const Icon(Icons.close, size: 13, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ]),
+                    ),
+                  InkWell(
+                    onTap: _agregarFoto,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                    child: Container(
+                      width: 84, height: 84,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.gris100, width: 2),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        color: AppColors.gris50,
+                      ),
+                      child: const Icon(Icons.add_a_photo_outlined, color: AppColors.grisM),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            UploadZone(
+              icon: Icons.description_outlined,
+              title: 'Subir documento (factura, permiso, etc.)', uploadedTitle: 'Documento adjuntado', sub: 'Opcional — toca para elegir una imagen',
+              image: _documento, onPicked: (p) => setState(() => _documento = p),
+              scanning: false, done: false, doneLabel: '', scanningLabel: '',
+            ),
+            const SizedBox(height: AppSpacing.md),
             AppButton(title: 'Publicar carga', icon: const Icon(Icons.rocket_launch, size: 16, color: Colors.white), onPressed: _submit, fullWidth: true),
           ]),
         ),

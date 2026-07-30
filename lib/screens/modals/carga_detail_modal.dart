@@ -5,6 +5,7 @@ import '../../state/app_state.dart';
 import '../../theme/theme.dart';
 import '../../utils/format.dart';
 import '../../widgets/app_button.dart';
+import '../../widgets/app_image.dart';
 import '../../widgets/avatar.dart';
 import '../../widgets/badge.dart';
 import '../../widgets/detail_row.dart';
@@ -54,8 +55,19 @@ class CargaDetailModal extends StatelessWidget {
             if (c.contrato != null) DetailRow(label: 'Contrato digital', value: c.contrato!.ambosFirmaron ? 'Firmado por ambas partes' : 'Pendiente de firma'),
             DetailRow(label: 'Ruta', value: '${c.ciudadOrigen} → ${c.ciudadDestino}'),
             DetailRow(label: 'Peso', value: '${c.peso} ${c.unidadPeso}'),
+            if (c.volumen != null) DetailRow(label: 'Volumen', value: '${c.volumen} m³'),
+            if (c.dimensiones != null) DetailRow(label: 'Dimensiones', value: c.dimensiones!),
             DetailRow(label: 'Vehículo requerido', value: c.vehiculoReq),
             DetailRow(label: 'Fecha de recogida', value: c.fecha),
+            if (c.peligrosa)
+              DetailRow(
+                label: 'Mercancía peligrosa',
+                valueWidget: const Row(mainAxisSize: MainAxisSize.min, children: [
+                  Icon(Icons.warning_amber_rounded, size: 15, color: AppColors.rojo),
+                  SizedBox(width: 4),
+                  Text('Sí, requiere manejo especial', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.rojo)),
+                ]),
+              ),
             DetailRow(
               label: 'Presupuesto',
               value: c.precioAcordado != null ? fmtMoneda(c.precioAcordado) : (c.presupuesto != null ? fmtMoneda(c.presupuesto) : 'Abierto a cotización'),
@@ -63,6 +75,25 @@ class CargaDetailModal extends StatelessWidget {
             ),
             if (c.transportistaNombre != null) DetailRow(label: 'Transportista', value: c.transportistaNombre!),
             if (c.descripcion.isNotEmpty) DetailRow(label: 'Descripción', value: c.descripcion),
+            if (c.fotos.isNotEmpty) ...[
+              const Padding(
+                padding: EdgeInsets.only(top: AppSpacing.md, bottom: 8),
+                child: Text('FOTOS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
+              ),
+              SizedBox(
+                height: 84,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    for (final f in c.fotos)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ClipRRect(borderRadius: BorderRadius.circular(AppRadius.md), child: AppImage(path: f, width: 84, height: 84, fit: BoxFit.cover)),
+                      ),
+                  ],
+                ),
+              ),
+            ],
             if (puedeContactar && c.estado != EstadoCarga.cancelada)
               Padding(
                 padding: const EdgeInsets.only(top: AppSpacing.lg),

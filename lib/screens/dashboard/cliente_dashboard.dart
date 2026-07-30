@@ -11,6 +11,7 @@ import '../../widgets/empty_state.dart';
 import '../../widgets/notif_bell.dart';
 import '../../widgets/screen.dart';
 import '../../widgets/stat_tile.dart';
+import '../../widgets/verification_banner.dart';
 
 const Map<String, IconData> _notifIcons = {'mensaje': Icons.chat_bubble, 'oferta': Icons.attach_money, 'sistema': Icons.campaign};
 
@@ -32,6 +33,7 @@ class ClienteDashboard extends StatelessWidget {
       subtitle: 'NexCarg — ${yo.subtipo}',
       right: const NotifBell(),
       children: [
+        if (!yo.verificado) const VerificationBanner(),
         Row(children: [
           StatTile(label: 'Cargas activas', value: '$activas', sub: 'en proceso', icon: Icons.inventory_2, accent: AppColors.amber),
           const SizedBox(width: 12),
