@@ -23,8 +23,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _enviar() {
     if (_textoCtrl.text.trim().isEmpty) return;
-    final app = context.read<AppState>();
-    app.enviarMensaje(widget.convoId, app.usuario!.id, _textoCtrl.text.trim());
+    context.read<AppState>().enviarMensaje(widget.convoId, _textoCtrl.text.trim());
     _textoCtrl.clear();
     _scrollToEnd();
   }
@@ -32,8 +31,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void _mandarOferta() {
     final val = double.tryParse(_ofertaCtrl.text);
     if (val == null || val < 1) return;
-    final app = context.read<AppState>();
-    app.enviarOferta(widget.convoId, app.usuario!.id, val);
+    context.read<AppState>().enviarOferta(widget.convoId, val);
     _ofertaCtrl.clear();
     setState(() => _showOferta = false);
     _scrollToEnd();
@@ -50,8 +48,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final app = context.watch<AppState>();
     final yo = app.usuario!;
     final convo = app.convos.firstWhere((c) => c.id == widget.convoId);
-    final otroId = convo.participantes.firstWhere((p) => p != yo.id, orElse: () => -1);
-    final otro = otroId == -1 ? null : app.usuarios.firstWhere((u) => u.id == otroId);
+    final otroId = convo.participantes.firstWhere((p) => p != yo.id, orElse: () => '');
+    final otro = otroId.isEmpty ? null : app.usuarios.firstWhere((u) => u.id == otroId);
     final carga = app.cargas.where((c) => c.id == convo.cargaId).isNotEmpty ? app.cargas.firstWhere((c) => c.id == convo.cargaId) : null;
 
     return Scaffold(
@@ -89,7 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         final mine = m.de == yo.id;
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 10),
-                          child: m.esOferta ? _ofertaBubble(app, convo.id, m, mine) : _textBubble(m, mine),
+                          child: m.esOferta ? _ofertaBubble(app, m, mine) : _textBubble(m, mine),
                         );
                       },
                     ),
@@ -196,7 +194,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _ofertaBubble(AppState app, int convoId, Mensaje m, bool mine) {
+  Widget _ofertaBubble(AppState app, Mensaje m, bool mine) {
     return Align(
       alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -220,7 +218,7 @@ class _ChatScreenState extends State<ChatScreen> {
               padding: const EdgeInsets.only(top: 8),
               child: Row(children: [
                 InkWell(
-                  onTap: () => app.responderOferta(convoId, m.id, 'aceptada'),
+                  onTap: () => app.responderOferta(m.id, 'aceptada'),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 12),
                     decoration: BoxDecoration(color: AppColors.navy, borderRadius: BorderRadius.circular(AppRadius.sm)),
@@ -233,7 +231,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 const SizedBox(width: 8),
                 InkWell(
-                  onTap: () => app.responderOferta(convoId, m.id, 'rechazada'),
+                  onTap: () => app.responderOferta(m.id, 'rechazada'),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 12),
                     decoration: BoxDecoration(color: AppColors.rojoBg, borderRadius: BorderRadius.circular(AppRadius.sm)),

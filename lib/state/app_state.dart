@@ -1,24 +1,25 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../data/seed.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/models.dart';
-import '../utils/format.dart';
 
 class AppState extends ChangeNotifier {
-  final List<Usuario> usuarios = buildSeedUsers();
+  final SupabaseClient _sb = Supabase.instance.client;
+
+  List<Usuario> usuarios = [];
   Usuario? usuario;
-  final List<Carga> cargas = buildSeedCargas();
-  final List<Conversacion> convos = buildSeedConvos();
-  final List<Notificacion> notifs = buildSeedNotifs();
-  final List<HistorialItem> historial = buildSeedHist();
-  final List<Factura> facturas = buildSeedFacturas();
+  List<Carga> cargas = [];
+  List<Conversacion> convos = [];
+  List<Notificacion> notifs = [];
+  List<HistorialItem> historial = [];
+  List<Factura> facturas = [];
+  bool loading = true;
 
   String? _toastMsg;
   int _toastId = 0;
   String? get toastMsg => _toastMsg;
   int get toastId => _toastId;
   Timer? _toastTimer;
-  Timer? _gpsTimer;
 
   ThemeMode themeMode = ThemeMode.system;
   void setThemeMode(ThemeMode mode) {
@@ -32,14 +33,134 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  StreamSubscription? _usuariosSub;
+  StreamSubscription? _cargasSub;
+  StreamSubscription? _convosSub;
+  StreamSubscription? _mensajesSub;
+  StreamSubscription? _notifsSub;
+  StreamSubscription? _historialSub;
+  StreamSubscription? _facturasSub;
+  StreamSubscription<AuthState>? _authSub;
+
+  List<Map<String, dynamic>> _rawConvos = [];
+  List<Map<String, dynamic>> _rawMensajes = [];
+
   AppState() {
-    _gpsTimer = Timer.periodic(const Duration(milliseconds: 2600), (_) => _advanceGps());
+    _authSub = _sb.auth.onAuthStateChange.listen(_onAuthChange);
+  }
+
+  void _onAuthChange(AuthState state) {
+    final session = state.session;
+    if (session != null) {
+      _loadUsuarioYDatos(session.user.id);
+    } else {
+      _teardown();
+    }
+  }
+
+  Future<void> _loadUsuarioYDatos(String userId) async {
+    loading = true;
+    notifyListeners();
+    try {
+      final row = await _sb.from('usuarios').select().eq('id', userId).single();
+      usuario = Usuario.fromMap(row);
+      _setupRealtimeStreams();
+    } catch (_) {
+      // profile row not ready yet (rare race right after signup) — leave usuario null.
+    }
+    loading = false;
+    notifyListeners();
+  }
+
+  void _teardown() {
+    _usuariosSub?.cancel();
+    _cargasSub?.cancel();
+    _convosSub?.cancel();
+    _mensajesSub?.cancel();
+    _notifsSub?.cancel();
+    _historialSub?.cancel();
+    _facturasSub?.cancel();
+    usuario = null;
+    usuarios = [];
+    cargas = [];
+    convos = [];
+    notifs = [];
+    historial = [];
+    facturas = [];
+    _rawConvos = [];
+    _rawMensajes = [];
+    loading = false;
+    notifyListeners();
+  }
+
+  void _setupRealtimeStreams() {
+    _usuariosSub?.cancel();
+    _usuariosSub = _sb.from('usuarios').stream(primaryKey: ['id']).listen((rows) {
+      usuarios = rows.map(Usuario.fromMap).toList();
+      if (usuario != null) {
+        final mine = usuarios.where((u) => u.id == usuario!.id);
+        if (mine.isNotEmpty) usuario = mine.first;
+      }
+      notifyListeners();
+    });
+
+    _cargasSub?.cancel();
+    _cargasSub = _sb.from('cargas').stream(primaryKey: ['id']).listen((rows) {
+      cargas = rows.map(Carga.fromMap).toList()..sort((a, b) => a.id.compareTo(b.id));
+      notifyListeners();
+    });
+
+    _convosSub?.cancel();
+    _convosSub = _sb.from('conversaciones').stream(primaryKey: ['id']).listen((rows) {
+      _rawConvos = rows;
+      _rebuildConvos();
+    });
+
+    _mensajesSub?.cancel();
+    _mensajesSub = _sb.from('mensajes').stream(primaryKey: ['id']).listen((rows) {
+      _rawMensajes = rows;
+      _rebuildConvos();
+    });
+
+    _notifsSub?.cancel();
+    _notifsSub = _sb.from('notificaciones').stream(primaryKey: ['id']).listen((rows) {
+      notifs = rows.map(Notificacion.fromMap).toList()..sort((a, b) => b.ts.compareTo(a.ts));
+      notifyListeners();
+    });
+
+    _historialSub?.cancel();
+    _historialSub = _sb.from('historial').stream(primaryKey: ['id']).listen((rows) {
+      historial = rows.map(HistorialItem.fromMap).toList()..sort((a, b) => b.id.compareTo(a.id));
+      notifyListeners();
+    });
+
+    _facturasSub?.cancel();
+    _facturasSub = _sb.from('facturas').stream(primaryKey: ['id']).listen((rows) {
+      facturas = rows.map(Factura.fromMap).toList()..sort((a, b) => b.id.compareTo(a.id));
+      notifyListeners();
+    });
+  }
+
+  void _rebuildConvos() {
+    final mensajesOrdenados = List.of(_rawMensajes)..sort((a, b) => (a['ts'] as String).compareTo(b['ts'] as String));
+    convos = _rawConvos.map((c) {
+      final propios = mensajesOrdenados.where((m) => m['conversacion_id'] == c['id']).map(Mensaje.fromMap).toList();
+      return Conversacion.fromMap(c, mensajes: propios);
+    }).toList();
+    notifyListeners();
   }
 
   @override
   void dispose() {
     _toastTimer?.cancel();
-    _gpsTimer?.cancel();
+    _usuariosSub?.cancel();
+    _cargasSub?.cancel();
+    _convosSub?.cancel();
+    _mensajesSub?.cancel();
+    _notifsSub?.cancel();
+    _historialSub?.cancel();
+    _facturasSub?.cancel();
+    _authSub?.cancel();
     super.dispose();
   }
 
@@ -54,34 +175,20 @@ class AppState extends ChangeNotifier {
     });
   }
 
-  void addNotif(int usuarioId, String tipo, String titulo, String sub) {
-    notifs.insert(0, Notificacion(id: uid(), usuarioId: usuarioId, tipo: tipo, titulo: titulo, sub: sub, ts: DateTime.now()));
-    notifyListeners();
+  // ---- Auth ----
+
+  Future<String?> login(String email, String password) async {
+    try {
+      await _sb.auth.signInWithPassword(email: email, password: password);
+      return null;
+    } on AuthException catch (e) {
+      return e.message;
+    } catch (_) {
+      return 'No se pudo iniciar sesión. Intenta de nuevo.';
+    }
   }
 
-  void markNotifsRead(int usuarioId) {
-    for (final n in notifs) {
-      if (n.usuarioId == usuarioId) n.leida = true;
-    }
-    notifyListeners();
-  }
-
-  Usuario? login(String email, String password) {
-    Usuario? found;
-    for (final u in usuarios) {
-      if (u.email == email && u.password == password) {
-        found = u;
-        break;
-      }
-    }
-    if (found != null) {
-      usuario = found;
-      notifyListeners();
-    }
-    return found;
-  }
-
-  Usuario registrar({
+  Future<String?> registrar({
     required String nombre,
     required String email,
     required String password,
@@ -93,200 +200,148 @@ class AppState extends ChangeNotifier {
     String? placa,
     String? selfie,
     String? doc,
-  }) {
-    final nuevo = Usuario(
-      id: uid(), nombre: nombre, email: email, password: password, tipo: tipo, subtipo: subtipo,
-      telefono: telefono, verificado: false, selfie: selfie, doc: doc,
-      vehiculo: vehiculo, capacidad: capacidad, placa: placa, fechaRegistro: DateTime.now(),
-    );
-    usuarios.add(nuevo);
-    usuario = nuevo;
-    notifyListeners();
-    return nuevo;
-  }
-
-  void aprobarUsuario(int usuarioId) {
-    final u = usuarios.firstWhere((x) => x.id == usuarioId);
-    u.verificado = true;
-    if (usuario?.id == usuarioId) usuario = u;
-    addNotif(usuarioId, 'sistema', 'Cuenta verificada', 'Tu cuenta fue aprobada por un administrador. Ya tenés acceso completo a NexCarg.');
-    notifyListeners();
-  }
-
-  void logout() {
-    usuario = null;
-    notifyListeners();
-  }
-
-  void publicarCarga(Carga carga) {
-    cargas.add(carga);
-    notifyListeners();
-  }
-
-  void cancelarCarga(int cargaId) {
-    final c = cargas.firstWhere((x) => x.id == cargaId);
-    c.estado = EstadoCarga.cancelada;
-    notifyListeners();
-  }
-
-  void asignarCarga(int cargaId, int transportistaId, String transportistaNombre, double monto) {
-    final c = cargas.firstWhere((x) => x.id == cargaId);
-    c.estado = EstadoCarga.asignada;
-    c.transportistaId = transportistaId;
-    c.transportistaNombre = transportistaNombre;
-    c.precioAcordado = monto;
-    c.pago = Pago(estado: EstadoPago.retenido, monto: monto);
-    c.contrato = Contrato();
-    c.fechaAsignacion = DateTime.now();
-    notifyListeners();
-  }
-
-  void iniciarViaje(int cargaId) {
-    final c = cargas.firstWhere((x) => x.id == cargaId);
-    c.estado = EstadoCarga.enTransito;
-    c.progreso = 2;
-    notifyListeners();
-  }
-
-  void _registrarEntrega(Carga c) {
-    final ruta = '${c.ciudadOrigen} (${c.paisOrigen}) → ${c.ciudadDestino} (${c.paisDestino})';
-    final calc = calcComision(c.precioAcordado!);
-    historial.insert(0, HistorialItem(
-      id: uid(), cargaId: c.id, clienteId: c.clienteId, cliente: c.cliente,
-      transportistaId: c.transportistaId!, transportista: c.transportistaNombre!, tipoCarga: c.tipoCarga,
-      ruta: ruta, monto: c.precioAcordado!, fecha: DateTime.now().toIso8601String().split('T')[0], estado: 'completado',
-    ));
-    facturas.insert(0, Factura(
-      id: uid(), numero: 'NX-${(facturas.length + 1).toString().padLeft(4, '0')}', cargaId: c.id,
-      clienteId: c.clienteId, cliente: c.cliente, transportistaId: c.transportistaId!, transportista: c.transportistaNombre!,
-      tipoCarga: c.tipoCarga, ruta: ruta, monto: c.precioAcordado!, comisionPct: 8, comision: calc.comision,
-      montoTransportista: calc.montoTransportista, fecha: DateTime.now().toIso8601String().split('T')[0],
-    ));
-    addNotif(c.clienteId, 'sistema', 'Carga entregada', '${c.tipoCarga} llegó a ${c.ciudadDestino}. Pago liberado al transportista. Ya puedes calificar el viaje.');
-    addNotif(c.transportistaId!, 'sistema', 'Pago liberado', 'Se liberó ${fmtMoneda(calc.montoTransportista)} (neto de comisión) por la entrega de ${c.tipoCarga}.');
-  }
-
-  void confirmarEntregaManual(int cargaId) {
-    final c = cargas.firstWhere((x) => x.id == cargaId);
-    c.progreso = 100;
-    c.estado = EstadoCarga.entregada;
-    c.pago.estado = EstadoPago.liberado;
-    c.fechaEntrega = DateTime.now();
-    _registrarEntrega(c);
-    notifyListeners();
-  }
-
-  void _advanceGps() {
-    final entregadas = <Carga>[];
-    for (final c in cargas) {
-      if (c.estado != EstadoCarga.enTransito) continue;
-      final p = (c.progreso + rand(6, 14)).clamp(0, 100).toDouble();
-      c.progreso = p;
-      if (p >= 100) {
-        c.estado = EstadoCarga.entregada;
-        c.pago.estado = EstadoPago.liberado;
-        c.fechaEntrega = DateTime.now();
-        entregadas.add(c);
+  }) async {
+    try {
+      await _sb.auth.signUp(email: email, password: password, data: {
+        'nombre': nombre,
+        'tipo': tipo.value,
+        'subtipo': subtipo,
+        'telefono': telefono,
+        if (vehiculo != null) 'vehiculo': vehiculo,
+        if (capacidad != null) 'capacidad': capacidad.toString(),
+        if (placa != null) 'placa': placa,
+      });
+      final uid = _sb.auth.currentUser?.id;
+      if (uid != null && (selfie != null || doc != null)) {
+        final updates = <String, dynamic>{};
+        if (selfie != null) updates['selfie_url'] = selfie;
+        if (doc != null) updates['doc_url'] = doc;
+        await _sb.from('usuarios').update(updates).eq('id', uid);
       }
+      return null;
+    } on AuthException catch (e) {
+      return e.message;
+    } catch (_) {
+      return 'No se pudo crear la cuenta. Intenta de nuevo.';
     }
-    if (entregadas.isNotEmpty) {
-      for (final c in entregadas) {
-        _registrarEntrega(c);
-      }
-    }
-    notifyListeners();
   }
 
-  void firmarContrato(int cargaId, TipoUsuario actorTipo) {
-    final c = cargas.firstWhere((x) => x.id == cargaId);
-    if (c.contrato == null) return;
-    if (actorTipo == TipoUsuario.cliente) {
-      c.contrato!.firmaCliente = true;
-      c.contrato!.fechaCliente = DateTime.now();
-    } else {
-      c.contrato!.firmaTransportista = true;
-      c.contrato!.fechaTransportista = DateTime.now();
-    }
-    notifyListeners();
+  Future<void> logout() async {
+    await _sb.auth.signOut();
   }
 
-  void calificar(int historialId, TipoUsuario actorTipo, int estrellas, String comentario) {
-    final h = historial.firstWhere((x) => x.id == historialId);
-    final cal = Calificacion(estrellas: estrellas, comentario: comentario);
-    if (actorTipo == TipoUsuario.cliente) {
-      h.calTransportista = cal;
-    } else {
-      h.calCliente = cal;
-    }
-    notifyListeners();
+  // ---- Notificaciones ----
+
+  Future<void> markNotifsRead(String usuarioId) async {
+    await _sb.from('notificaciones').update({'leida': true}).eq('usuario_id', usuarioId).eq('leida', false);
   }
 
-  int abrirOCrearConvo(Carga carga, int yoId, TipoUsuario yoTipo) {
+  // ---- Cargas ----
+
+  Future<void> publicarCarga({
+    required String clienteId,
+    required String cliente,
+    required String tipoCarga,
+    required double peso,
+    required String unidadPeso,
+    required String paisOrigen,
+    required String ciudadOrigen,
+    required String paisDestino,
+    required String ciudadDestino,
+    required String fecha,
+    required String vehiculoReq,
+    double? presupuesto,
+    String descripcion = '',
+    double? volumen,
+    String? dimensiones,
+    bool peligrosa = false,
+    List<String> fotos = const [],
+    List<String> documentos = const [],
+  }) async {
+    await _sb.from('cargas').insert({
+      'cliente_id': clienteId,
+      'cliente': cliente,
+      'tipo_carga': tipoCarga,
+      'peso': peso,
+      'unidad_peso': unidadPeso,
+      'pais_origen': paisOrigen,
+      'ciudad_origen': ciudadOrigen,
+      'pais_destino': paisDestino,
+      'ciudad_destino': ciudadDestino,
+      'fecha': fecha,
+      'vehiculo_req': vehiculoReq,
+      'presupuesto': presupuesto,
+      'descripcion': descripcion,
+      'volumen': volumen,
+      'dimensiones': dimensiones,
+      'peligrosa': peligrosa,
+      'fotos': fotos,
+      'documentos': documentos,
+    });
+  }
+
+  Future<void> cancelarCarga(int cargaId) async {
+    await _sb.from('cargas').update({'estado': 'cancelada'}).eq('id', cargaId);
+  }
+
+  Future<void> asignarCarga(int cargaId, String transportistaId, String transportistaNombre, double monto) async {
+    await _sb.rpc('asignar_carga', params: {'p_carga_id': cargaId, 'p_transportista_id': transportistaId, 'p_monto': monto});
+  }
+
+  Future<void> iniciarViaje(int cargaId) async {
+    await _sb.rpc('iniciar_viaje', params: {'p_carga_id': cargaId});
+  }
+
+  Future<void> confirmarEntregaManual(int cargaId) async {
+    await _sb.rpc('confirmar_entrega_manual', params: {'p_carga_id': cargaId});
+  }
+
+  Future<void> firmarContrato(int cargaId, TipoUsuario actorTipo) async {
+    await _sb.rpc('firmar_contrato', params: {'p_carga_id': cargaId, 'p_actor_tipo': actorTipo == TipoUsuario.cliente ? 'cliente' : 'transportista'});
+  }
+
+  Future<void> calificar(int historialId, TipoUsuario actorTipo, int estrellas, String comentario) async {
+    await _sb.rpc('calificar', params: {
+      'p_historial_id': historialId,
+      'p_actor_tipo': actorTipo == TipoUsuario.cliente ? 'cliente' : 'transportista',
+      'p_estrellas': estrellas,
+      'p_comentario': comentario,
+    });
+  }
+
+  // ---- Mensajería ----
+
+  Future<int> abrirOCrearConvo(Carga carga, String yoId, TipoUsuario yoTipo) async {
     final otroId = yoTipo == TipoUsuario.cliente ? carga.transportistaId : carga.clienteId;
     final targetId = otroId ?? carga.clienteId;
-    for (final c in convos) {
-      if (c.participantes.contains(yoId) && c.participantes.contains(targetId) && c.cargaId == carga.id) {
-        return c.id;
-      }
-    }
-    final nuevaId = uid();
-    convos.add(Conversacion(id: nuevaId, participantes: [yoId, targetId], cargaId: carga.id));
-    notifyListeners();
-    return nuevaId;
+    final res = await _sb.rpc('abrir_o_crear_convo', params: {'p_carga_id': carga.id, 'p_yo_id': yoId, 'p_otro_id': targetId});
+    return res as int;
   }
 
-  void enviarMensaje(int convoId, int deId, String texto) {
-    final convo = convos.firstWhere((c) => c.id == convoId);
-    convo.mensajes.add(Mensaje.texto(id: uid(), de: deId, texto: texto, ts: DateTime.now()));
-    final destId = convo.participantes.firstWhere((p) => p != deId, orElse: () => -1);
-    final de = usuarios.firstWhere((u) => u.id == deId, orElse: () => usuarios.first);
-    if (destId != -1) {
-      addNotif(destId, 'mensaje', 'Nuevo mensaje de ${de.nombre}', texto.length > 60 ? texto.substring(0, 60) : texto);
-    }
-    notifyListeners();
+  Future<void> enviarMensaje(int convoId, String texto) async {
+    await _sb.rpc('enviar_mensaje', params: {'p_convo_id': convoId, 'p_texto': texto});
   }
 
-  void enviarOferta(int convoId, int deId, double precio) {
-    final convo = convos.firstWhere((c) => c.id == convoId);
-    convo.mensajes.add(Mensaje.oferta(id: uid(), de: deId, precio: precio, ts: DateTime.now()));
-    final destId = convo.participantes.firstWhere((p) => p != deId, orElse: () => -1);
-    final de = usuarios.firstWhere((u) => u.id == deId, orElse: () => usuarios.first);
-    if (destId != -1) {
-      addNotif(destId, 'oferta', 'Nueva cotización de ${de.nombre}', '${fmtMoneda(precio)} por el viaje');
-    }
-    notifyListeners();
+  Future<void> enviarOferta(int convoId, double precio) async {
+    await _sb.rpc('enviar_oferta', params: {'p_convo_id': convoId, 'p_precio': precio});
   }
 
-  void responderOferta(int convoId, int msgId, String accion) {
-    final convo = convos.firstWhere((c) => c.id == convoId);
-    Mensaje? ofertaMsg;
-    for (final m in convo.mensajes) {
-      if (m.id == msgId) {
-        m.estadoOferta = accion;
-        ofertaMsg = m;
-      }
-    }
-    if (accion == 'aceptada' && ofertaMsg != null) {
-      final respondiendoId = usuario?.id;
-      final transportistaId = ofertaMsg.de;
-      final transportista = usuarios.firstWhere((u) => u.id == transportistaId);
-      asignarCarga(convo.cargaId, transportista.id, transportista.nombre, ofertaMsg.precio!);
-      final destId = convo.participantes.firstWhere((p) => p != respondiendoId, orElse: () => -1);
-      if (destId != -1) {
-        addNotif(destId, 'oferta', 'Cotización aceptada', 'Tu cotización de ${fmtMoneda(ofertaMsg.precio)} fue aceptada');
-      }
-    }
-    notifyListeners();
+  Future<void> responderOferta(int mensajeId, String accion) async {
+    await _sb.rpc('responder_oferta', params: {'p_mensaje_id': mensajeId, 'p_accion': accion});
   }
 
-  void actualizarPerfil(int usuarioId, {String? nombre, String? telefono, String? selfie}) {
-    final u = usuarios.firstWhere((x) => x.id == usuarioId);
-    if (nombre != null) u.nombre = nombre;
-    if (telefono != null) u.telefono = telefono;
-    if (selfie != null) u.selfie = selfie;
-    if (usuario?.id == usuarioId) {
-      // usuario is the same object reference from `usuarios`, already mutated above.
-    }
-    notifyListeners();
+  // ---- Perfil / Admin ----
+
+  Future<void> actualizarPerfil(String usuarioId, {String? nombre, String? telefono, String? selfie}) async {
+    final updates = <String, dynamic>{};
+    if (nombre != null) updates['nombre'] = nombre;
+    if (telefono != null) updates['telefono'] = telefono;
+    if (selfie != null) updates['selfie_url'] = selfie;
+    if (updates.isEmpty) return;
+    await _sb.from('usuarios').update(updates).eq('id', usuarioId);
+  }
+
+  Future<void> aprobarUsuario(String usuarioId) async {
+    await _sb.rpc('aprobar_usuario', params: {'p_usuario_id': usuarioId});
   }
 }

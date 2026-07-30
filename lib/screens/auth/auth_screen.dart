@@ -62,10 +62,17 @@ class _AuthScreenState extends State<AuthScreen> {
     });
   }
 
-  void _doLogin() {
-    final app = context.read<AppState>();
-    final u = app.login(_emailCtrl.text.trim(), _passCtrl.text);
-    setState(() => _err = u == null ? 'Correo o contraseña incorrectos.' : '');
+  bool _submitting = false;
+
+  Future<void> _doLogin() async {
+    if (_emailCtrl.text.trim().isEmpty || _passCtrl.text.isEmpty) {
+      setState(() => _err = 'Completa correo y contraseña.');
+      return;
+    }
+    setState(() { _submitting = true; _err = ''; });
+    final err = await context.read<AppState>().login(_emailCtrl.text.trim(), _passCtrl.text);
+    if (!mounted) return;
+    setState(() { _submitting = false; _err = err ?? ''; });
   }
 
   void _recuperarContrasena() {
@@ -99,10 +106,11 @@ class _AuthScreenState extends State<AuthScreen> {
     });
   }
 
-  void _finalizarRegistro() {
+  Future<void> _finalizarRegistro() async {
     if (!_selfieOk) { setState(() => _err = 'Completa la verificación facial.'); return; }
+    setState(() { _submitting = true; _err = ''; });
     final app = context.read<AppState>();
-    app.registrar(
+    final err = await app.registrar(
       nombre: _nombreCtrl.text, email: _regEmailCtrl.text, password: _regPassCtrl.text,
       tipo: _tipo!, subtipo: _subtipo, telefono: _telefonoCtrl.text,
       vehiculo: _esTransportista ? _vehiculo : null,
@@ -110,12 +118,13 @@ class _AuthScreenState extends State<AuthScreen> {
       placa: _esTransportista ? _placaCtrl.text : null,
       selfie: _selfieImg, doc: _docImg,
     );
-    app.showToast('¡Cuenta verificada creada!');
+    if (!mounted) return;
+    setState(() { _submitting = false; _err = err ?? ''; });
+    if (err == null) app.showToast('¡Cuenta creada! Un administrador va a revisar tus documentos.');
   }
 
   @override
   Widget build(BuildContext context) {
-    final app = context.watch<AppState>();
     return Scaffold(
       body: Stack(
         children: [
@@ -176,7 +185,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     Expanded(child: Text(_err, style: const TextStyle(color: AppColors.rojo, fontSize: 12))),
                                   ]),
                                 ),
-                              if (_isLogin) _loginForm() else _registerForm(app),
+                              if (_isLogin) _loginForm() else _registerForm(),
                             ],
                           ),
                         ),
@@ -228,7 +237,7 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           ]),
         ),
-        AppButton(title: 'Entrar a la plataforma', onPressed: _doLogin, fullWidth: true),
+        AppButton(title: 'Entrar a la plataforma', onPressed: _doLogin, loading: _submitting, fullWidth: true),
         const SizedBox(height: 14),
         Row(children: const [
           Expanded(child: Divider(color: AppColors.gris100)),
@@ -270,19 +279,19 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _registerForm(AppState app) {
+  Widget _registerForm() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         StepIndicator(steps: const ['Datos', 'Documento', 'Selfie'], current: _step),
-        if (_step == 1) _step1(app),
+        if (_step == 1) _step1(),
         if (_step == 2) _step2(),
         if (_step == 3) _step3(),
       ],
     );
   }
 
-  Widget _step1(AppState app) {
+  Widget _step1() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -318,7 +327,6 @@ class _AuthScreenState extends State<AuthScreen> {
               return;
             }
             if (_esTransportista && _capacidadCtrl.text.isEmpty) { setState(() => _err = 'Indica la capacidad del vehículo.'); return; }
-            if (app.usuarios.any((u) => u.email == _regEmailCtrl.text)) { setState(() => _err = 'Este correo ya está registrado.'); return; }
             setState(() { _err = ''; _step = 2; });
           },
         ),
@@ -345,7 +353,7 @@ class _AuthScreenState extends State<AuthScreen> {
         UploadZone(
           icon: _esTransportista ? Icons.badge : Icons.description,
           title: 'Subir documento', uploadedTitle: 'Documento cargado', sub: 'Toca para elegir una imagen',
-          image: _docImg, onPicked: _handleDoc,
+          image: _docImg, carpeta: 'documentos', onPicked: _handleDoc,
           scanning: _scanning, scanningLabel: 'Leyendo datos del documento con IA…',
           done: _scanned, doneLabel: 'Documento verificado correctamente — datos extraídos',
         ),
@@ -373,7 +381,7 @@ class _AuthScreenState extends State<AuthScreen> {
         const SizedBox(height: 14),
         UploadZone(
           icon: Icons.camera_alt, title: 'Subir selfie', uploadedTitle: 'Selfie cargada', sub: 'Toca para elegir una foto',
-          image: _selfieImg, onPicked: _handleSelfie,
+          image: _selfieImg, carpeta: 'selfies', onPicked: _handleSelfie,
           scanning: _selfieScanning, scanningLabel: 'Comparando rostro con documento mediante IA…',
           done: _selfieOk, doneLabel: '¡Identidad verificada! Coincidencia facial confirmada',
         ),
@@ -381,7 +389,7 @@ class _AuthScreenState extends State<AuthScreen> {
         Row(children: [
           Expanded(child: AppButton(title: '← Atrás', variant: AppButtonVariant.ghost, onPressed: () => setState(() => _step = 2))),
           const SizedBox(width: 8),
-          Expanded(flex: 2, child: AppButton(title: 'Crear cuenta verificada', onPressed: _selfieOk ? _finalizarRegistro : null)),
+          Expanded(flex: 2, child: AppButton(title: 'Crear cuenta', onPressed: _selfieOk ? _finalizarRegistro : null, loading: _submitting)),
         ]),
       ],
     );

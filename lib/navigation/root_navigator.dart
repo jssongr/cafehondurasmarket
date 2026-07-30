@@ -13,6 +13,9 @@ class RootNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
+    if (app.loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     final usuario = app.usuario;
     if (usuario == null) return const AuthScreen();
     switch (usuario.tipo) {

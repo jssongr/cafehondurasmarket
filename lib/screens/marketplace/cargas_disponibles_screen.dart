@@ -85,15 +85,16 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
               cliente: app.usuarios.firstWhere((u) => u.id == c.clienteId),
               historial: app.historial,
               onPressed: () => openCargaDetail(context, c.id),
-              onAceptar: () {
-                app.asignarCarga(c.id, yo.id, yo.nombre, c.presupuesto!);
-                app.abrirOCrearConvo(c, yo.id, TipoUsuario.transportista);
-                app.addNotif(c.clienteId, 'sistema', 'Viaje aceptado', '${yo.nombre} aceptó transportar tu ${c.tipoCarga}.');
+              onAceptar: () async {
+                await app.asignarCarga(c.id, yo.id, yo.nombre, c.presupuesto!);
+                await app.abrirOCrearConvo(c, yo.id, TipoUsuario.transportista);
+                if (!context.mounted) return;
                 app.showToast('¡Viaje aceptado! Coordina la recogida en Mensajes.');
                 context.read<TabShellController>().goTo(2);
               },
-              onCotizar: () {
-                final convoId = app.abrirOCrearConvo(c, yo.id, TipoUsuario.transportista);
+              onCotizar: () async {
+                final convoId = await app.abrirOCrearConvo(c, yo.id, TipoUsuario.transportista);
+                if (!context.mounted) return;
                 openChat(context, convoId);
               },
             ),

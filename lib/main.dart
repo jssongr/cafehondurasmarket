@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'navigation/root_navigator.dart';
 import 'state/app_state.dart';
 import 'theme/theme.dart';
 
-void main() {
+const _supabaseUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: 'https://jfrixarxbrtvxuoorkpc.supabase.co');
+const _supabasePublishableKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(url: _supabaseUrl, publishableKey: _supabasePublishableKey);
   runApp(const NexCargApp());
 }
 

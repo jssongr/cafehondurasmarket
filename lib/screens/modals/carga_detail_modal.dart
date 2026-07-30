@@ -99,9 +99,10 @@ class CargaDetailModal extends StatelessWidget {
                 padding: const EdgeInsets.only(top: AppSpacing.lg),
                 child: AppButton(
                   title: 'Contactar', fullWidth: true,
-                  onPressed: () {
+                  onPressed: () async {
                     final yoTipo = yo.tipo == TipoUsuario.cliente ? TipoUsuario.cliente : TipoUsuario.transportista;
-                    final convoId = app.abrirOCrearConvo(c, yo.id, yoTipo);
+                    final convoId = await app.abrirOCrearConvo(c, yo.id, yoTipo);
+                    if (!context.mounted) return;
                     Navigator.of(context).pop();
                     Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (_) => ChatScreen(convoId: convoId)));
                   },

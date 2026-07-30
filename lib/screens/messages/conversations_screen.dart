@@ -19,8 +19,8 @@ class ConversationsScreen extends StatelessWidget {
     final mis = app.convos.where((c) => c.participantes.contains(yo.id)).toList();
 
     Usuario? otro(Conversacion c) {
-      final otroId = c.participantes.firstWhere((p) => p != yo.id, orElse: () => -1);
-      if (otroId == -1) return null;
+      final otroId = c.participantes.firstWhere((p) => p != yo.id, orElse: () => '');
+      if (otroId.isEmpty) return null;
       try {
         return app.usuarios.firstWhere((u) => u.id == otroId);
       } catch (_) {

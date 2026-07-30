@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../data/constants.dart';
 import '../../models/models.dart';
+import '../../services/storage_service.dart';
 import '../../state/app_state.dart';
 import '../../theme/theme.dart';
 import '../../utils/format.dart';
@@ -35,11 +35,16 @@ class _PerfilScreenState extends State<PerfilScreen> {
   late TextEditingController _telefonoCtrl;
   String? _selfie;
   bool _init = false;
+  bool _subiendoFoto = false;
 
   Future<void> _cambiarFoto() async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
-    if (file != null) setState(() => _selfie = file.path);
+    setState(() => _subiendoFoto = true);
+    try {
+      final url = await pickAndUploadImage(carpeta: 'selfies');
+      if (url != null) setState(() => _selfie = url);
+    } finally {
+      if (mounted) setState(() => _subiendoFoto = false);
+    }
   }
 
   @override
@@ -70,7 +75,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 decoration: BoxDecoration(color: AppColors.gris100, shape: BoxShape.circle, border: Border.all(color: AppColors.amber, width: 3)),
                 clipBehavior: Clip.antiAlias,
                 alignment: Alignment.center,
-                child: _selfie != null ? AppImage(path: _selfie!, width: 84, height: 84) : Icon(tipoIcon[yo.tipo], size: 40, color: AppColors.navy),
+                child: _subiendoFoto
+                    ? const CircularProgressIndicator(strokeWidth: 2)
+                    : (_selfie != null ? AppImage(path: _selfie!, width: 84, height: 84) : Icon(tipoIcon[yo.tipo], size: 40, color: AppColors.navy)),
               ),
             ),
             const SizedBox(height: 10),
@@ -134,9 +141,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
             ],
             AppButton(
               title: 'Guardar cambios', fullWidth: true,
-              onPressed: () {
-                app.actualizarPerfil(yo.id, nombre: _nombreCtrl.text, telefono: _telefonoCtrl.text, selfie: _selfie);
-                app.showToast('Perfil actualizado');
+              onPressed: () async {
+                await app.actualizarPerfil(yo.id, nombre: _nombreCtrl.text, telefono: _telefonoCtrl.text, selfie: _selfie);
+                if (context.mounted) app.showToast('Perfil actualizado');
               },
             ),
           ]),
@@ -144,7 +151,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
         AppButton(
           title: 'Cerrar sesión', variant: AppButtonVariant.outline, fullWidth: true,
           icon: const Icon(Icons.logout, size: 16, color: AppColors.navy),
-          onPressed: app.logout,
+          onPressed: () => app.logout(),
         ),
       ],
     );

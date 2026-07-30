@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../data/constants.dart';
-import '../../models/models.dart';
+import '../../services/storage_service.dart';
 import '../../state/app_state.dart';
 import '../../theme/theme.dart';
-import '../../utils/format.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/app_image.dart';
@@ -39,14 +37,20 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
   bool _peligrosa = false;
   final List<String> _fotos = [];
   String? _documento;
+  bool _agregandoFoto = false;
+  bool _publicando = false;
 
   Future<void> _agregarFoto() async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
-    if (file != null) setState(() => _fotos.add(file.path));
+    setState(() => _agregandoFoto = true);
+    try {
+      final url = await pickAndUploadImage(carpeta: 'cargas');
+      if (url != null) setState(() => _fotos.add(url));
+    } finally {
+      if (mounted) setState(() => _agregandoFoto = false);
+    }
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (_pesoCtrl.text.isEmpty || _fechaCtrl.text.isEmpty) {
       _alert('Campos requeridos', 'Peso y fecha de recogida son obligatorios.');
       return;
@@ -55,33 +59,39 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
       _alert('Campos requeridos', "Indica un presupuesto o activa 'Abierto a cotizaciones'.");
       return;
     }
+    setState(() => _publicando = true);
     final app = context.read<AppState>();
     final yo = app.usuario!;
-    app.publicarCarga(Carga(
-      id: uid(), clienteId: yo.id, cliente: yo.nombre, tipoCarga: _tipoCarga,
-      peso: double.tryParse(_pesoCtrl.text) ?? 0, unidadPeso: _unidadPeso,
-      paisOrigen: _paisOrigen, ciudadOrigen: _ciudadOrigen, paisDestino: _paisDestino, ciudadDestino: _ciudadDestino,
-      fecha: _fechaCtrl.text, vehiculoReq: _vehiculoReq,
-      presupuesto: _abierto ? null : double.tryParse(_presupuestoCtrl.text),
-      descripcion: _descripcionCtrl.text, estado: EstadoCarga.publicada,
-      volumen: double.tryParse(_volumenCtrl.text),
-      dimensiones: _dimensionesCtrl.text.isEmpty ? null : _dimensionesCtrl.text,
-      peligrosa: _peligrosa,
-      fotos: List.of(_fotos),
-      documentos: _documento != null ? [_documento!] : [],
-    ));
-    app.showToast('¡Carga publicada! Los transportistas ya pueden verla.');
-    setState(() {
-      _pesoCtrl.clear();
-      _fechaCtrl.clear();
-      _presupuestoCtrl.clear();
-      _descripcionCtrl.clear();
-      _volumenCtrl.clear();
-      _dimensionesCtrl.clear();
-      _peligrosa = false;
-      _fotos.clear();
-      _documento = null;
-    });
+    try {
+      await app.publicarCarga(
+        clienteId: yo.id, cliente: yo.nombre, tipoCarga: _tipoCarga,
+        peso: double.tryParse(_pesoCtrl.text) ?? 0, unidadPeso: _unidadPeso,
+        paisOrigen: _paisOrigen, ciudadOrigen: _ciudadOrigen, paisDestino: _paisDestino, ciudadDestino: _ciudadDestino,
+        fecha: _fechaCtrl.text, vehiculoReq: _vehiculoReq,
+        presupuesto: _abierto ? null : double.tryParse(_presupuestoCtrl.text),
+        descripcion: _descripcionCtrl.text,
+        volumen: double.tryParse(_volumenCtrl.text),
+        dimensiones: _dimensionesCtrl.text.isEmpty ? null : _dimensionesCtrl.text,
+        peligrosa: _peligrosa,
+        fotos: List.of(_fotos),
+        documentos: _documento != null ? [_documento!] : [],
+      );
+      if (!mounted) return;
+      app.showToast('¡Carga publicada! Los transportistas ya pueden verla.');
+      setState(() {
+        _pesoCtrl.clear();
+        _fechaCtrl.clear();
+        _presupuestoCtrl.clear();
+        _descripcionCtrl.clear();
+        _volumenCtrl.clear();
+        _dimensionesCtrl.clear();
+        _peligrosa = false;
+        _fotos.clear();
+        _documento = null;
+      });
+    } finally {
+      if (mounted) setState(() => _publicando = false);
+    }
   }
 
   void _alert(String title, String msg) {
@@ -200,7 +210,7 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
                       ]),
                     ),
                   InkWell(
-                    onTap: _agregarFoto,
+                    onTap: _agregandoFoto ? null : _agregarFoto,
                     borderRadius: BorderRadius.circular(AppRadius.md),
                     child: Container(
                       width: 84, height: 84,
@@ -209,7 +219,10 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
                         borderRadius: BorderRadius.circular(AppRadius.md),
                         color: AppColors.gris50,
                       ),
-                      child: const Icon(Icons.add_a_photo_outlined, color: AppColors.grisM),
+                      alignment: Alignment.center,
+                      child: _agregandoFoto
+                          ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.add_a_photo_outlined, color: AppColors.grisM),
                     ),
                   ),
                 ],
@@ -219,11 +232,11 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
             UploadZone(
               icon: Icons.description_outlined,
               title: 'Subir documento (factura, permiso, etc.)', uploadedTitle: 'Documento adjuntado', sub: 'Opcional — toca para elegir una imagen',
-              image: _documento, onPicked: (p) => setState(() => _documento = p),
+              image: _documento, carpeta: 'cargas', onPicked: (p) => setState(() => _documento = p),
               scanning: false, done: false, doneLabel: '', scanningLabel: '',
             ),
             const SizedBox(height: AppSpacing.md),
-            AppButton(title: 'Publicar carga', icon: const Icon(Icons.rocket_launch, size: 16, color: Colors.white), onPressed: _submit, fullWidth: true),
+            AppButton(title: 'Publicar carga', icon: const Icon(Icons.rocket_launch, size: 16, color: Colors.white), onPressed: _submit, loading: _publicando, fullWidth: true),
           ]),
         ),
       ],
