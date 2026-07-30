@@ -1,3 +1,3 @@
-# Expo HAS CHANGED
+# NexCarg is a Flutter app
 
-Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before writing any code.
+This project was originally prototyped with Expo/React Native, then rewritten as a Flutter app (single codebase for iOS, Android, and Web). There is no Expo or React Native code left in this repo — all app code lives under `lib/` in Dart. Consult https://docs.flutter.dev/ if you need framework docs.
