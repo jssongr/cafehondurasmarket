@@ -188,6 +188,17 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  Future<String?> recuperarContrasena(String email) async {
+    try {
+      await _sb.auth.resetPasswordForEmail(email);
+      return null;
+    } on AuthException catch (e) {
+      return e.message;
+    } catch (_) {
+      return 'No se pudo enviar el correo de recuperación. Intenta de nuevo.';
+    }
+  }
+
   Future<String?> registrar({
     required String nombre,
     required String email,

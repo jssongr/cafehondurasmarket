@@ -8,6 +8,7 @@ import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/select_field.dart';
 import '../../widgets/upload_zone.dart';
+import '../settings/legal_screen.dart';
 import 'step_indicator.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -43,6 +44,7 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _selfieImg;
   bool _selfieScanning = false;
   bool _selfieOk = false;
+  bool _aceptaTerminos = false;
 
   bool get _esTransportista => _tipo == TipoUsuario.transportista;
   List<String> get _subtipos => _esTransportista ? transportistaSubtipos : clienteSubtipos;
@@ -61,6 +63,7 @@ class _AuthScreenState extends State<AuthScreen> {
       _scanned = false;
       _selfieImg = null;
       _selfieOk = false;
+      _aceptaTerminos = false;
     });
   }
 
@@ -77,11 +80,16 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() { _submitting = false; _err = err ?? ''; });
   }
 
-  void _recuperarContrasena() {
+  Future<void> _recuperarContrasena() async {
     if (_emailCtrl.text.trim().isEmpty) {
       setState(() => _err = 'Escribe tu correo arriba para poder enviarte el enlace de recuperación.');
       return;
     }
+    setState(() { _submitting = true; _err = ''; });
+    final err = await context.read<AppState>().recuperarContrasena(_emailCtrl.text.trim());
+    if (!mounted) return;
+    setState(() => _submitting = false);
+    if (err != null) { setState(() => _err = err); return; }
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -110,6 +118,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Future<void> _finalizarRegistro() async {
     if (!_selfieOk) { setState(() => _err = 'Completa la verificación facial.'); return; }
+    if (!_aceptaTerminos) { setState(() => _err = 'Debes aceptar los Términos de Uso y la Política de Privacidad.'); return; }
     setState(() { _submitting = true; _err = ''; });
     final app = context.read<AppState>();
     final err = await app.registrar(
@@ -252,12 +261,6 @@ class _AuthScreenState extends State<AuthScreen> {
           const SizedBox(width: 8),
           Expanded(child: _socialButton('Apple', Icons.apple)),
         ]),
-        const SizedBox(height: 12),
-        const Text(
-          'Demo cliente: cliente@demo.com / 1234\nDemo transportista: transportista@demo.com / 1234\nDemo admin: admin@demo.com / 1234',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 10.5, color: AppColors.grisM, height: 1.4),
-        ),
       ],
     );
   }
@@ -390,10 +393,38 @@ class _AuthScreenState extends State<AuthScreen> {
           done: _selfieOk, doneLabel: '¡Identidad verificada! Coincidencia facial confirmada',
         ),
         const SizedBox(height: 14),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          SizedBox(
+            width: 22, height: 22,
+            child: Checkbox(
+              value: _aceptaTerminos, onChanged: (v) => setState(() => _aceptaTerminos = v ?? false),
+              activeColor: AppColors.navy, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Wrap(children: [
+                const Text('Acepto los ', style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
+                InkWell(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LegalScreen(esTerminos: true))),
+                  child: const Text('Términos de Uso', style: TextStyle(fontSize: 11.5, color: AppColors.blue, fontWeight: FontWeight.w700)),
+                ),
+                const Text(' y la ', style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
+                InkWell(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LegalScreen(esTerminos: false))),
+                  child: const Text('Política de Privacidad', style: TextStyle(fontSize: 11.5, color: AppColors.blue, fontWeight: FontWeight.w700)),
+                ),
+              ]),
+            ),
+          ),
+        ]),
+        const SizedBox(height: 10),
         Row(children: [
           Expanded(child: AppButton(title: '← Atrás', variant: AppButtonVariant.ghost, onPressed: () => setState(() => _step = 2))),
           const SizedBox(width: 8),
-          Expanded(flex: 2, child: AppButton(title: 'Crear cuenta', onPressed: _selfieOk ? _finalizarRegistro : null, loading: _submitting)),
+          Expanded(flex: 2, child: AppButton(title: 'Crear cuenta', onPressed: (_selfieOk && _aceptaTerminos) ? _finalizarRegistro : null, loading: _submitting)),
         ]),
       ],
     );

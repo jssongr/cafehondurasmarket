@@ -8,6 +8,7 @@ import '../facturacion/facturacion_screen.dart';
 import '../historial/historial_screen.dart';
 import 'ayuda_screen.dart';
 import 'documentos_screen.dart';
+import 'legal_screen.dart';
 
 class ConfiguracionScreen extends StatelessWidget {
   const ConfiguracionScreen({super.key});
@@ -60,7 +61,11 @@ class ConfiguracionScreen extends StatelessWidget {
             _divider(),
             _link(context, Icons.receipt_long, 'Facturación', () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FacturacionScreen(showBack: true)))),
             _divider(),
-            _link(context, Icons.folder_outlined, 'Documentos', () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DocumentosScreen())), isLast: true),
+            _link(context, Icons.folder_outlined, 'Documentos', () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DocumentosScreen()))),
+            _divider(),
+            _link(context, Icons.description_outlined, 'Términos de uso', () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LegalScreen(esTerminos: true)))),
+            _divider(),
+            _link(context, Icons.privacy_tip_outlined, 'Política de privacidad', () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LegalScreen(esTerminos: false))), isLast: true),
           ]),
         ),
       ],
