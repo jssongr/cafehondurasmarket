@@ -6,7 +6,10 @@ import 'state/app_state.dart';
 import 'theme/theme.dart';
 
 const _supabaseUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: 'https://jfrixarxbrtvxuoorkpc.supabase.co');
-const _supabasePublishableKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+const _supabasePublishableKey = String.fromEnvironment(
+  'SUPABASE_ANON_KEY',
+  defaultValue: 'sb_publishable_wfwutn5qTzGBm03uxOvH3Q_mgVnZdWK',
+);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
