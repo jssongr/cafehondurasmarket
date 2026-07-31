@@ -213,6 +213,7 @@ class AppState extends ChangeNotifier {
     String? selfie,
     String? doc,
     String? docIdentidad,
+    String? seguro,
   }) async {
     try {
       await _sb.auth.signUp(email: email, password: password, data: {
@@ -226,11 +227,12 @@ class AppState extends ChangeNotifier {
         if (placa != null) 'placa': placa,
       });
       final uid = _sb.auth.currentUser?.id;
-      if (uid != null && (selfie != null || doc != null || docIdentidad != null)) {
+      if (uid != null && (selfie != null || doc != null || docIdentidad != null || seguro != null)) {
         final updates = <String, dynamic>{};
         if (selfie != null) updates['selfie_url'] = selfie;
         if (doc != null) updates['doc_url'] = doc;
         if (docIdentidad != null) updates['doc_identidad_url'] = docIdentidad;
+        if (seguro != null) updates['seguro_url'] = seguro;
         await _sb.from('usuarios').update(updates).eq('id', uid);
       }
       return null;

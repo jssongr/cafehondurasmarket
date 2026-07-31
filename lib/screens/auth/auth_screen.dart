@@ -44,6 +44,7 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _docIdentidadImg;
   bool _scanningIdentidad = false;
   bool _scannedIdentidad = false;
+  String? _seguroImg;
   String? _selfieImg;
   bool _selfieScanning = false;
   bool _selfieOk = false;
@@ -66,6 +67,7 @@ class _AuthScreenState extends State<AuthScreen> {
       _scanned = false;
       _docIdentidadImg = null;
       _scannedIdentidad = false;
+      _seguroImg = null;
       _selfieImg = null;
       _selfieOk = false;
       _aceptaTerminos = false;
@@ -140,7 +142,7 @@ class _AuthScreenState extends State<AuthScreen> {
       vehiculo: _esTransportista ? _vehiculo : null,
       capacidad: _esTransportista ? double.tryParse(_capacidadCtrl.text) : null,
       placa: _esTransportista ? _placaCtrl.text : null,
-      selfie: _selfieImg, doc: _docImg, docIdentidad: _docIdentidadImg,
+      selfie: _selfieImg, doc: _docImg, docIdentidad: _docIdentidadImg, seguro: _seguroImg,
     );
     if (!mounted) return;
     setState(() { _submitting = false; _err = err ?? ''; });
@@ -390,6 +392,20 @@ class _AuthScreenState extends State<AuthScreen> {
           scanning: _scanningIdentidad, scanningLabel: 'Leyendo datos del documento con IA…',
           done: _scannedIdentidad, doneLabel: 'Documento de identidad verificado correctamente',
         ),
+        if (_esTransportista) ...[
+          const SizedBox(height: 18),
+          const Text('Comprobante de seguro (opcional)', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+          const SizedBox(height: 4),
+          const Text('Si tienes seguro para tu vehículo o para ingresar carga a otro país, súbelo aquí — útil sobre todo en fletes internacionales.',
+              style: TextStyle(fontSize: 12, color: AppColors.grisM, height: 1.4)),
+          const SizedBox(height: 14),
+          UploadZone(
+            icon: Icons.shield_outlined,
+            title: 'Subir comprobante de seguro', uploadedTitle: 'Comprobante de seguro cargado', sub: 'Opcional — toca para elegir una imagen',
+            image: _seguroImg, carpeta: 'documentos', onPicked: (p) => setState(() => _seguroImg = p),
+            scanning: false, done: false, doneLabel: '', scanningLabel: '',
+          ),
+        ],
         const SizedBox(height: 14),
         Row(children: [
           Expanded(child: AppButton(title: '← Atrás', variant: AppButtonVariant.ghost, onPressed: () => setState(() => _step = 1))),

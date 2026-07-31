@@ -46,6 +46,14 @@ class DocumentosScreen extends StatelessWidget {
               ClipRRect(borderRadius: BorderRadius.circular(AppRadius.md), child: AppImage(path: yo.docIdentidad!, width: double.infinity, height: 160)),
             ]),
           ),
+        if (yo.seguro != null)
+          AppCard(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('Comprobante de seguro', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+              const SizedBox(height: 10),
+              ClipRRect(borderRadius: BorderRadius.circular(AppRadius.md), child: AppImage(path: yo.seguro!, width: double.infinity, height: 160)),
+            ]),
+          ),
         if (yo.selfie != null)
           AppCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

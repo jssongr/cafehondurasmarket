@@ -36,6 +36,7 @@ class Usuario {
   String? selfie;
   final String? doc;
   final String? docIdentidad;
+  final String? seguro;
   final String? vehiculo;
   final double? capacidad;
   final String? placa;
@@ -53,6 +54,7 @@ class Usuario {
     this.selfie,
     this.doc,
     this.docIdentidad,
+    this.seguro,
     this.vehiculo,
     this.capacidad,
     this.placa,
@@ -71,6 +73,7 @@ class Usuario {
         selfie: m['selfie_url'] as String?,
         doc: m['doc_url'] as String?,
         docIdentidad: m['doc_identidad_url'] as String?,
+        seguro: m['seguro_url'] as String?,
         vehiculo: m['vehiculo'] as String?,
         capacidad: (m['capacidad'] as num?)?.toDouble(),
         placa: m['placa'] as String?,
