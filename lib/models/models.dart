@@ -35,6 +35,7 @@ class Usuario {
   bool verificado;
   String? selfie;
   final String? doc;
+  final String? docIdentidad;
   final String? vehiculo;
   final double? capacidad;
   final String? placa;
@@ -51,6 +52,7 @@ class Usuario {
     required this.verificado,
     this.selfie,
     this.doc,
+    this.docIdentidad,
     this.vehiculo,
     this.capacidad,
     this.placa,
@@ -68,6 +70,7 @@ class Usuario {
         verificado: m['verificado'] as bool? ?? false,
         selfie: m['selfie_url'] as String?,
         doc: m['doc_url'] as String?,
+        docIdentidad: m['doc_identidad_url'] as String?,
         vehiculo: m['vehiculo'] as String?,
         capacidad: (m['capacidad'] as num?)?.toDouble(),
         placa: m['placa'] as String?,

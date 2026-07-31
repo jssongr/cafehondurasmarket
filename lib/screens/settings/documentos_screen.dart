@@ -16,7 +16,7 @@ class DocumentosScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final yo = app.usuario!;
-    final tieneDocs = yo.doc != null || yo.selfie != null;
+    final tieneDocs = yo.doc != null || yo.docIdentidad != null || yo.selfie != null;
 
     return Screen(
       title: 'Documentos',
@@ -33,6 +33,17 @@ class DocumentosScreen extends StatelessWidget {
               ]),
               const SizedBox(height: 10),
               ClipRRect(borderRadius: BorderRadius.circular(AppRadius.md), child: AppImage(path: yo.doc!, width: double.infinity, height: 160)),
+            ]),
+          ),
+        if (yo.docIdentidad != null)
+          AppCard(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                const Expanded(child: Text('Documento de identidad (DNI/cédula)', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
+                AppBadge(tone: yo.verificado ? 'verificado' : 'sinVerificar', label: yo.verificado ? 'Aprobado' : 'En revisión'),
+              ]),
+              const SizedBox(height: 10),
+              ClipRRect(borderRadius: BorderRadius.circular(AppRadius.md), child: AppImage(path: yo.docIdentidad!, width: double.infinity, height: 160)),
             ]),
           ),
         if (yo.selfie != null)

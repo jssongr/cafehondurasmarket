@@ -41,6 +41,9 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _docImg;
   bool _scanning = false;
   bool _scanned = false;
+  String? _docIdentidadImg;
+  bool _scanningIdentidad = false;
+  bool _scannedIdentidad = false;
   String? _selfieImg;
   bool _selfieScanning = false;
   bool _selfieOk = false;
@@ -61,6 +64,8 @@ class _AuthScreenState extends State<AuthScreen> {
       _subtipo = '';
       _docImg = null;
       _scanned = false;
+      _docIdentidadImg = null;
+      _scannedIdentidad = false;
       _selfieImg = null;
       _selfieOk = false;
       _aceptaTerminos = false;
@@ -108,6 +113,14 @@ class _AuthScreenState extends State<AuthScreen> {
     });
   }
 
+  void _handleDocIdentidad(String path) {
+    setState(() { _docIdentidadImg = path; _scanningIdentidad = true; _scannedIdentidad = false; });
+    Future.delayed(const Duration(milliseconds: 1800), () {
+      if (!mounted) return;
+      setState(() { _scanningIdentidad = false; _scannedIdentidad = true; });
+    });
+  }
+
   void _handleSelfie(String path) {
     setState(() { _selfieImg = path; _selfieScanning = true; _selfieOk = false; });
     Future.delayed(const Duration(milliseconds: 2200), () {
@@ -127,7 +140,7 @@ class _AuthScreenState extends State<AuthScreen> {
       vehiculo: _esTransportista ? _vehiculo : null,
       capacidad: _esTransportista ? double.tryParse(_capacidadCtrl.text) : null,
       placa: _esTransportista ? _placaCtrl.text : null,
-      selfie: _selfieImg, doc: _docImg,
+      selfie: _selfieImg, doc: _docImg, docIdentidad: _docIdentidadImg,
     );
     if (!mounted) return;
     setState(() { _submitting = false; _err = err ?? ''; });
@@ -364,12 +377,26 @@ class _AuthScreenState extends State<AuthScreen> {
           scanning: _scanning, scanningLabel: 'Leyendo datos del documento con IA…',
           done: _scanned, doneLabel: 'Documento verificado correctamente — datos extraídos',
         ),
+        const SizedBox(height: 18),
+        const Text('Documento de identidad (DNI, cédula o pasaporte)', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+        const SizedBox(height: 4),
+        const Text('Sube una foto clara de tu documento de identidad personal, para confirmar quién eres.',
+            style: TextStyle(fontSize: 12, color: AppColors.grisM, height: 1.4)),
+        const SizedBox(height: 14),
+        UploadZone(
+          icon: Icons.badge_outlined,
+          title: 'Subir DNI/cédula', uploadedTitle: 'Documento de identidad cargado', sub: 'Toca para elegir una imagen',
+          image: _docIdentidadImg, carpeta: 'documentos', onPicked: _handleDocIdentidad,
+          scanning: _scanningIdentidad, scanningLabel: 'Leyendo datos del documento con IA…',
+          done: _scannedIdentidad, doneLabel: 'Documento de identidad verificado correctamente',
+        ),
         const SizedBox(height: 14),
         Row(children: [
           Expanded(child: AppButton(title: '← Atrás', variant: AppButtonVariant.ghost, onPressed: () => setState(() => _step = 1))),
           const SizedBox(width: 8),
           Expanded(flex: 2, child: AppButton(title: 'Siguiente →', onPressed: () {
             if (!_scanned) { setState(() => _err = 'Sube tu documento para continuar.'); return; }
+            if (!_scannedIdentidad) { setState(() => _err = 'Sube tu documento de identidad (DNI/cédula) para continuar.'); return; }
             setState(() { _err = ''; _step = 3; });
           })),
         ]),
