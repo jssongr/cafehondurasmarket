@@ -42,7 +42,7 @@ const List<String> tiposVehiculo = [
 const List<String> clienteSubtipos = ['Empresa importadora', 'Empresa exportadora', 'Fabricante', 'Distribuidor', 'Comercio', 'Operador logístico'];
 const List<String> transportistaSubtipos = ['Transportista independiente', 'Conductor de flota', 'Empresa con flota de camiones'];
 
-const double comisionPct = 8;
+const double comisionPct = 5;
 
 const Map<TipoUsuario, IconData> tipoIcon = {
   TipoUsuario.cliente: Icons.apartment,
