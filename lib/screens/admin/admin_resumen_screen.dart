@@ -68,7 +68,7 @@ class AdminResumenScreen extends StatelessWidget {
                 child: Row(children: [
                   Expanded(child: Text.rich(TextSpan(children: [
                     TextSpan(text: c.tipoCarga, style: const TextStyle(fontWeight: FontWeight.w700)),
-                    TextSpan(text: ' · ${c.paisOrigen} → ${c.paisDestino}'),
+                    TextSpan(text: ' · ${c.ciudadOrigen}, ${c.paisOrigen} → ${c.ciudadDestino}, ${c.paisDestino}'),
                   ]), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, color: AppColors.texto))),
                   AppBadge(tone: c.estado.value),
                 ]),

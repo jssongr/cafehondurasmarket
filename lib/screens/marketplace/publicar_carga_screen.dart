@@ -25,8 +25,10 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
   String _unidadPeso = 'ton';
   String _paisOrigen = paises[0];
   late String _ciudadOrigen = ciudades[paises[0]]![0];
+  final _direccionOrigenCtrl = TextEditingController();
   String _paisDestino = paises[1];
   late String _ciudadDestino = ciudades[paises[1]]![0];
+  final _direccionDestinoCtrl = TextEditingController();
   final _fechaCtrl = TextEditingController();
   String _vehiculoReq = tiposVehiculo[0];
   bool _abierto = false;
@@ -66,7 +68,10 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
       await app.publicarCarga(
         clienteId: yo.id, cliente: yo.nombre, tipoCarga: _tipoCarga,
         peso: double.tryParse(_pesoCtrl.text) ?? 0, unidadPeso: _unidadPeso,
-        paisOrigen: _paisOrigen, ciudadOrigen: _ciudadOrigen, paisDestino: _paisDestino, ciudadDestino: _ciudadDestino,
+        paisOrigen: _paisOrigen, ciudadOrigen: _ciudadOrigen,
+        direccionOrigen: _direccionOrigenCtrl.text.isEmpty ? null : _direccionOrigenCtrl.text,
+        paisDestino: _paisDestino, ciudadDestino: _ciudadDestino,
+        direccionDestino: _direccionDestinoCtrl.text.isEmpty ? null : _direccionDestinoCtrl.text,
         fecha: _fechaCtrl.text, vehiculoReq: _vehiculoReq,
         presupuesto: _abierto ? null : double.tryParse(_presupuestoCtrl.text),
         descripcion: _descripcionCtrl.text,
@@ -85,6 +90,8 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
         _descripcionCtrl.clear();
         _volumenCtrl.clear();
         _dimensionesCtrl.clear();
+        _direccionOrigenCtrl.clear();
+        _direccionDestinoCtrl.clear();
         _peligrosa = false;
         _fotos.clear();
         _documento = null;
@@ -163,8 +170,10 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
             const SizedBox(height: AppSpacing.md),
             SelectField(label: 'País de origen', value: _paisOrigen, options: paises, onChanged: (v) => setState(() { _paisOrigen = v; _ciudadOrigen = ciudades[v]![0]; })),
             SelectField(label: 'Ciudad de origen', value: _ciudadOrigen, options: ciudades[_paisOrigen]!, onChanged: (v) => setState(() => _ciudadOrigen = v)),
+            AppTextField(label: 'Dirección exacta de recogida (opcional)', placeholder: 'Ej. Bodega 4, Zona Industrial', controller: _direccionOrigenCtrl),
             SelectField(label: 'País de destino', value: _paisDestino, options: paises, onChanged: (v) => setState(() { _paisDestino = v; _ciudadDestino = ciudades[v]![0]; })),
             SelectField(label: 'Ciudad de destino', value: _ciudadDestino, options: ciudades[_paisDestino]!, onChanged: (v) => setState(() => _ciudadDestino = v)),
+            AppTextField(label: 'Dirección exacta de entrega (opcional)', placeholder: 'Ej. Col. Miraflores, Calle Principal', controller: _direccionDestinoCtrl),
             AppTextField(label: 'Fecha de recogida (AAAA-MM-DD)', placeholder: '2026-08-15', controller: _fechaCtrl),
             AppTextField(label: 'Presupuesto (USD)', placeholder: '1200', controller: _presupuestoCtrl, keyboardType: TextInputType.number, enabled: !_abierto),
             InkWell(

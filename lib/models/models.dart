@@ -144,8 +144,10 @@ class Carga {
   String unidadPeso;
   String paisOrigen;
   String ciudadOrigen;
+  String? direccionOrigen;
   String paisDestino;
   String ciudadDestino;
+  String? direccionDestino;
   String fecha;
   String vehiculoReq;
   double? presupuesto;
@@ -174,8 +176,10 @@ class Carga {
     required this.unidadPeso,
     required this.paisOrigen,
     required this.ciudadOrigen,
+    this.direccionOrigen,
     required this.paisDestino,
     required this.ciudadDestino,
+    this.direccionDestino,
     required this.fecha,
     required this.vehiculoReq,
     this.presupuesto,
@@ -209,8 +213,10 @@ class Carga {
       unidadPeso: m['unidad_peso'] as String? ?? 'ton',
       paisOrigen: m['pais_origen'] as String,
       ciudadOrigen: m['ciudad_origen'] as String,
+      direccionOrigen: m['direccion_origen'] as String?,
       paisDestino: m['pais_destino'] as String,
       ciudadDestino: m['ciudad_destino'] as String,
+      direccionDestino: m['direccion_destino'] as String?,
       fecha: m['fecha'] as String,
       vehiculoReq: m['vehiculo_req'] as String,
       presupuesto: (m['presupuesto'] as num?)?.toDouble(),

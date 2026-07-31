@@ -58,7 +58,7 @@ class ClienteDashboard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(child: Text.rich(TextSpan(children: [
                     TextSpan(text: c.tipoCarga, style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.texto)),
-                    TextSpan(text: ' · ${c.paisOrigen} → ${c.paisDestino}', style: const TextStyle(color: AppColors.texto)),
+                    TextSpan(text: ' · ${c.ciudadOrigen}, ${c.paisOrigen} → ${c.ciudadDestino}, ${c.paisDestino}', style: const TextStyle(color: AppColors.texto)),
                   ]), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5))),
                   const SizedBox(width: 8),
                   AppBadge(tone: c.estado.value),
