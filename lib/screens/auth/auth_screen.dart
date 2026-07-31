@@ -34,6 +34,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _placaCtrl = TextEditingController();
 
   TipoUsuario? _tipo;
+  String _pais = '';
   String _subtipo = '';
   String _vehiculo = tiposVehiculo[0];
   String? _docImg;
@@ -54,6 +55,7 @@ class _AuthScreenState extends State<AuthScreen> {
       _regPassCtrl.clear();
       _telefonoCtrl.clear();
       _tipo = null;
+      _pais = '';
       _subtipo = '';
       _docImg = null;
       _scanned = false;
@@ -112,7 +114,7 @@ class _AuthScreenState extends State<AuthScreen> {
     final app = context.read<AppState>();
     final err = await app.registrar(
       nombre: _nombreCtrl.text, email: _regEmailCtrl.text, password: _regPassCtrl.text,
-      tipo: _tipo!, subtipo: _subtipo, telefono: _telefonoCtrl.text,
+      tipo: _tipo!, subtipo: _subtipo, telefono: _telefonoCtrl.text, pais: _pais,
       vehiculo: _esTransportista ? _vehiculo : null,
       capacidad: _esTransportista ? double.tryParse(_capacidadCtrl.text) : null,
       placa: _esTransportista ? _placaCtrl.text : null,
@@ -297,8 +299,9 @@ class _AuthScreenState extends State<AuthScreen> {
       children: [
         AppTextField(label: 'Nombre completo o empresa', placeholder: 'Ej. Transportes del Norte S.A.', controller: _nombreCtrl),
         AppTextField(label: 'Correo electrónico', placeholder: 'correo@ejemplo.com', controller: _regEmailCtrl, keyboardType: TextInputType.emailAddress),
-        AppTextField(label: 'Contraseña', placeholder: 'Mínimo 6 caracteres', controller: _regPassCtrl, obscureText: true),
+        AppTextField(label: 'Contraseña', placeholder: 'Mínimo 8 caracteres', controller: _regPassCtrl, obscureText: true),
         AppTextField(label: 'Teléfono', placeholder: '+(504) 9xxx-xxxx', controller: _telefonoCtrl, keyboardType: TextInputType.phone),
+        SelectField(label: 'País', value: _pais, options: paises, onChanged: (v) => setState(() => _pais = v), placeholder: 'Selecciona tu país'),
         const Padding(
           padding: EdgeInsets.only(bottom: 8),
           child: Text('¿QUÉ NECESITAS HACER?', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
@@ -322,10 +325,11 @@ class _AuthScreenState extends State<AuthScreen> {
         AppButton(
           title: 'Siguiente →', fullWidth: true,
           onPressed: () {
-            if (_nombreCtrl.text.isEmpty || _regEmailCtrl.text.isEmpty || _regPassCtrl.text.isEmpty || _tipo == null || _subtipo.isEmpty || _telefonoCtrl.text.isEmpty) {
+            if (_nombreCtrl.text.isEmpty || _regEmailCtrl.text.isEmpty || _regPassCtrl.text.isEmpty || _tipo == null || _subtipo.isEmpty || _telefonoCtrl.text.isEmpty || _pais.isEmpty) {
               setState(() => _err = 'Completa todos los campos.');
               return;
             }
+            if (_regPassCtrl.text.length < 8) { setState(() => _err = 'La contraseña debe tener al menos 8 caracteres.'); return; }
             if (_esTransportista && _capacidadCtrl.text.isEmpty) { setState(() => _err = 'Indica la capacidad del vehículo.'); return; }
             setState(() { _err = ''; _step = 2; });
           },

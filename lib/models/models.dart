@@ -31,6 +31,7 @@ class Usuario {
   final TipoUsuario tipo;
   final String subtipo;
   String telefono;
+  final String pais;
   bool verificado;
   String? selfie;
   final String? doc;
@@ -46,6 +47,7 @@ class Usuario {
     required this.tipo,
     required this.subtipo,
     required this.telefono,
+    required this.pais,
     required this.verificado,
     this.selfie,
     this.doc,
@@ -62,6 +64,7 @@ class Usuario {
         tipo: tipoUsuarioFromString(m['tipo'] as String),
         subtipo: m['subtipo'] as String? ?? '',
         telefono: m['telefono'] as String? ?? '',
+        pais: m['pais'] as String? ?? '',
         verificado: m['verificado'] as bool? ?? false,
         selfie: m['selfie_url'] as String?,
         doc: m['doc_url'] as String?,

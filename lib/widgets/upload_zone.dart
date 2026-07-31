@@ -37,12 +37,15 @@ class UploadZone extends StatefulWidget {
 
 class _UploadZoneState extends State<UploadZone> {
   bool _subiendo = false;
+  String? _error;
 
   Future<void> _pick() async {
-    setState(() => _subiendo = true);
+    setState(() { _subiendo = true; _error = null; });
     try {
       final url = await pickAndUploadImage(carpeta: widget.carpeta);
       if (url != null) widget.onPicked(url);
+    } catch (_) {
+      if (mounted) setState(() => _error = 'No se pudo subir el archivo. Revisa tu conexión e intenta de nuevo.');
     } finally {
       if (mounted) setState(() => _subiendo = false);
     }
@@ -114,6 +117,20 @@ class _UploadZoneState extends State<UploadZone> {
                 const Icon(Icons.check_circle, size: 16, color: AppColors.verde),
                 const SizedBox(width: 8),
                 Expanded(child: Text(widget.doneLabel, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.verde))),
+              ],
+            ),
+          ),
+        if (_error != null)
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(top: AppSpacing.sm),
+            padding: const EdgeInsets.all(11),
+            decoration: BoxDecoration(color: AppColors.rojoBg, borderRadius: BorderRadius.circular(AppRadius.md)),
+            child: Row(
+              children: [
+                const Icon(Icons.error_outline, size: 16, color: AppColors.rojo),
+                const SizedBox(width: 8),
+                Expanded(child: Text(_error!, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.rojo))),
               ],
             ),
           ),
