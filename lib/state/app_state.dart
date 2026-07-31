@@ -309,6 +309,10 @@ class AppState extends ChangeNotifier {
     await _sb.rpc('iniciar_viaje', params: {'p_carga_id': cargaId});
   }
 
+  Future<void> actualizarUbicacion(int cargaId, double lat, double lng) async {
+    await _sb.rpc('actualizar_ubicacion', params: {'p_carga_id': cargaId, 'p_lat': lat, 'p_lng': lng});
+  }
+
   Future<void> confirmarEntregaManual(int cargaId) async {
     await _sb.rpc('confirmar_entrega_manual', params: {'p_carga_id': cargaId});
   }

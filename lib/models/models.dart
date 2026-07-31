@@ -166,6 +166,9 @@ class Carga {
   bool peligrosa;
   List<String> fotos;
   List<String> documentos;
+  double? lat;
+  double? lng;
+  DateTime? gpsActualizado;
 
   Carga({
     required this.id,
@@ -198,6 +201,9 @@ class Carga {
     this.peligrosa = false,
     List<String>? fotos,
     List<String>? documentos,
+    this.lat,
+    this.lng,
+    this.gpsActualizado,
   })  : pago = pago ?? Pago(estado: EstadoPago.pendiente),
         fotos = fotos ?? [],
         documentos = documentos ?? [];
@@ -242,6 +248,9 @@ class Carga {
       peligrosa: m['peligrosa'] as bool? ?? false,
       fotos: (m['fotos'] as List?)?.cast<String>() ?? [],
       documentos: (m['documentos'] as List?)?.cast<String>() ?? [],
+      lat: (m['lat'] as num?)?.toDouble(),
+      lng: (m['lng'] as num?)?.toDouble(),
+      gpsActualizado: m['gps_actualizado'] != null ? DateTime.parse(m['gps_actualizado'] as String) : null,
     );
   }
 }
