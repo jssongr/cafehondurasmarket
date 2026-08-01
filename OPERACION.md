@@ -72,7 +72,43 @@ que esto no frena a nadie al registrarse. Pero **recuperar contraseña sí manda
 correo**, y con ese límite la función no sirve en la vida real.
 
 **Qué hacer:** conectar un proveedor de correo propio en
-Supabase → Project Settings → Authentication → SMTP Settings.
+Supabase → Project Settings → Authentication → SMTP Settings. Ver
+"Configurar el envío de correos" más abajo.
+
+## Configurar el envío de correos (Brevo)
+
+Brevo permite verificar una sola dirección de correo sin necesidad de tener un
+dominio propio, y su plan gratuito cubre 300 correos por día.
+
+1. Crear cuenta en https://www.brevo.com
+2. **Senders, Domains & Dedicated IPs → Senders → Add a sender**: agregar la
+   dirección desde la que van a salir los correos. Brevo manda un correo de
+   verificación a esa dirección; hay que confirmarlo.
+3. **SMTP & API → SMTP**: ahí aparecen los datos de conexión. Anotar el *login*
+   y la *master password* (la clave SMTP, no la contraseña de la cuenta Brevo).
+4. En Supabase → **Project Settings → Authentication → SMTP Settings**, activar
+   "Enable Custom SMTP" y llenar:
+
+   | Campo | Valor |
+   | --- | --- |
+   | Host | `smtp-relay.brevo.com` |
+   | Port | `587` |
+   | Username | el login que da Brevo |
+   | Password | la clave SMTP de Brevo |
+   | Sender email | la dirección verificada en el paso 2 |
+   | Sender name | `NexCarg` |
+
+5. Guardar y probar con "¿Olvidaste tu contraseña?" en la app.
+
+Cuando se compre el dominio propio, conviene verificarlo en Brevo y cambiar el
+*sender* a `soporte@nexcarg.com`, que se ve bastante más confiable que una
+dirección personal.
+
+### Plantillas de correo
+
+Supabase trae las plantillas en inglés. La versión en español y con el diseño de
+NexCarg está en `docs/correo/recuperar-contrasena.html`; se pega en
+Supabase → Authentication → Emails → Reset Password → Message body.
 
 ### Comisión de la plataforma
 
