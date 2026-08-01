@@ -18,6 +18,23 @@ Future<String> uploadImageBytes(Uint8List bytes, {required String carpeta, requi
   final ext = filename.contains('.') ? filename.split('.').last : 'jpg';
   final path = '$carpeta/${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1 << 32)}.$ext';
   final sb = Supabase.instance.client;
-  await sb.storage.from(_uploadsBucket).uploadBinary(path, bytes, fileOptions: const FileOptions(upsert: true));
+  // No upsert: the path is already unique, and upsert would additionally require an
+  // UPDATE storage policy, which anonymous users (mid-registration) don't have.
+  await sb.storage.from(_uploadsBucket).uploadBinary(path, bytes, fileOptions: FileOptions(contentType: _contentType(ext)));
   return sb.storage.from(_uploadsBucket).getPublicUrl(path);
+}
+
+String _contentType(String ext) {
+  switch (ext.toLowerCase()) {
+    case 'png':
+      return 'image/png';
+    case 'webp':
+      return 'image/webp';
+    case 'heic':
+      return 'image/heic';
+    case 'gif':
+      return 'image/gif';
+    default:
+      return 'image/jpeg';
+  }
 }
