@@ -49,7 +49,15 @@ class AppState extends ChangeNotifier {
     _authSub = _sb.auth.onAuthStateChange.listen(_onAuthChange);
   }
 
+  bool passwordRecovery = false;
+
   void _onAuthChange(AuthState state) {
+    if (state.event == AuthChangeEvent.passwordRecovery) {
+      passwordRecovery = true;
+      loading = false;
+      notifyListeners();
+      return;
+    }
     final session = state.session;
     if (session != null) {
       _loadUsuarioYDatos(session.user.id);
@@ -190,12 +198,30 @@ class AppState extends ChangeNotifier {
 
   Future<String?> recuperarContrasena(String email) async {
     try {
-      await _sb.auth.resetPasswordForEmail(email);
+      await _sb.auth.resetPasswordForEmail(email, redirectTo: 'https://nexcarg.vercel.app');
       return null;
     } on AuthException catch (e) {
       return e.message;
     } catch (_) {
       return 'No se pudo enviar el correo de recuperación. Intenta de nuevo.';
+    }
+  }
+
+  Future<String?> actualizarContrasena(String nuevaContrasena) async {
+    try {
+      await _sb.auth.updateUser(UserAttributes(password: nuevaContrasena));
+      final userId = _sb.auth.currentUser?.id;
+      passwordRecovery = false;
+      if (userId != null) {
+        await _loadUsuarioYDatos(userId);
+      } else {
+        notifyListeners();
+      }
+      return null;
+    } on AuthException catch (e) {
+      return e.message;
+    } catch (_) {
+      return 'No se pudo actualizar la contraseña. Intenta de nuevo.';
     }
   }
 

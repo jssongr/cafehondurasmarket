@@ -15,6 +15,7 @@ const _faqs = [
   _Faq('¿Qué es el contrato digital?', 'Es un acuerdo que ambas partes firman dentro de la app antes de iniciar el viaje. El transportista no puede comenzar el trayecto hasta que las dos firmas estén completas.'),
   _Faq('¿Cuánto tarda la verificación de mi cuenta?', 'Un administrador revisa tu documento y tu selfie manualmente. Mientras tanto podés explorar la app, pero algunas acciones quedan bloqueadas hasta que te aprueben.'),
   _Faq('¿Puedo cancelar una carga publicada?', 'Sí, mientras nadie la haya aceptado. Una vez asignada a un transportista, contactalo por el chat para coordinar.'),
+  _Faq('Olvidé mi contraseña, ¿qué hago?', 'En la pantalla de inicio de sesión, escribí tu correo y tocá "¿Olvidaste tu contraseña?". Te llega un correo con un enlace para elegir una contraseña nueva. Si no te llega, revisá spam o escribinos a soporte.'),
 ];
 
 class AyudaScreen extends StatelessWidget {
