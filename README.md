@@ -11,7 +11,7 @@ Digitaliza la contratación de transporte terrestre: las empresas publican carga
 - **Negociación**: aceptar al precio publicado o enviar/recibir cotizaciones por chat interno.
 - **Contrato digital**: se genera al asignar un viaje; ambas partes deben firmarlo antes de que el transportista pueda iniciar el trayecto.
 - **Pago en garantía (escrow)**: el monto se retiene y se libera al transportista, descontando la comisión de la plataforma, al confirmarse la entrega.
-- **Seguimiento GPS simulado** sobre el corredor Panamá–México, con progreso en vivo.
+- **Seguimiento GPS real** del transportista mientras la app está abierta, mostrado en un mapa en vivo (además del progreso estimado sobre el corredor Panamá–México).
 - **Calificaciones** mutuas entre cliente y transportista al finalizar cada viaje.
 - **Facturación** automática con desglose de comisión en cada viaje completado.
 - **Panel administrativo**: resumen de usuarios, viajes e ingresos por comisión, listado de usuarios y de todos los viajes.
@@ -20,17 +20,9 @@ Digitaliza la contratación de transporte terrestre: las empresas publican carga
 ## Stack técnico
 
 - [Flutter](https://flutter.dev) (SDK estable 3.x) — una sola base de código para iOS, Android y Web.
-- `provider` para estado centralizado (`lib/state/app_state.dart`) — sin backend todavía, datos en memoria, listo para conectar a una API real.
+- `provider` para estado centralizado (`lib/state/app_state.dart`), respaldado por **Supabase** (Postgres + Auth + Storage + Realtime) como base de datos real y compartida.
 - Navegación con `Navigator` nativo de Flutter: barra inferior por rol (`lib/navigation/`) + pantallas modales para detalle de carga, contrato, calificación y chat.
 - Tipografía local (Liberation Sans, empaquetada en `assets/fonts/`) para no depender de Google Fonts en tiempo de ejecución.
-
-## Cuentas de demostración
-
-| Rol | Correo | Contraseña |
-|---|---|---|
-| Cliente (empresa) | cliente@demo.com | 1234 |
-| Transportista | transportista@demo.com | 1234 |
-| Administrador | admin@demo.com | 1234 |
 
 ## Desarrollo local
 
