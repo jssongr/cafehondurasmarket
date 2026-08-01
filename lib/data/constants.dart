@@ -44,6 +44,11 @@ const List<String> transportistaSubtipos = ['Transportista independiente', 'Cond
 
 const double comisionPct = 5;
 
+const String soporteEmail = 'soporte@nexcarg.com';
+// Número de WhatsApp de soporte en formato internacional sin signos (ej: '50499998888').
+// Se deja vacío hasta tener un número real; el botón de WhatsApp no se muestra mientras esté vacío.
+const String soporteWhatsapp = '';
+
 const Map<TipoUsuario, IconData> tipoIcon = {
   TipoUsuario.cliente: Icons.apartment,
   TipoUsuario.transportista: Icons.local_shipping,

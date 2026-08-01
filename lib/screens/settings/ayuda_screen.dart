@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../data/constants.dart';
 import '../../theme/theme.dart';
+import '../../widgets/app_button.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/screen.dart';
 
@@ -40,7 +43,28 @@ class AyudaScreen extends StatelessWidget {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Text('¿No encontraste lo que buscabas?', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
             const SizedBox(height: 6),
-            const Text('Escribinos a soporte@nexcarg.com y te respondemos en menos de 24 horas.', style: TextStyle(fontSize: 12.5, color: AppColors.grisM, height: 1.45)),
+            Text('Escribinos a $soporteEmail y te respondemos en menos de 24 horas.', style: const TextStyle(fontSize: 12.5, color: AppColors.grisM, height: 1.45)),
+            const SizedBox(height: 12),
+            Row(children: [
+              Expanded(
+                child: AppButton(
+                  title: 'Escribir un correo',
+                  icon: const Icon(Icons.email_outlined, size: 16, color: Colors.white),
+                  onPressed: () => launchUrl(Uri(scheme: 'mailto', path: soporteEmail)),
+                ),
+              ),
+              if (soporteWhatsapp.isNotEmpty) ...[
+                const SizedBox(width: 10),
+                Expanded(
+                  child: AppButton(
+                    title: 'WhatsApp',
+                    variant: AppButtonVariant.accent,
+                    icon: const Icon(Icons.chat_outlined, size: 16, color: Colors.white),
+                    onPressed: () => launchUrl(Uri.parse('https://wa.me/$soporteWhatsapp')),
+                  ),
+                ),
+              ],
+            ]),
           ]),
         ),
       ],
