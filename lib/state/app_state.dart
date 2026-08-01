@@ -185,12 +185,46 @@ class AppState extends ChangeNotifier {
 
   // ---- Auth ----
 
+  /// Supabase returns auth errors in English; surface them in Spanish instead.
+  String _mensajeAuth(AuthException e) {
+    final m = e.message.toLowerCase();
+    if (m.contains('email rate limit') || m.contains('over_email_send_rate_limit')) {
+      return 'Se alcanzó el límite de correos por hora. Espera un momento e intenta de nuevo.';
+    }
+    final espera = RegExp(r'after (\d+) seconds').firstMatch(m);
+    if (espera != null) {
+      return 'Por seguridad, espera ${espera.group(1)} segundos antes de volver a intentar.';
+    }
+    if (m.contains('already registered') || m.contains('already been registered')) {
+      return 'Ya existe una cuenta con ese correo. Inicia sesión o recupera tu contraseña.';
+    }
+    if (m.contains('invalid login credentials')) {
+      return 'Correo o contraseña incorrectos.';
+    }
+    if (m.contains('email not confirmed')) {
+      return 'Todavía no confirmaste tu correo. Revisa tu bandeja de entrada.';
+    }
+    if (m.contains('password should be at least')) {
+      return 'La contraseña debe tener al menos 8 caracteres.';
+    }
+    if (m.contains('invalid format') || m.contains('unable to validate email')) {
+      return 'El correo no tiene un formato válido.';
+    }
+    if (m.contains('signups not allowed')) {
+      return 'El registro de cuentas nuevas está deshabilitado por el momento.';
+    }
+    if (m.contains('same password')) {
+      return 'La contraseña nueva debe ser distinta a la anterior.';
+    }
+    return e.message;
+  }
+
   Future<String?> login(String email, String password) async {
     try {
       await _sb.auth.signInWithPassword(email: email, password: password);
       return null;
     } on AuthException catch (e) {
-      return e.message;
+      return _mensajeAuth(e);
     } catch (_) {
       return 'No se pudo iniciar sesión. Intenta de nuevo.';
     }
@@ -201,7 +235,7 @@ class AppState extends ChangeNotifier {
       await _sb.auth.resetPasswordForEmail(email, redirectTo: 'https://nexcarg.vercel.app');
       return null;
     } on AuthException catch (e) {
-      return e.message;
+      return _mensajeAuth(e);
     } catch (_) {
       return 'No se pudo enviar el correo de recuperación. Intenta de nuevo.';
     }
@@ -219,7 +253,7 @@ class AppState extends ChangeNotifier {
       }
       return null;
     } on AuthException catch (e) {
-      return e.message;
+      return _mensajeAuth(e);
     } catch (_) {
       return 'No se pudo actualizar la contraseña. Intenta de nuevo.';
     }
@@ -263,7 +297,7 @@ class AppState extends ChangeNotifier {
       }
       return null;
     } on AuthException catch (e) {
-      return e.message;
+      return _mensajeAuth(e);
     } catch (_) {
       return 'No se pudo crear la cuenta. Intenta de nuevo.';
     }
