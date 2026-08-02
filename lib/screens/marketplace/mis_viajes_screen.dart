@@ -41,7 +41,7 @@ class MisViajesScreen extends StatelessWidget {
                         : AppButton(title: 'Firmar para iniciar', size: AppButtonSize.sm, variant: AppButtonVariant.accent, onPressed: () => openContrato(context, c.id)),
                   if (c.estado == EstadoCarga.enTransito) ...[
                     AppButton(title: 'Seguimiento', size: AppButtonSize.sm, variant: AppButtonVariant.accent, onPressed: () => openSeguimiento(context)),
-                    AppButton(title: 'Confirmar entrega', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onPressed: () { app.confirmarEntregaManual(c.id); app.showToast('Entrega confirmada — pago liberado'); }),
+                    AppButton(title: 'Confirmar entrega', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onPressed: () => openPruebaEntrega(context, c.id)),
                   ],
                 ],
               );

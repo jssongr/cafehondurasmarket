@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../screens/modals/carga_detail_modal.dart';
 import '../screens/modals/contrato_modal.dart';
 import '../screens/modals/calificar_modal.dart';
+import '../screens/modals/prueba_entrega_modal.dart';
 import '../screens/messages/chat_screen.dart';
 import '../screens/tracking/seguimiento_screen.dart';
 
@@ -16,6 +17,13 @@ Future<void> openContrato(BuildContext context, int cargaId) {
   return Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
     fullscreenDialog: true,
     builder: (_) => ContratoModal(cargaId: cargaId),
+  ));
+}
+
+Future<void> openPruebaEntrega(BuildContext context, int cargaId) {
+  return Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+    fullscreenDialog: true,
+    builder: (_) => PruebaEntregaModal(cargaId: cargaId),
   ));
 }
 

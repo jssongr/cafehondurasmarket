@@ -175,6 +175,9 @@ class Carga {
   double? lat;
   double? lng;
   DateTime? gpsActualizado;
+  final String? pruebaFoto;
+  final String? pruebaFirma;
+  final String? recibidoPor;
 
   Carga({
     required this.id,
@@ -210,6 +213,9 @@ class Carga {
     this.lat,
     this.lng,
     this.gpsActualizado,
+    this.pruebaFoto,
+    this.pruebaFirma,
+    this.recibidoPor,
   })  : pago = pago ?? Pago(estado: EstadoPago.pendiente),
         fotos = fotos ?? [],
         documentos = documentos ?? [];
@@ -257,6 +263,9 @@ class Carga {
       lat: (m['lat'] as num?)?.toDouble(),
       lng: (m['lng'] as num?)?.toDouble(),
       gpsActualizado: m['gps_actualizado'] != null ? DateTime.parse(m['gps_actualizado'] as String) : null,
+      pruebaFoto: m['prueba_foto_url'] as String?,
+      pruebaFirma: m['prueba_firma_url'] as String?,
+      recibidoPor: m['recibido_por'] as String?,
     );
   }
 }

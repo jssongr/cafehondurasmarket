@@ -378,8 +378,18 @@ class AppState extends ChangeNotifier {
     await _sb.rpc('actualizar_ubicacion', params: {'p_carga_id': cargaId, 'p_lat': lat, 'p_lng': lng});
   }
 
-  Future<void> confirmarEntregaManual(int cargaId) async {
-    await _sb.rpc('confirmar_entrega_manual', params: {'p_carga_id': cargaId});
+  Future<void> confirmarEntregaManual(
+    int cargaId, {
+    required String pruebaFoto,
+    required String pruebaFirma,
+    required String recibidoPor,
+  }) async {
+    await _sb.rpc('confirmar_entrega_con_prueba', params: {
+      'p_carga_id': cargaId,
+      'p_prueba_foto': pruebaFoto,
+      'p_prueba_firma': pruebaFirma,
+      'p_recibido_por': recibidoPor,
+    });
   }
 
   Future<void> firmarContrato(int cargaId, TipoUsuario actorTipo) async {

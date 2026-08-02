@@ -12,6 +12,10 @@ String fmtTime(DateTime ts) {
   return '${ts.day.toString().padLeft(2, '0')} ${_mesesEs[ts.month - 1]}';
 }
 
+/// Fecha y hora completas, para constancias que hay que poder citar después.
+String fechaLarga(DateTime d) =>
+    '${d.day} ${_mesesEs[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+
 final _moneyFmt = NumberFormat('#,##0.##', 'en_US');
 
 String fmtMoneda(num? n) => n == null ? '' : '\$${_moneyFmt.format(n)}';

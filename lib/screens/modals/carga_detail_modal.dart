@@ -96,6 +96,40 @@ class CargaDetailModal extends StatelessWidget {
                 ),
               ),
             ],
+            if (c.pruebaFoto != null || c.pruebaFirma != null) ...[
+              const Padding(
+                padding: EdgeInsets.only(top: AppSpacing.md, bottom: 8),
+                child: Text('PRUEBA DE ENTREGA', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
+              ),
+              if (c.recibidoPor != null) DetailRow(label: 'Recibido por', value: c.recibidoPor!),
+              if (c.fechaEntrega != null) DetailRow(label: 'Fecha de entrega', value: fechaLarga(c.fechaEntrega!)),
+              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                if (c.pruebaFoto != null)
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      const Text('Carga entregada', style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
+                      const SizedBox(height: 5),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        child: AppImage(path: c.pruebaFoto!, width: double.infinity, height: 120, fit: BoxFit.cover),
+                      ),
+                    ]),
+                  ),
+                if (c.pruebaFoto != null && c.pruebaFirma != null) const SizedBox(width: 10),
+                if (c.pruebaFirma != null)
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      const Text('Firma de quien recibió', style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
+                      const SizedBox(height: 5),
+                      Container(
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.md), border: Border.all(color: AppColors.gris100)),
+                        clipBehavior: Clip.antiAlias,
+                        child: AppImage(path: c.pruebaFirma!, width: double.infinity, height: 120, fit: BoxFit.contain),
+                      ),
+                    ]),
+                  ),
+              ]),
+            ],
             if (puedeContactar && c.estado != EstadoCarga.cancelada)
               Padding(
                 padding: const EdgeInsets.only(top: AppSpacing.lg),

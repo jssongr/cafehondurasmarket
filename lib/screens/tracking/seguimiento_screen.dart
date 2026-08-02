@@ -104,7 +104,7 @@ class _SeguimientoScreenState extends State<SeguimientoScreen> {
                 if (yo.tipo == TipoUsuario.transportista && c.estado == EstadoCarga.enTransito)
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
-                    child: AppButton(title: 'Confirmar entrega', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onPressed: () => app.confirmarEntregaManual(c.id)),
+                    child: AppButton(title: 'Confirmar entrega', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onPressed: () => openPruebaEntrega(context, c.id)),
                   ),
               ]),
             );
