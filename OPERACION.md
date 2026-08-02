@@ -7,7 +7,7 @@ esto es para quien opera NexCarg.
 
 | Qué | Dónde |
 | --- | --- |
-| App web | https://nexcarg.vercel.app |
+| App web | https://nexcarg.com |
 | APK Android (siempre la última versión) | https://github.com/jssongr/cafehondurasmarket/releases/download/latest-apk/app-release.apk |
 | Código | https://github.com/jssongr/cafehondurasmarket |
 | Base de datos y usuarios | Supabase → jssongr's Project |
