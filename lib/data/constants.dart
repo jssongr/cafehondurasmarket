@@ -44,6 +44,11 @@ const List<String> transportistaSubtipos = ['Transportista independiente', 'Cond
 
 const double comisionPct = 5;
 
+/// Dirección pública de la app. La usa Supabase como destino del enlace de
+/// recuperación de contraseña, así que debe estar también en la lista de
+/// "Redirect URLs" de Supabase → Authentication → URL Configuration.
+const String urlApp = 'https://nexcarg.vercel.app';
+
 const String soporteEmail = 'soporte@nexcarg.com';
 // Número de WhatsApp de soporte en formato internacional sin signos (ej: '50499998888').
 // Se deja vacío hasta tener un número real; el botón de WhatsApp no se muestra mientras esté vacío.

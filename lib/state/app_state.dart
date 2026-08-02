@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../data/constants.dart';
 import '../models/models.dart';
 
 class AppState extends ChangeNotifier {
@@ -232,7 +233,7 @@ class AppState extends ChangeNotifier {
 
   Future<String?> recuperarContrasena(String email) async {
     try {
-      await _sb.auth.resetPasswordForEmail(email, redirectTo: 'https://nexcarg.vercel.app');
+      await _sb.auth.resetPasswordForEmail(email, redirectTo: urlApp);
       return null;
     } on AuthException catch (e) {
       return _mensajeAuth(e);
