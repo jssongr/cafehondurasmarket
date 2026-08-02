@@ -100,6 +100,25 @@ dominio propio, y su plan gratuito cubre 300 correos por día.
 
 5. Guardar y probar con "¿Olvidaste tu contraseña?" en la app.
 
+Valores de conexión (la clave NO se anota acá; vive solo en Supabase):
+
+| Campo | Valor |
+| --- | --- |
+| Host | `smtp-relay.brevo.com` |
+| Port | `587` |
+| Username | `b428ce001@smtp-brevo.com` |
+| Sender email | `soporte@nexcarg.com` |
+| Sender name | `NexCarg` |
+
+**Si un día los correos dejan de salir sin explicación**, lo primero a revisar es la
+clave SMTP en Brevo: se revocan solas tras **90 días sin uso**, sin importar la
+fecha de expiración elegida. Se genera una nueva y se actualiza en Supabase.
+
+Las claves SMTP se muestran una sola vez al crearlas. Si se pierde, no se
+recupera: hay que generar otra y borrar la anterior. Nunca se comparten por chat,
+correo ni capturas de pantalla — quien tenga la clave puede enviar correos
+haciéndose pasar por NexCarg.
+
 Cuando se compre el dominio propio, conviene verificarlo en Brevo y cambiar el
 *sender* a `soporte@nexcarg.com`, que se ve bastante más confiable que una
 dirección personal.
