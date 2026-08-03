@@ -13,7 +13,14 @@ const _supabasePublishableKey = String.fromEnvironment(
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Supabase.initialize(url: _supabaseUrl, publishableKey: _supabasePublishableKey);
+  await Supabase.initialize(
+    url: _supabaseUrl,
+    publishableKey: _supabasePublishableKey,
+    // Implicit en vez de PKCE: el enlace de recuperación de contraseña llega por
+    // correo y casi siempre se abre en otro navegador (el interno de Gmail o de
+    // Outlook), donde el verificador de PKCE no existe y el enlace muere.
+    authOptions: const FlutterAuthClientOptions(authFlowType: AuthFlowType.implicit),
+  );
   runApp(const NexCargApp());
 }
 

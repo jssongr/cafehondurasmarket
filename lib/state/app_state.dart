@@ -47,7 +47,18 @@ class AppState extends ChangeNotifier {
   List<Map<String, dynamic>> _rawMensajes = [];
 
   AppState() {
-    _authSub = _sb.auth.onAuthStateChange.listen(_onAuthChange);
+    _authSub = _sb.auth.onAuthStateChange.listen(_onAuthChange, onError: (_) => _dejarDeCargar());
+    // Red de seguridad: si la sesión no se resuelve, mostrar el login en vez de
+    // dejar al usuario mirando el spinner para siempre.
+    _cargaTimeout = Timer(const Duration(seconds: 10), _dejarDeCargar);
+  }
+
+  Timer? _cargaTimeout;
+
+  void _dejarDeCargar() {
+    if (!loading) return;
+    loading = false;
+    notifyListeners();
   }
 
   bool passwordRecovery = false;
@@ -162,6 +173,7 @@ class AppState extends ChangeNotifier {
   @override
   void dispose() {
     _toastTimer?.cancel();
+    _cargaTimeout?.cancel();
     _usuariosSub?.cancel();
     _cargasSub?.cancel();
     _convosSub?.cancel();
