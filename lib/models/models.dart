@@ -24,6 +24,53 @@ extension TipoUsuarioX on TipoUsuario {
   }
 }
 
+/// Estado de moderación de la cuenta. Un booleano no alcanzaba: hay que
+/// distinguir "sin revisar" de "revisada y rechazada", y poder bloquear a
+/// alguien que ya había sido aprobado.
+enum EstadoCuenta { pendiente, aprobado, rechazado, suspendido }
+
+EstadoCuenta estadoCuentaFromString(String? s) {
+  switch (s) {
+    case 'aprobado':
+      return EstadoCuenta.aprobado;
+    case 'rechazado':
+      return EstadoCuenta.rechazado;
+    case 'suspendido':
+      return EstadoCuenta.suspendido;
+    default:
+      return EstadoCuenta.pendiente;
+  }
+}
+
+extension EstadoCuentaX on EstadoCuenta {
+  String get etiqueta {
+    switch (this) {
+      case EstadoCuenta.pendiente:
+        return 'Pendiente de revisión';
+      case EstadoCuenta.aprobado:
+        return 'Verificado';
+      case EstadoCuenta.rechazado:
+        return 'Rechazado';
+      case EstadoCuenta.suspendido:
+        return 'Suspendido';
+    }
+  }
+
+  String get tono {
+    switch (this) {
+      // Ámbar para "todavía la estoy revisando", rojo solo para lo que ya se
+      // decidió en contra — si todo es rojo, el pendiente parece un problema.
+      case EstadoCuenta.pendiente:
+        return 'asignada';
+      case EstadoCuenta.aprobado:
+        return 'verificado';
+      case EstadoCuenta.rechazado:
+      case EstadoCuenta.suspendido:
+        return 'cancelada';
+    }
+  }
+}
+
 class Usuario {
   final String id; // uuid, matches auth.users.id
   String nombre;
@@ -33,6 +80,8 @@ class Usuario {
   String telefono;
   final String pais;
   bool verificado;
+  final EstadoCuenta estadoCuenta;
+  final String? motivoRechazo;
   String? selfie;
   final String? doc;
   final String? docIdentidad;
@@ -51,6 +100,8 @@ class Usuario {
     required this.telefono,
     required this.pais,
     required this.verificado,
+    this.estadoCuenta = EstadoCuenta.pendiente,
+    this.motivoRechazo,
     this.selfie,
     this.doc,
     this.docIdentidad,
@@ -70,6 +121,8 @@ class Usuario {
         telefono: m['telefono'] as String? ?? '',
         pais: m['pais'] as String? ?? '',
         verificado: m['verificado'] as bool? ?? false,
+        estadoCuenta: estadoCuentaFromString(m['estado_cuenta'] as String?),
+        motivoRechazo: m['motivo_rechazo'] as String?,
         selfie: m['selfie_url'] as String?,
         doc: m['doc_url'] as String?,
         docIdentidad: m['doc_identidad_url'] as String?,

@@ -452,4 +452,16 @@ class AppState extends ChangeNotifier {
   Future<void> aprobarUsuario(String usuarioId) async {
     await _sb.rpc('aprobar_usuario', params: {'p_usuario_id': usuarioId});
   }
+
+  Future<void> rechazarUsuario(String usuarioId, String motivo) async {
+    await _sb.rpc('rechazar_usuario', params: {'p_usuario_id': usuarioId, 'p_motivo': motivo});
+  }
+
+  Future<void> suspenderUsuario(String usuarioId, String motivo) async {
+    await _sb.rpc('suspender_usuario', params: {'p_usuario_id': usuarioId, 'p_motivo': motivo});
+  }
+
+  Future<void> reactivarUsuario(String usuarioId) async {
+    await _sb.rpc('reactivar_usuario', params: {'p_usuario_id': usuarioId});
+  }
 }
