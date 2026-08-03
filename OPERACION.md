@@ -82,6 +82,23 @@ esperaría indefinidamente.
 Nadie puede suspenderse a sí mismo, y los administradores no aparecen en la
 lista.
 
+## Quién ve los datos de quién
+
+La tabla `usuarios` es privada: cada persona solo lee su propia fila, y el
+administrador las lee todas. Ahí viven el correo, el teléfono y los enlaces a los
+documentos de identidad.
+
+Lo que el marketplace y el chat necesitan mostrar de la contraparte —nombre,
+foto, tipo, país, calificación— sale de la vista `usuarios_publicos`, que **no
+incluye documentos ni datos de contacto**. Si algún día hay que mostrar un dato
+nuevo de otro usuario, se agrega a esa vista; nunca se abre la tabla.
+
+Los documentos siguen guardados en un bucket público, así que **quien tenga la
+URL exacta puede abrirla** aunque no tenga sesión. Las URLs llevan un sufijo
+aleatorio y ya no se pueden obtener desde la app, pero si algún día se manejan
+volúmenes grandes de documentos conviene pasar ese bucket a privado y servirlos
+con enlaces firmados de corta duración.
+
 ## Límites que hay que vigilar
 
 ### Almacenamiento de archivos — el primero que se va a llenar

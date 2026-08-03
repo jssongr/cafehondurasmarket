@@ -115,7 +115,8 @@ class Usuario {
   factory Usuario.fromMap(Map<String, dynamic> m) => Usuario(
         id: m['id'] as String,
         nombre: m['nombre'] as String,
-        email: m['email'] as String,
+        // La vista de perfiles públicos no expone el correo a propósito.
+        email: m['email'] as String? ?? '',
         tipo: tipoUsuarioFromString(m['tipo'] as String),
         subtipo: m['subtipo'] as String? ?? '',
         telefono: m['telefono'] as String? ?? '',

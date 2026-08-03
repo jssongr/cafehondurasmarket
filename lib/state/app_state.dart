@@ -8,8 +8,26 @@ import '../services/location_service.dart';
 class AppState extends ChangeNotifier {
   final SupabaseClient _sb = Supabase.instance.client;
 
+  /// Filas completas de `usuarios`. Para un usuario común solo trae la propia;
+  /// el administrador las ve todas. Es lo que alimenta el panel de moderación.
   List<Usuario> usuarios = [];
+
+  /// Perfiles reducidos —nombre, foto, tipo— de toda la plataforma, sin
+  /// documentos ni datos de contacto. Es lo que el marketplace y el chat usan
+  /// para mostrar a la contraparte.
+  List<Usuario> usuariosPublicos = [];
+
   Usuario? usuario;
+
+  /// Datos visibles de otra persona. Cae en la propia sesión cuando el id es el
+  /// del usuario actual, que no siempre está en la vista pública todavía.
+  Usuario? perfilDe(String id) {
+    if (usuario?.id == id) return usuario;
+    for (final u in usuariosPublicos) {
+      if (u.id == id) return u;
+    }
+    return null;
+  }
   List<Carga> cargas = [];
   List<Conversacion> convos = [];
   List<Notificacion> notifs = [];
@@ -85,6 +103,7 @@ class AppState extends ChangeNotifier {
     try {
       final row = await _sb.from('usuarios').select().eq('id', userId).single();
       usuario = Usuario.fromMap(row);
+      await _cargarPerfilesPublicos();
       _setupRealtimeStreams();
     } catch (_) {
       // profile row not ready yet (rare race right after signup) — leave usuario null.
@@ -104,6 +123,7 @@ class AppState extends ChangeNotifier {
     _facturasSub?.cancel();
     usuario = null;
     usuarios = [];
+    usuariosPublicos = [];
     cargas = [];
     convos = [];
     notifs = [];
@@ -129,6 +149,7 @@ class AppState extends ChangeNotifier {
     _cargasSub?.cancel();
     _cargasSub = _sb.from('cargas').stream(primaryKey: ['id']).listen((rows) {
       cargas = rows.map(Carga.fromMap).toList()..sort((a, b) => a.id.compareTo(b.id));
+      _perfilesFaltantes(cargas.map((c) => c.clienteId));
       notifyListeners();
     });
 
@@ -159,6 +180,30 @@ class AppState extends ChangeNotifier {
     _facturasSub?.cancel();
     _facturasSub = _sb.from('facturas').stream(primaryKey: ['id']).listen((rows) {
       facturas = rows.map(Factura.fromMap).toList()..sort((a, b) => b.id.compareTo(a.id));
+      notifyListeners();
+    });
+  }
+
+  Future<void> _cargarPerfilesPublicos() async {
+    try {
+      final filas = await _sb.from('usuarios_publicos').select();
+      usuariosPublicos = (filas as List).map((f) => Usuario.fromMap(f as Map<String, dynamic>)).toList();
+    } catch (_) {
+      // Si falla, los nombres se muestran genéricos hasta el siguiente intento.
+    }
+  }
+
+  bool _recargandoPerfiles = false;
+
+  /// Vuelve a pedir la lista solo si apareció alguien que no conocemos, para no
+  /// consultar de más en cada actualización del stream.
+  void _perfilesFaltantes(Iterable<String> ids) {
+    if (_recargandoPerfiles) return;
+    final falta = ids.any((id) => perfilDe(id) == null);
+    if (!falta) return;
+    _recargandoPerfiles = true;
+    _cargarPerfilesPublicos().whenComplete(() {
+      _recargandoPerfiles = false;
       notifyListeners();
     });
   }

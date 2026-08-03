@@ -49,7 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final yo = app.usuario!;
     final convo = app.convos.firstWhere((c) => c.id == widget.convoId);
     final otroId = convo.participantes.firstWhere((p) => p != yo.id, orElse: () => '');
-    final otro = otroId.isEmpty ? null : app.usuarios.firstWhere((u) => u.id == otroId);
+    final otro = otroId.isEmpty ? null : app.perfilDe(otroId);
     final carga = app.cargas.where((c) => c.id == convo.cargaId).isNotEmpty ? app.cargas.firstWhere((c) => c.id == convo.cargaId) : null;
 
     return Scaffold(

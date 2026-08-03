@@ -82,7 +82,7 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
             padding: const EdgeInsets.only(bottom: AppSpacing.lg),
             child: CargaMarketCard(
               carga: c,
-              cliente: app.usuarios.firstWhere((u) => u.id == c.clienteId),
+              cliente: app.perfilDe(c.clienteId),
               historial: app.historial,
               onPressed: () => openCargaDetail(context, c.id),
               onAceptar: () async {

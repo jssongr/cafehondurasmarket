@@ -22,7 +22,7 @@ class CargaDetailModal extends StatelessWidget {
     final app = context.watch<AppState>();
     final yo = app.usuario!;
     final c = app.cargas.firstWhere((x) => x.id == cargaId);
-    final pub = app.usuarios.firstWhere((u) => u.id == c.clienteId, orElse: () => app.usuarios.first);
+    final pub = app.perfilDe(c.clienteId);
     final puedeContactar = yo.tipo == TipoUsuario.cliente ? c.clienteId != yo.id : true;
 
     return Scaffold(
@@ -37,16 +37,16 @@ class CargaDetailModal extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 4),
               decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
               child: Row(children: [
-                Avatar(uri: pub.selfie, tipo: TipoUsuario.cliente, size: 40),
+                Avatar(uri: pub?.selfie, tipo: TipoUsuario.cliente, size: 40),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text(c.cliente, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.navy)),
                     const SizedBox(height: 4),
                     Row(children: [
-                      AppBadge(tone: pub.verificado ? 'verificado' : 'sinVerificar', label: pub.verificado ? 'Verificado' : 'Sin verificar'),
+                      AppBadge(tone: (pub?.verificado ?? false) ? 'verificado' : 'sinVerificar', label: (pub?.verificado ?? false) ? 'Verificado' : 'Sin verificar'),
                       const SizedBox(width: 6),
-                      Stars(value: avgRating(app.historial, usuarioId: pub.id, tipo: pub.tipo)),
+                      if (pub != null) Stars(value: avgRating(app.historial, usuarioId: pub.id, tipo: pub.tipo)),
                     ]),
                   ]),
                 ),
