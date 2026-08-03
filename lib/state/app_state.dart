@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/constants.dart';
 import '../models/models.dart';
+import '../services/location_service.dart';
 
 class AppState extends ChangeNotifier {
   final SupabaseClient _sb = Supabase.instance.client;
@@ -93,6 +94,7 @@ class AppState extends ChangeNotifier {
   }
 
   void _teardown() {
+    detenerRastreo();
     _usuariosSub?.cancel();
     _cargasSub?.cancel();
     _convosSub?.cancel();
@@ -174,6 +176,7 @@ class AppState extends ChangeNotifier {
   void dispose() {
     _toastTimer?.cancel();
     _cargaTimeout?.cancel();
+    _rastreoTimer?.cancel();
     _usuariosSub?.cancel();
     _cargasSub?.cancel();
     _convosSub?.cancel();
@@ -183,6 +186,66 @@ class AppState extends ChangeNotifier {
     _facturasSub?.cancel();
     _authSub?.cancel();
     super.dispose();
+  }
+
+  // ---- Rastreo GPS ----
+  //
+  // Vive acá y no en la pantalla de seguimiento para que el transportista pueda
+  // moverse por la app —revisar mensajes, ver una carga— sin dejar de reportar
+  // su posición. Solo se activa cuando él lo autoriza explícitamente.
+
+  Timer? _rastreoTimer;
+  bool rastreoActivo = false;
+  String? rastreoError;
+
+  /// Viajes que este transportista está llevando ahora mismo.
+  List<Carga> get viajesEnRuta {
+    final yo = usuario;
+    if (yo == null || yo.tipo != TipoUsuario.transportista) return const [];
+    return cargas.where((c) => c.transportistaId == yo.id && c.estado == EstadoCarga.enTransito).toList();
+  }
+
+  Future<bool> iniciarRastreo() async {
+    rastreoError = null;
+    final permitido = await ensureLocationPermission();
+    if (!permitido) {
+      rastreoError = 'No pudimos acceder a tu ubicación. Revisá que el GPS esté encendido y que le hayas dado permiso a NexCarg.';
+      rastreoActivo = false;
+      notifyListeners();
+      return false;
+    }
+    rastreoActivo = true;
+    notifyListeners();
+    await _reportarUbicacion();
+    _rastreoTimer?.cancel();
+    _rastreoTimer = Timer.periodic(const Duration(seconds: 30), (_) => _reportarUbicacion());
+    return true;
+  }
+
+  void detenerRastreo() {
+    _rastreoTimer?.cancel();
+    _rastreoTimer = null;
+    rastreoActivo = false;
+    notifyListeners();
+  }
+
+  Future<void> _reportarUbicacion() async {
+    final activos = viajesEnRuta;
+    // Al terminar el último viaje se corta solo: nadie debería seguir siendo
+    // ubicado cuando ya no está llevando carga de nadie.
+    if (activos.isEmpty) {
+      detenerRastreo();
+      return;
+    }
+    final pos = await getCurrentPosition();
+    if (pos == null) return;
+    for (final c in activos) {
+      try {
+        await actualizarUbicacion(c.id, pos.latitude, pos.longitude);
+      } catch (_) {
+        // Falla puntual de red: el siguiente ciclo reintenta.
+      }
+    }
   }
 
   void showToast(String msg) {

@@ -1,10 +1,8 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/constants.dart';
 import '../../models/models.dart';
 import '../../navigation/app_routes.dart';
-import '../../services/location_service.dart';
 import '../../state/app_state.dart';
 import '../../theme/theme.dart';
 import '../../widgets/app_button.dart';
@@ -13,49 +11,12 @@ import '../../widgets/badge.dart';
 import '../../widgets/corridor_track.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/gps_map_card.dart';
+import '../../widgets/tarjeta_rastreo.dart';
 import '../../widgets/screen.dart';
 
-class SeguimientoScreen extends StatefulWidget {
+class SeguimientoScreen extends StatelessWidget {
   final bool showBack;
   const SeguimientoScreen({super.key, this.showBack = false});
-
-  @override
-  State<SeguimientoScreen> createState() => _SeguimientoScreenState();
-}
-
-class _SeguimientoScreenState extends State<SeguimientoScreen> {
-  Timer? _gpsTimer;
-
-  @override
-  void initState() {
-    super.initState();
-    _enviarUbicacion();
-    _gpsTimer = Timer.periodic(const Duration(seconds: 30), (_) => _enviarUbicacion());
-  }
-
-  @override
-  void dispose() {
-    _gpsTimer?.cancel();
-    super.dispose();
-  }
-
-  Future<void> _enviarUbicacion() async {
-    if (!mounted) return;
-    final app = context.read<AppState>();
-    final yo = app.usuario;
-    if (yo == null || yo.tipo != TipoUsuario.transportista) return;
-    final activos = app.cargas.where((c) => c.transportistaId == yo.id && c.estado == EstadoCarga.enTransito);
-    if (activos.isEmpty) return;
-    final pos = await getCurrentPosition();
-    if (pos == null || !mounted) return;
-    for (final c in activos) {
-      try {
-        await app.actualizarUbicacion(c.id, pos.latitude, pos.longitude);
-      } catch (_) {
-        // Silently skip — e.g. transient network issue. Next tick retries.
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +30,9 @@ class _SeguimientoScreenState extends State<SeguimientoScreen> {
     return Screen(
       title: 'Seguimiento GPS',
       subtitle: 'NexCarg — ${yo.subtipo}',
-      onBack: widget.showBack ? () => Navigator.of(context).pop() : null,
+      onBack: showBack ? () => Navigator.of(context).pop() : null,
       children: [
+        const TarjetaRastreo(),
         if (mios.isEmpty) const EmptyState(icon: Icons.location_on_outlined, title: 'No tienes viajes en curso', sub: 'Aquí verás el seguimiento GPS en tiempo real de tus cargas asignadas'),
         for (final c in mios)
           Builder(builder: (context) {
