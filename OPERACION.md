@@ -28,12 +28,26 @@ Para convertir una cuenta existente en administrador:
 2. En Supabase → SQL Editor, correr:
 
 ```sql
+alter table public.usuarios disable trigger user;
+
 update public.usuarios
-set tipo = 'admin', verificado = true
-where id = (select id from auth.users where email = 'correo@ejemplo.com');
+set tipo = 'admin', verificado = true, estado_cuenta = 'aprobado'
+where lower(email) = lower('correo@ejemplo.com');
+
+alter table public.usuarios enable trigger user;
+
+select email, tipo::text as tipo, verificado, estado_cuenta from public.usuarios;
 ```
 
 3. Cerrar sesión en la app y volver a entrar. Aparece el panel de administrador.
+
+**Por qué se desactiva el disparador:** la tabla tiene una protección
+(`proteger_campos_usuario`) que impide cambiar `tipo` y `verificado`, para que
+nadie pueda ascenderse a administrador ni auto-verificarse editando su propia
+fila. Bloquea el cambio venga de donde venga, incluso desde el editor de SQL. Sin
+desactivarla, el UPDATE dice "Success" pero **no cambia esas dos columnas** — hay
+que correr el bloque completo, porque la penúltima línea vuelve a activarla y la
+consulta final confirma cómo quedó.
 
 Conviene tener la cuenta de administrador **separada** de la cuenta con la que se
 prueba como cliente o transportista, para poder revisar ambas vistas.
