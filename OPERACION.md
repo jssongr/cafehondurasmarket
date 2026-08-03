@@ -38,13 +38,35 @@ where id = (select id from auth.users where email = 'correo@ejemplo.com');
 Conviene tener la cuenta de administrador **separada** de la cuenta con la que se
 prueba como cliente o transportista, para poder revisar ambas vistas.
 
-## Aprobar usuarios nuevos
+## Revisar y moderar usuarios
 
-Todo usuario que se registra queda en estado "Cuenta en verificación" y no puede
-publicar ni aceptar cargas hasta que un administrador revise sus documentos.
+Todo usuario que se registra queda **pendiente** y no puede publicar ni aceptar
+cargas hasta que un administrador revise sus documentos.
 
-Panel de administrador → Usuarios → revisar documento, DNI y selfie →
-"Aprobar documentos".
+Panel de administrador → **Usuarios**. Los pendientes aparecen primero. Hay
+buscador (nombre, correo, teléfono, país) y filtros por estado y por tipo.
+
+Al tocar un usuario se abre su ficha completa: todos los documentos que subió a
+ancho completo, y tocando cualquiera se abre a pantalla completa con zoom para
+poder leer un número de DNI. **Revisar los documentos antes de decidir** — el
+botón de aprobar no comprueba nada por sí solo.
+
+Estados posibles:
+
+| Estado | Qué significa | Acciones disponibles |
+| --- | --- | --- |
+| Pendiente | Recién registrado, sin revisar | Aprobar · Rechazar |
+| Aprobado | Puede operar normalmente | Suspender |
+| Rechazado | Documentos no válidos | Aprobar de todas formas · Suspender |
+| Suspendido | Bloqueado por el administrador | Reactivar |
+
+Rechazar y suspender **exigen escribir un motivo**. Ese texto le llega al usuario
+como notificación y le reemplaza el aviso del panel, así sabe qué corregir. Sin
+eso, un usuario rechazado seguiría viendo "un administrador está revisando" y
+esperaría indefinidamente.
+
+Nadie puede suspenderse a sí mismo, y los administradores no aparecen en la
+lista.
 
 ## Límites que hay que vigilar
 
