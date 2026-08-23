@@ -61,9 +61,9 @@ using (
     where u.id = auth.uid()
       and (
         u.tipo::text = 'admin'
-        or u.doc            like '%' || objects.name
-        or u.doc_identidad  like '%' || objects.name
-        or u.seguro         like '%' || objects.name
+        or u.doc_url            like '%' || objects.name
+        or u.doc_identidad_url  like '%' || objects.name
+        or u.seguro_url         like '%' || objects.name
       )
   )
 );
