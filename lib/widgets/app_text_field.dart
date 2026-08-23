@@ -44,7 +44,22 @@ class _AppTextFieldState extends State<AppTextField> {
               padding: const EdgeInsets.only(bottom: 5),
               child: Text(widget.label!, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
             ),
-          TextField(
+          // El campo va hundido, no plano: se rellena con el gris suave y la
+          // sombra le entra desde arriba, como un surco. Así el formulario se
+          // lee como una superficie con huecos donde escribir, en vez de como
+          // rectángulos apoyados sobre otro rectángulo.
+          DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.marcaFondo.withValues(alpha: AppColors.esOscuro ? 0.3 : 0.05),
+                  offset: const Offset(0, 1),
+                  blurRadius: 2,
+                ),
+              ],
+            ),
+            child: TextField(
             controller: widget.controller,
             onChanged: widget.onChanged,
             obscureText: widget.obscureText && _obscured,
@@ -58,7 +73,7 @@ class _AppTextFieldState extends State<AppTextField> {
               hintText: widget.placeholder,
               hintStyle: TextStyle(color: AppColors.grisM),
               filled: true,
-              fillColor: widget.enabled ? AppColors.white : AppColors.gris50,
+              fillColor: widget.enabled ? AppColors.gris50 : AppColors.gris100,
               contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
               suffixIcon: widget.obscureText
                   ? IconButton(
@@ -69,8 +84,11 @@ class _AppTextFieldState extends State<AppTextField> {
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.gris100, width: 1.5)),
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.gris100, width: 1.5)),
               disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.gris100, width: 1.5)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.amber, width: 1.5)),
+              // Al enfocar manda el azul de acción, no el ámbar: el ámbar es
+              // el color de "atención" en el resto de la app y acá confundía.
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.blue, width: 1.8)),
             ),
+          ),
           ),
         ],
       ),

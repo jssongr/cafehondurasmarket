@@ -665,3 +665,138 @@ class _Rejilla extends StatelessWidget {
     return Column(children: filas);
   }
 }
+
+/// Preguntas frecuentes.
+///
+/// Quien llega desde un anuncio a una plataforma que no conoce llega con
+/// desconfianza, y esa desconfianza tiene preguntas concretas: quién responde
+/// si se pierde la carga, cuándo cobro, qué pasa si el otro no cumple.
+/// Contestarlas acá evita que la persona se vaya sin registrarse, y evita que
+/// esas mismas preguntas lleguen todas por correo a soporte.
+class Preguntas extends StatefulWidget {
+  final bool amplio;
+  const Preguntas({super.key, required this.amplio});
+
+  @override
+  State<Preguntas> createState() => _PreguntasState();
+}
+
+class _PreguntasState extends State<Preguntas> {
+  int? _abierta = 0;
+
+  // Getter y no constante: la comisión sale de `comisionPct`, para que este
+  // texto no se quede diciendo 5% el día que cambie.
+  List<(String, String)> get _preguntas => [
+    (
+      '¿Cuánto cuesta usar NexCarg?',
+      'Crear la cuenta y publicar carga no cuesta nada. NexCarg cobra una comisión '
+          'del $comisionTexto% sobre cada viaje completado, que se descuenta automáticamente al '
+          'confirmarse la entrega. No hay mensualidad ni cargo por publicar.',
+    ),
+    (
+      '¿Cómo sé que el transportista es de fiar?',
+      'Nadie opera en la plataforma sin que una persona de NexCarg haya revisado su '
+          'documento de identidad, su licencia y los papeles de la empresa o del '
+          'vehículo. Además cada perfil arrastra las calificaciones de los viajes que '
+          'ya hizo, y solo puede calificar quien de verdad viajó con él.',
+    ),
+    (
+      'Soy transportista, ¿cuándo me pagan?',
+      'El cliente deposita antes de que salgas y el dinero queda retenido en '
+          'garantía. Al entregar la carga tomás la foto y la firma de quien recibe, y '
+          'con esa prueba el pago se libera automáticamente. No dependés de que el '
+          'cliente se acuerde de pagarte.',
+    ),
+    (
+      '¿Qué pasa si la carga no llega o llega dañada?',
+      'El pago no se libera hasta que haya prueba de entrega, así que el dinero no '
+          'sale mientras el viaje esté en disputa. Escribinos a $soporteEmail con el '
+          'número de viaje y revisamos el caso con el contrato, el recorrido del GPS y '
+          'las fotos, que quedan guardados.',
+    ),
+    (
+      '¿Necesito instalar algo?',
+      'No. NexCarg funciona en el navegador de cualquier computadora o teléfono. '
+          'También hay aplicación para Android si preferís tenerla instalada, útil '
+          'sobre todo para los transportistas, que van compartiendo su ubicación '
+          'durante el viaje.',
+    ),
+    (
+      '¿Comparto mi ubicación todo el tiempo?',
+      'No. La ubicación se comparte únicamente mientras tenés un viaje en curso y '
+          'solamente si la activás, con un aviso previo que explica para qué se usa. '
+          'Podés dejar de compartirla cuando quieras, y al terminar el viaje se '
+          'detiene sola.',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Seccion(
+      amplio: widget.amplio,
+      fondo: AppColors.gris50,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        TituloSeccion(
+          amplio: widget.amplio,
+          ante: 'Preguntas frecuentes',
+          titulo: 'Lo que todo el mundo\npregunta antes de empezar.',
+        ),
+        const SizedBox(height: 30),
+        for (var i = 0; i < _preguntas.length; i++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _Pregunta(
+              pregunta: _preguntas[i].$1,
+              respuesta: _preguntas[i].$2,
+              abierta: _abierta == i,
+              onTap: () => setState(() => _abierta = _abierta == i ? null : i),
+            ),
+          ),
+      ]),
+    );
+  }
+}
+
+class _Pregunta extends StatelessWidget {
+  final String pregunta;
+  final String respuesta;
+  final bool abierta;
+  final VoidCallback onTap;
+
+  const _Pregunta({required this.pregunta, required this.respuesta, required this.abierta, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Panel(
+      onTap: onTap,
+      elevacion: abierta ? 1 : 0,
+      padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Expanded(
+            child: Text(pregunta,
+                style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+          ),
+          const SizedBox(width: 12),
+          AnimatedRotation(
+            turns: abierta ? 0.5 : 0,
+            duration: const Duration(milliseconds: 180),
+            child: Icon(Icons.expand_more_rounded, color: abierta ? AppColors.blue : AppColors.grisM),
+          ),
+        ]),
+        // AnimatedCrossFade en vez de mostrar u ocultar de golpe: el salto seco
+        // de altura hace perder el hilo de dónde estaba uno leyendo.
+        AnimatedCrossFade(
+          duration: const Duration(milliseconds: 180),
+          crossFadeState: abierta ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+          firstChild: Padding(
+            padding: const EdgeInsets.only(top: 10, right: 24),
+            child: Text(respuesta,
+                style: TextStyle(fontSize: 14, height: 1.6, color: AppColors.grisM)),
+          ),
+          secondChild: const SizedBox(width: double.infinity),
+        ),
+      ]),
+    );
+  }
+}

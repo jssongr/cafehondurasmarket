@@ -26,6 +26,9 @@ class AppColors {
   /// Se llama una vez por dibujado, desde `main.dart`.
   static void usarTema(Brightness brillo) => _oscuro = brillo == Brightness.dark;
 
+  /// Para las piezas que necesitan ajustar algo más que un color.
+  static bool get esOscuro => _oscuro;
+
   static Color _t(Color claro, Color oscuro) => _oscuro ? oscuro : claro;
 
   // --- Marca: fondos oscuros que no cambian con el tema -------------------

@@ -50,6 +50,7 @@ class _LandingScreenState extends State<LandingScreen> {
               ParaQuien(amplio: amplio, onEntrar: _entrar),
               TiposDeCarga(amplio: amplio),
               PorQueConfiar(amplio: amplio),
+              Preguntas(amplio: amplio),
               Contacto(amplio: amplio),
               _Cierre(amplio: amplio, onEntrar: _entrar),
               const _PieDePagina(),

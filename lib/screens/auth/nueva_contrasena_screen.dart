@@ -50,7 +50,7 @@ class _NuevaContrasenaScreenState extends State<NuevaContrasenaScreen> {
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 460),
                   child: Container(
-                    decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(AppRadius.xl), boxShadow: floatingShadow),
+                    decoration: BoxDecoration(gradient: degradadoSuperficie, borderRadius: BorderRadius.circular(AppRadius.xl), border: bordeSuperficie, boxShadow: floatingShadow),
                     clipBehavior: Clip.antiAlias,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
