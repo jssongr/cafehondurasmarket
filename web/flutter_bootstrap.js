@@ -20,4 +20,16 @@ if (window.caches) {
 {{flutter_build_config}}
 
 // Sin serviceWorkerSettings: el cargador no instala service worker.
-_flutter.loader.load();
+_flutter.loader.load({
+  onEntrypointLoaded: async function (engineInitializer) {
+    const motor = await engineInitializer.initializeEngine();
+    await motor.runApp();
+    // Recién acá hay algo dibujado. Quitar la pantalla de arranque antes
+    // dejaría un parpadeo en blanco entre una cosa y la otra.
+    const arranque = document.getElementById('arranque');
+    if (arranque) {
+      arranque.style.opacity = '0';
+      setTimeout(function () { arranque.remove(); }, 400);
+    }
+  },
+});

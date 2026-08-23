@@ -44,6 +44,11 @@ const List<String> transportistaSubtipos = ['Transportista independiente', 'Cond
 
 const double comisionPct = 5;
 
+/// `comisionPct` es un double: interpolarlo directo escribe "5.0%" en pantalla.
+/// Esto lo deja en "5%" mientras sea entero, y en "4.5%" si algún día no lo es.
+final String comisionTexto =
+    comisionPct == comisionPct.roundToDouble() ? comisionPct.toStringAsFixed(0) : '$comisionPct';
+
 /// Dirección pública de la app. La usa Supabase como destino del enlace de
 /// recuperación de contraseña, así que debe estar también en la lista de
 /// "Redirect URLs" de Supabase → Authentication → URL Configuration.

@@ -46,7 +46,7 @@ class ContratoModal extends StatelessWidget {
                     'con fecha de recogida ${c.fecha}.'),
                 const SizedBox(height: 10),
                 _p('El monto acordado es de ${fmtMoneda(c.precioAcordado)}, retenido en garantía (escrow) por NexCarg y liberado al Transportista al confirmarse la entrega. '
-                    'NexCarg retiene una comisión de servicio del $comisionPct% sobre el monto del viaje.'),
+                    'NexCarg retiene una comisión de servicio del $comisionTexto% sobre el monto del viaje.'),
                 const SizedBox(height: 10),
                 _p('Ambas partes se comprometen a coordinar la recogida y entrega dentro de los plazos acordados, y a calificarse mutuamente al finalizar el viaje.'),
               ]),

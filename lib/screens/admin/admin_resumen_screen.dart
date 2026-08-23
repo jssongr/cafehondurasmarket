@@ -36,7 +36,7 @@ class AdminResumenScreen extends StatelessWidget {
         Row(children: [
           StatTile(label: 'Completados', value: '${app.historial.length}', sub: 'entregados', icon: Icons.check_circle, accent: AppColors.verde),
           const SizedBox(width: 12),
-          StatTile(label: 'Comisión', value: fmtMoneda(comision), sub: '$comisionPct% por viaje', icon: Icons.attach_money, accent: const Color(0xFF6366F1)),
+          StatTile(label: 'Comisión', value: fmtMoneda(comision), sub: '$comisionTexto% por viaje', icon: Icons.attach_money, accent: const Color(0xFF6366F1)),
         ]),
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

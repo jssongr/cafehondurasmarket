@@ -12,14 +12,19 @@ import '../settings/legal_screen.dart';
 import 'step_indicator.dart';
 
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({super.key});
+  /// La página de presentación tiene botones que dicen "Crear cuenta" y
+  /// "Publicar mi primera carga". Caer en el formulario de acceso después de
+  /// tocarlos obligaría a buscar el enlace de registro; con esto se abre
+  /// directo en el paso 1 del registro.
+  final bool iniciarEnRegistro;
+  const AuthScreen({super.key, this.iniciarEnRegistro = false});
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  bool _isLogin = true;
+  late bool _isLogin = !widget.iniciarEnRegistro;
   int _step = 1;
   String _err = '';
 
@@ -76,6 +81,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
   bool _submitting = false;
 
+  /// Esta pantalla se abre encima de la presentación. Al entrar, el navegador
+  /// raíz ya muestra las pestañas del usuario detrás, así que hay que quitar
+  /// este formulario de la pila o quedaría tapándolas.
+  void _cerrarSiSeAbrioEncima() {
+    final nav = Navigator.of(context);
+    if (nav.canPop()) nav.pop();
+  }
+
   Future<void> _doLogin() async {
     if (_emailCtrl.text.trim().isEmpty || _passCtrl.text.isEmpty) {
       setState(() => _err = 'Completa correo y contraseña.');
@@ -85,6 +98,7 @@ class _AuthScreenState extends State<AuthScreen> {
     final err = await context.read<AppState>().login(_emailCtrl.text.trim(), _passCtrl.text);
     if (!mounted) return;
     setState(() { _submitting = false; _err = err ?? ''; });
+    if (err == null) _cerrarSiSeAbrioEncima();
   }
 
   Future<void> _recuperarContrasena() async {
@@ -146,7 +160,10 @@ class _AuthScreenState extends State<AuthScreen> {
     );
     if (!mounted) return;
     setState(() { _submitting = false; _err = err ?? ''; });
-    if (err == null) app.showToast('¡Cuenta creada! Un administrador va a revisar tus documentos.');
+    if (err == null) {
+      app.showToast('¡Cuenta creada! Un administrador va a revisar tus documentos.');
+      _cerrarSiSeAbrioEncima();
+    }
   }
 
   @override
@@ -177,10 +194,8 @@ class _AuthScreenState extends State<AuthScreen> {
                           color: AppColors.navy,
                           child: const Column(
                             children: [
-                              Icon(Icons.rocket_launch, size: 34, color: Colors.white),
-                              SizedBox(height: 6),
-                              Text('NexCarg', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.4)),
-                              SizedBox(height: 2),
+                              Image(image: AssetImage('assets/logo-blanco.png'), height: 34),
+                              SizedBox(height: 10),
                               Text('El transporte de carga terrestre de Panamá a México, en un solo lugar',
                                   textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Color(0xA6FFFFFF))),
                             ],
@@ -222,6 +237,20 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
           ),
+          // Solo aparece si esta pantalla se abrió desde la presentación; si es
+          // la raíz de la app no hay a dónde volver.
+          if (Navigator.of(context).canPop())
+            Positioned(
+              top: 0,
+              left: 4,
+              child: SafeArea(
+                child: IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                  tooltip: 'Volver',
+                ),
+              ),
+            ),
         ],
       ),
     );

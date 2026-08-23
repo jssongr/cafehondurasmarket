@@ -32,7 +32,7 @@ class FacturacionScreen extends StatelessWidget {
           Row(children: [
             StatTile(label: 'Facturas emitidas', value: '${mias.length}', sub: 'total', icon: Icons.receipt, accent: AppColors.amber),
             const SizedBox(width: 12),
-            StatTile(label: 'Ingresos comisión', value: fmtMoneda(totalComision), sub: '$comisionPct% por viaje', icon: Icons.attach_money, accent: AppColors.verde),
+            StatTile(label: 'Ingresos comisión', value: fmtMoneda(totalComision), sub: '$comisionTexto% por viaje', icon: Icons.attach_money, accent: AppColors.verde),
           ]),
         if (mias.isEmpty) const EmptyState(icon: Icons.receipt_long_outlined, title: 'Sin facturas todavía', sub: 'Se generan automáticamente al liberarse el pago de un viaje'),
         for (final f in mias)
@@ -55,7 +55,7 @@ class FacturacionScreen extends StatelessWidget {
                   Text(f.fecha, style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
                   if (modoAdmin) Text('${f.cliente} → ${f.transportista}', style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
                   if (!modoAdmin && yo.tipo == TipoUsuario.transportista)
-                    Text('Bruto ${fmtMoneda(f.monto)} − comisión $comisionPct% (${fmtMoneda(f.comision)})', style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
+                    Text('Bruto ${fmtMoneda(f.monto)} − comisión $comisionTexto% (${fmtMoneda(f.comision)})', style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
                 ]),
               ),
               Column(crossAxisAlignment: CrossAxisAlignment.end, children: [

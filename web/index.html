@@ -18,8 +18,24 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="NexCarg — plataforma de transporte de carga terrestre Panamá-México.">
+  <meta name="description" content="NexCarg conecta empresas que necesitan mover mercancía con transportistas verificados de Panamá, Costa Rica, Nicaragua, Honduras, El Salvador, Guatemala y México. Contrato digital, pago en garantía, GPS en vivo y prueba de entrega.">
   <meta name="theme-color" content="#0F1F29">
+
+  <!-- Tarjeta que se ve al compartir el enlace en WhatsApp, Facebook o LinkedIn.
+       Sin esto el anuncio aparece como un enlace pelado y casi nadie lo abre. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NexCarg">
+  <meta property="og:locale" content="es_HN">
+  <meta property="og:url" content="https://nexcarg.com">
+  <meta property="og:title" content="NexCarg — Transporte de carga terrestre de Panamá a México">
+  <meta property="og:description" content="Publicá tu carga, recibí ofertas de transportistas verificados, firmá un contrato digital y pagá solo cuando la entrega esté probada.">
+  <meta property="og:image" content="https://nexcarg.com/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NexCarg — Transporte de carga terrestre de Panamá a México">
+  <meta name="twitter:description" content="Publicá tu carga, recibí ofertas de transportistas verificados, firmá un contrato digital y pagá solo cuando la entrega esté probada.">
+  <meta name="twitter:image" content="https://nexcarg.com/og.png">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -30,10 +46,42 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>NexCarg</title>
+  <title>NexCarg — Transporte de carga terrestre de Panamá a México</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; background: #0F1F29; }
+    /* Pantalla de arranque. La app pesa unos megabytes y hasta que carga la
+       página quedaba en blanco: quien llega desde un anuncio con datos móviles
+       cree que el sitio está caído y se va antes de ver nada. */
+    #arranque {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 26px;
+      background: linear-gradient(135deg, #0F1F29 0%, #1E3A52 60%, #2C5468 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      transition: opacity .35s ease; z-index: 9999;
+    }
+    #arranque img { width: 190px; max-width: 55vw; }
+    #arranque .barra {
+      width: 190px; max-width: 55vw; height: 3px; border-radius: 999px;
+      background: rgba(255,255,255,.14); overflow: hidden;
+    }
+    #arranque .barra i {
+      display: block; width: 40%; height: 100%; border-radius: 999px;
+      background: #5470FF; animation: corre 1.1s ease-in-out infinite;
+    }
+    @keyframes corre {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(250%); }
+    }
+    #arranque p { margin: 0; color: rgba(255,255,255,.55); font-size: 13px; }
+  </style>
 </head>
 <body>
+  <div id="arranque">
+    <img src="icons/Icon-192.png" alt="NexCarg" style="width:76px;border-radius:20px">
+    <div class="barra"><i></i></div>
+    <p>Cargando NexCarg…</p>
+  </div>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader
