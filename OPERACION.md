@@ -93,11 +93,33 @@ foto, tipo, país, calificación— sale de la vista `usuarios_publicos`, que **
 incluye documentos ni datos de contacto**. Si algún día hay que mostrar un dato
 nuevo de otro usuario, se agrega a esa vista; nunca se abre la tabla.
 
-Los documentos siguen guardados en un bucket público, así que **quien tenga la
-URL exacta puede abrirla** aunque no tenga sesión. Las URLs llevan un sufijo
-aleatorio y ya no se pueden obtener desde la app, pero si algún día se manejan
-volúmenes grandes de documentos conviene pasar ese bucket a privado y servirlos
-con enlaces firmados de corta duración.
+### Los archivos
+
+El depósito de archivos (`uploads`) es **privado**. La dirección que se guarda
+en la base de datos no abre nada por sí sola: cada vez que la app va a mostrar
+una imagen le pide a Supabase un enlace firmado que vale una hora y va atado a
+la sesión de quien lo pidió. Al cerrar sesión, esos enlaces se descartan.
+
+Quién ve cada carpeta:
+
+| Carpeta | Qué guarda | Quién puede verla |
+| --- | --- | --- |
+| `documentos/` | DNI, licencia, papeles de empresa, seguro | Solo su dueño y el administrador |
+| `selfies/` | Foto de perfil | Cualquier usuario con sesión |
+| `cargas/` | Fotos de la mercancía | Cualquier usuario con sesión |
+| `entregas/` | Foto y firma de la entrega | Cualquier usuario con sesión |
+
+Las selfies y las fotos de carga se muestran entre usuarios a propósito: son el
+avatar en el chat y las fotos que acompañan una publicación en el marketplace.
+Los documentos de identidad no: ni siquiera otro usuario registrado los puede
+abrir teniendo la dirección exacta.
+
+El SQL que deja esto así está en `docs/sql/documentos-privados.sql`. No hay que
+volver a correrlo salvo que se rehaga el proyecto de Supabase desde cero.
+
+**Si algún día se agrega una carpeta nueva** (por ejemplo `facturas/`), hay que
+decidir a mano quién la puede leer y agregarla a la política correspondiente.
+Por omisión, una carpeta nueva cae en "cualquier usuario con sesión".
 
 ## Límites que hay que vigilar
 

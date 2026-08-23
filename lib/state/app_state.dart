@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/constants.dart';
 import '../models/models.dart';
 import '../services/location_service.dart';
+import '../services/storage_service.dart';
 
 class AppState extends ChangeNotifier {
   final SupabaseClient _sb = Supabase.instance.client;
@@ -425,6 +426,9 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    // Los enlaces firmados son permisos de quien estaba usando la app. Si el
+    // teléfono queda en manos de otra persona, no deben seguir sirviendo.
+    olvidarEnlacesFirmados();
     await _sb.auth.signOut();
   }
 
