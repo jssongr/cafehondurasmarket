@@ -98,12 +98,12 @@ class _PruebaEntregaModalState extends State<PruebaEntregaModal> {
               decoration: BoxDecoration(color: AppColors.bg, borderRadius: BorderRadius.circular(AppRadius.lg)),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text('${c.tipoCarga} · ${c.peso} ${c.unidadPeso}',
-                    style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                    style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
                 const SizedBox(height: 4),
                 Text('Entrega en ${c.ciudadDestino}, ${c.paisDestino}',
-                    style: const TextStyle(fontSize: 12.5, color: AppColors.grisM)),
+                    style: TextStyle(fontSize: 12.5, color: AppColors.grisM)),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Esta constancia queda guardada en el viaje. Protege a ambas partes si después hay un reclamo por la entrega.',
                   style: TextStyle(fontSize: 12, color: AppColors.grisM, height: 1.45),
                 ),
@@ -116,15 +116,15 @@ class _PruebaEntregaModalState extends State<PruebaEntregaModal> {
                 padding: const EdgeInsets.all(11),
                 decoration: BoxDecoration(color: AppColors.rojoBg, borderRadius: BorderRadius.circular(AppRadius.md)),
                 child: Row(children: [
-                  const Icon(Icons.error_outline, size: 16, color: AppColors.rojo),
+                  Icon(Icons.error_outline, size: 16, color: AppColors.rojo),
                   const SizedBox(width: 8),
-                  Expanded(child: Text(_err, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.rojo))),
+                  Expanded(child: Text(_err, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.rojo))),
                 ]),
               ),
-            const Text('Foto de la carga entregada',
+            Text('Foto de la carga entregada',
                 style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
             const SizedBox(height: 4),
-            const Text('Tomá una foto de la mercancía ya descargada en el destino.',
+            Text('Tomá una foto de la mercancía ya descargada en el destino.',
                 style: TextStyle(fontSize: 12, color: AppColors.grisM)),
             const SizedBox(height: AppSpacing.sm),
             UploadZone(
@@ -147,7 +147,7 @@ class _PruebaEntregaModalState extends State<PruebaEntregaModal> {
               controller: _recibidoPorCtrl,
               textCapitalization: TextCapitalization.words,
             ),
-            const Text('Firma de quien recibe',
+            Text('Firma de quien recibe',
                 style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
             const SizedBox(height: AppSpacing.sm),
             FirmaPad(controller: _firma, onCambio: () => setState(() {})),
@@ -159,7 +159,7 @@ class _PruebaEntregaModalState extends State<PruebaEntregaModal> {
               fullWidth: true,
             ),
             const SizedBox(height: AppSpacing.sm),
-            const Text(
+            Text(
               'Al confirmar, el pago retenido se libera al transportista descontando la comisión de la plataforma.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 11.5, color: AppColors.grisM, height: 1.4),

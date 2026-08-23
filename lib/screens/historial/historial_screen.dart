@@ -47,25 +47,25 @@ class HistorialScreen extends StatelessWidget {
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text('${h.tipoCarga} · ${yo.tipo == TipoUsuario.cliente ? "Transportado por ${h.transportista}" : "Para ${h.cliente}"}',
-                        maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                        maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
                     const SizedBox(height: 3),
-                    Text(h.ruta, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
+                    Text(h.ruta, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: AppColors.grisM)),
                     const SizedBox(height: 3),
                     Row(children: [
-                      Text(h.fecha, style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
+                      Text(h.fecha, style: TextStyle(fontSize: 11, color: AppColors.grisM)),
                       const SizedBox(width: 8),
                       const AppBadge(tone: 'entregada', label: 'completado'),
                     ]),
                     if (suCal != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 4),
-                        child: Text('Te calificaron: ${suCal.estrellas}/5 "${suCal.comentario}"', style: const TextStyle(fontSize: 10.5, color: AppColors.grisM)),
+                        child: Text('Te calificaron: ${suCal.estrellas}/5 "${suCal.comentario}"', style: TextStyle(fontSize: 10.5, color: AppColors.grisM)),
                       ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: miCal != null
                           ? Row(mainAxisSize: MainAxisSize.min, children: [
-                              const Text('Tu calificación:', style: TextStyle(fontSize: 11, color: AppColors.grisM)),
+                              Text('Tu calificación:', style: TextStyle(fontSize: 11, color: AppColors.grisM)),
                               const SizedBox(width: 6),
                               Stars(value: miCal.estrellas.toDouble()),
                             ])
@@ -77,8 +77,8 @@ class HistorialScreen extends StatelessWidget {
                   ]),
                 ),
                 Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  Text(fmtMoneda(h.monto), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.blue)),
-                  const Text('Pago liberado', style: TextStyle(fontSize: 9.5, color: AppColors.grisM)),
+                  Text(fmtMoneda(h.monto), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.blue)),
+                  Text('Pago liberado', style: TextStyle(fontSize: 9.5, color: AppColors.grisM)),
                 ]),
               ]),
             );

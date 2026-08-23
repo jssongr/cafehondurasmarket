@@ -28,7 +28,7 @@ class DocumentosScreen extends StatelessWidget {
           AppCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
-                Expanded(child: Text(yo.tipo == TipoUsuario.transportista ? 'Licencia de conducir' : 'Documento de la empresa', style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
+                Expanded(child: Text(yo.tipo == TipoUsuario.transportista ? 'Licencia de conducir' : 'Documento de la empresa', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
                 AppBadge(tone: yo.verificado ? 'verificado' : 'sinVerificar', label: yo.verificado ? 'Aprobado' : 'En revisión'),
               ]),
               const SizedBox(height: 10),
@@ -39,7 +39,7 @@ class DocumentosScreen extends StatelessWidget {
           AppCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
-                const Expanded(child: Text('Documento de identidad (DNI/cédula)', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
+                Expanded(child: Text('Documento de identidad (DNI/cédula)', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
                 AppBadge(tone: yo.verificado ? 'verificado' : 'sinVerificar', label: yo.verificado ? 'Aprobado' : 'En revisión'),
               ]),
               const SizedBox(height: 10),
@@ -49,7 +49,7 @@ class DocumentosScreen extends StatelessWidget {
         if (yo.seguro != null)
           AppCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Comprobante de seguro', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+              Text('Comprobante de seguro', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
               const SizedBox(height: 10),
               ClipRRect(borderRadius: BorderRadius.circular(AppRadius.md), child: AppImage(path: yo.seguro!, width: double.infinity, height: 160)),
             ]),
@@ -58,7 +58,7 @@ class DocumentosScreen extends StatelessWidget {
           AppCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
-                const Expanded(child: Text('Selfie de verificación', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
+                Expanded(child: Text('Selfie de verificación', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
                 AppBadge(tone: yo.verificado ? 'verificado' : 'sinVerificar', label: yo.verificado ? 'Aprobado' : 'En revisión'),
               ]),
               const SizedBox(height: 10),

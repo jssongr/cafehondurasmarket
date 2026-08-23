@@ -21,7 +21,7 @@ class ModalHeader extends StatelessWidget {
               children: [
                 if (badge != null) badge!,
                 const SizedBox(height: 6),
-                Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.navy, letterSpacing: -0.2)),
+                Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.navy, letterSpacing: -0.2)),
               ],
             ),
           ),
@@ -30,9 +30,9 @@ class ModalHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             child: Container(
               width: 32, height: 32,
-              decoration: const BoxDecoration(color: AppColors.gris50, shape: BoxShape.circle),
+              decoration: BoxDecoration(color: AppColors.gris50, shape: BoxShape.circle),
               alignment: Alignment.center,
-              child: const Icon(Icons.close, size: 20, color: AppColors.grisM),
+              child: Icon(Icons.close, size: 20, color: AppColors.grisM),
             ),
           ),
         ],

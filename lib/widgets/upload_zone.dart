@@ -90,10 +90,10 @@ class _UploadZoneState extends State<UploadZone> {
                 const SizedBox(height: 8),
                 Text(
                   _subiendo ? 'Subiendo…' : (widget.image != null ? widget.uploadedTitle : widget.title),
-                  style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy),
+                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy),
                 ),
                 const SizedBox(height: 2),
-                Text(widget.sub, style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
+                Text(widget.sub, style: TextStyle(fontSize: 11, color: AppColors.grisM)),
               ],
             ),
           ),
@@ -106,9 +106,9 @@ class _UploadZoneState extends State<UploadZone> {
             decoration: BoxDecoration(color: const Color(0xFFF0F9FF), borderRadius: BorderRadius.circular(AppRadius.md)),
             child: Row(
               children: [
-                const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.azul)),
+                SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.azul)),
                 const SizedBox(width: 8),
-                Expanded(child: Text(widget.scanningLabel, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.azul))),
+                Expanded(child: Text(widget.scanningLabel, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.azul))),
               ],
             ),
           ),
@@ -120,9 +120,9 @@ class _UploadZoneState extends State<UploadZone> {
             decoration: BoxDecoration(color: AppColors.verdeBg, borderRadius: BorderRadius.circular(AppRadius.md)),
             child: Row(
               children: [
-                const Icon(Icons.check_circle, size: 16, color: AppColors.verde),
+                Icon(Icons.check_circle, size: 16, color: AppColors.verde),
                 const SizedBox(width: 8),
-                Expanded(child: Text(widget.doneLabel, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.verde))),
+                Expanded(child: Text(widget.doneLabel, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.verde))),
               ],
             ),
           ),
@@ -134,9 +134,9 @@ class _UploadZoneState extends State<UploadZone> {
             decoration: BoxDecoration(color: AppColors.rojoBg, borderRadius: BorderRadius.circular(AppRadius.md)),
             child: Row(
               children: [
-                const Icon(Icons.error_outline, size: 16, color: AppColors.rojo),
+                Icon(Icons.error_outline, size: 16, color: AppColors.rojo),
                 const SizedBox(width: 8),
-                Expanded(child: Text(_error!, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.rojo))),
+                Expanded(child: Text(_error!, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.rojo))),
               ],
             ),
           ),

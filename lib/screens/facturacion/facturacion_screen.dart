@@ -50,20 +50,20 @@ class FacturacionScreen extends StatelessWidget {
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('${f.numero} · ${f.tipoCarga}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
-                  Text(f.ruta, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
-                  Text(f.fecha, style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
-                  if (modoAdmin) Text('${f.cliente} → ${f.transportista}', style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
+                  Text('${f.numero} · ${f.tipoCarga}', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                  Text(f.ruta, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: AppColors.grisM)),
+                  Text(f.fecha, style: TextStyle(fontSize: 11, color: AppColors.grisM)),
+                  if (modoAdmin) Text('${f.cliente} → ${f.transportista}', style: TextStyle(fontSize: 11, color: AppColors.grisM)),
                   if (!modoAdmin && yo.tipo == TipoUsuario.transportista)
-                    Text('Bruto ${fmtMoneda(f.monto)} − comisión $comisionTexto% (${fmtMoneda(f.comision)})', style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
+                    Text('Bruto ${fmtMoneda(f.monto)} − comisión $comisionTexto% (${fmtMoneda(f.comision)})', style: TextStyle(fontSize: 11, color: AppColors.grisM)),
                 ]),
               ),
               Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
                 Text(
                   modoAdmin ? fmtMoneda(f.comision) : fmtMoneda(yo.tipo == TipoUsuario.transportista ? f.montoTransportista : f.monto),
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.blue),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.blue),
                 ),
-                Text(modoAdmin ? 'comisión' : (yo.tipo == TipoUsuario.transportista ? 'neto recibido' : 'total pagado'), style: const TextStyle(fontSize: 9.5, color: AppColors.grisM)),
+                Text(modoAdmin ? 'comisión' : (yo.tipo == TipoUsuario.transportista ? 'neto recibido' : 'total pagado'), style: TextStyle(fontSize: 9.5, color: AppColors.grisM)),
               ]),
             ]),
           ),

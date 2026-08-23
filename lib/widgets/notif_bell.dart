@@ -41,12 +41,12 @@ class NotifBell extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(AppSpacing.lg),
-                        decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
+                        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Notificaciones', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.navy)),
-                            InkWell(onTap: () => Navigator.pop(ctx), child: const Icon(Icons.close, size: 18, color: AppColors.grisM)),
+                            Text('Notificaciones', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                            InkWell(onTap: () => Navigator.pop(ctx), child: Icon(Icons.close, size: 18, color: AppColors.grisM)),
                           ],
                         ),
                       ),
@@ -67,7 +67,7 @@ class NotifBell extends StatelessWidget {
                                       padding: const EdgeInsets.all(AppSpacing.lg),
                                       decoration: BoxDecoration(
                                         color: n.leida ? null : const Color(0xFFFFFBF2),
-                                        border: const Border(bottom: BorderSide(color: AppColors.gris100)),
+                                        border: Border(bottom: BorderSide(color: AppColors.gris100)),
                                       ),
                                       child: Row(
                                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,11 +78,11 @@ class NotifBell extends StatelessWidget {
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Text(n.titulo, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.navy)),
+                                                Text(n.titulo, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.navy)),
                                                 const SizedBox(height: 2),
-                                                Text(n.sub, style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
+                                                Text(n.sub, style: TextStyle(fontSize: 11, color: AppColors.grisM)),
                                                 const SizedBox(height: 3),
-                                                Text(fmtTime(n.ts), style: const TextStyle(fontSize: 10, color: AppColors.grisM)),
+                                                Text(fmtTime(n.ts), style: TextStyle(fontSize: 10, color: AppColors.grisM)),
                                               ],
                                             ),
                                           ),
@@ -108,7 +108,7 @@ class NotifBell extends StatelessWidget {
             width: 40, height: 40,
             decoration: BoxDecoration(color: AppColors.white, shape: BoxShape.circle, boxShadow: cardShadow),
             alignment: Alignment.center,
-            child: const Icon(Icons.notifications_none, size: 22, color: AppColors.navy),
+            child: Icon(Icons.notifications_none, size: 22, color: AppColors.navy),
           ),
           if (unread > 0)
             Positioned(

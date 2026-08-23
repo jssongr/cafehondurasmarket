@@ -17,7 +17,7 @@ class GpsMapCard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         width: double.infinity,
         decoration: BoxDecoration(color: AppColors.gris50, borderRadius: BorderRadius.circular(AppRadius.md)),
-        child: const Row(children: [
+        child: Row(children: [
           SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
           SizedBox(width: 10),
           Expanded(child: Text('Esperando la primera señal GPS del transportista…', style: TextStyle(fontSize: 11.5, color: AppColors.grisM))),
@@ -43,7 +43,7 @@ class GpsMapCard extends StatelessWidget {
                 Marker(
                   point: pos,
                   width: 36, height: 36,
-                  child: const Icon(Icons.local_shipping, color: AppColors.blue, size: 30),
+                  child: Icon(Icons.local_shipping, color: AppColors.blue, size: 30),
                 ),
               ]),
             ],
@@ -55,7 +55,7 @@ class GpsMapCard extends StatelessWidget {
           color: AppColors.gris50,
           child: Text(
             carga.gpsActualizado != null ? 'Ubicación real · actualizada ${fmtTime(carga.gpsActualizado!)}' : 'Ubicación real',
-            style: const TextStyle(fontSize: 10.5, color: AppColors.grisM),
+            style: TextStyle(fontSize: 10.5, color: AppColors.grisM),
           ),
         ),
       ]),

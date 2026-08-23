@@ -68,7 +68,7 @@ class _BarraSuperior extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.navy,
+      color: AppColors.marcaFondo,
       padding: EdgeInsets.symmetric(horizontal: amplio ? 40 : 18, vertical: 12),
       child: SafeArea(
         bottom: false,
@@ -104,7 +104,7 @@ class _BotonRelieve extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(999),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           colors: [AppColors.blueLight, AppColors.blue],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -142,9 +142,9 @@ class HeroPrincipal extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.navy, AppColors.navyLight, AppColors.navyXLight],
+          colors: [AppColors.marcaFondo, AppColors.marcaFondo2, AppColors.marcaFondo3],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -262,9 +262,9 @@ class _Cierre extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: amplio ? 40 : 22, vertical: amplio ? 72 : 52),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.navyLight, AppColors.navy],
+          colors: [AppColors.marcaFondo2, AppColors.marcaFondo],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -303,7 +303,7 @@ class _PieDePagina extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      color: AppColors.navy,
+      color: AppColors.marcaFondo,
       padding: const EdgeInsets.fromLTRB(22, 26, 22, 30),
       child: Column(children: [
         Image.asset('assets/logo-blanco.png', height: 26),

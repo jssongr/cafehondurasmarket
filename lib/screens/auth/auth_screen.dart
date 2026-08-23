@@ -172,8 +172,8 @@ class _AuthScreenState extends State<AuthScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(colors: [AppColors.navy, AppColors.navyLight, AppColors.blue], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [AppColors.marcaFondo, AppColors.marcaFondo2, AppColors.blue], begin: Alignment.topLeft, end: Alignment.bottomRight),
             ),
           ),
           SafeArea(
@@ -191,7 +191,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 30, horizontal: AppSpacing.xl),
-                          color: AppColors.navy,
+                          color: AppColors.marcaFondo,
                           child: const Column(
                             children: [
                               Image(image: AssetImage('assets/logo-blanco.png'), height: 34),
@@ -221,9 +221,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(color: AppColors.rojoBg, borderRadius: BorderRadius.circular(AppRadius.sm)),
                                   child: Row(children: [
-                                    const Icon(Icons.warning, size: 14, color: AppColors.rojo),
+                                    Icon(Icons.warning, size: 14, color: AppColors.rojo),
                                     const SizedBox(width: 8),
-                                    Expanded(child: Text(_err, style: const TextStyle(color: AppColors.rojo, fontSize: 12))),
+                                    Expanded(child: Text(_err, style: TextStyle(color: AppColors.rojo, fontSize: 12))),
                                   ]),
                                 ),
                               if (_isLogin) _loginForm() else _registerForm(),
@@ -261,7 +261,7 @@ class _AuthScreenState extends State<AuthScreen> {
         borderRadius: BorderRadius.circular(AppRadius.sm),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 9),
-          decoration: BoxDecoration(color: on ? AppColors.navy : Colors.transparent, borderRadius: BorderRadius.circular(AppRadius.sm)),
+          decoration: BoxDecoration(color: on ? AppColors.solido : Colors.transparent, borderRadius: BorderRadius.circular(AppRadius.sm)),
           alignment: Alignment.center,
           child: Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: on ? Colors.white : AppColors.grisM)),
         ),
@@ -284,17 +284,17 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            const Text('Recordarme', style: TextStyle(fontSize: 12, color: AppColors.grisM)),
+            Text('Recordarme', style: TextStyle(fontSize: 12, color: AppColors.grisM)),
             const Spacer(),
             InkWell(
               onTap: _recuperarContrasena,
-              child: const Text('¿Olvidaste tu contraseña?', style: TextStyle(fontSize: 12, color: AppColors.blue, fontWeight: FontWeight.w600)),
+              child: Text('¿Olvidaste tu contraseña?', style: TextStyle(fontSize: 12, color: AppColors.blue, fontWeight: FontWeight.w600)),
             ),
           ]),
         ),
         AppButton(title: 'Entrar a la plataforma', onPressed: _doLogin, loading: _submitting, fullWidth: true),
         const SizedBox(height: 14),
-        Row(children: const [
+        Row(children: [
           Expanded(child: Divider(color: AppColors.gris100)),
           Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: Text('o continuá con', style: TextStyle(fontSize: 11, color: AppColors.grisM))),
           Expanded(child: Divider(color: AppColors.gris100)),
@@ -319,10 +319,10 @@ class _AuthScreenState extends State<AuthScreen> {
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Icon(icon, size: 18, color: AppColors.grisM),
             const SizedBox(width: 6),
-            Text(label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.grisM)),
+            Text(label, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.grisM)),
           ]),
           const SizedBox(height: 2),
-          const Text('Próximamente', style: TextStyle(fontSize: 9, color: AppColors.grisM)),
+          Text('Próximamente', style: TextStyle(fontSize: 9, color: AppColors.grisM)),
         ]),
       ),
     );
@@ -349,7 +349,7 @@ class _AuthScreenState extends State<AuthScreen> {
         AppTextField(label: 'Contraseña', placeholder: 'Mínimo 8 caracteres', controller: _regPassCtrl, obscureText: true),
         AppTextField(label: 'Teléfono', placeholder: '+(504) 9xxx-xxxx', controller: _telefonoCtrl, keyboardType: TextInputType.phone),
         SelectField(label: 'País', value: _pais, options: paises, onChanged: (v) => setState(() => _pais = v), placeholder: 'Selecciona tu país'),
-        const Padding(
+        Padding(
           padding: EdgeInsets.only(bottom: 8),
           child: Text('¿QUÉ NECESITAS HACER?', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
         ),
@@ -391,14 +391,14 @@ class _AuthScreenState extends State<AuthScreen> {
       children: [
         Text(
           _esTransportista ? 'Licencia de conducir vigente' : 'Documento de la empresa (RTN / Registro mercantil)',
-          style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy),
+          style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy),
         ),
         const SizedBox(height: 4),
         Text(
           _esTransportista
               ? 'Sube una foto clara de tu licencia de conducir. Esto nos ayuda a verificar tu identidad como transportista.'
               : 'Sube una foto o escaneo de tu documento de registro comercial para verificar tu empresa.',
-          style: const TextStyle(fontSize: 12, color: AppColors.grisM, height: 1.4),
+          style: TextStyle(fontSize: 12, color: AppColors.grisM, height: 1.4),
         ),
         const SizedBox(height: 14),
         UploadZone(
@@ -409,9 +409,9 @@ class _AuthScreenState extends State<AuthScreen> {
           done: _scanned, doneLabel: 'Documento verificado correctamente — datos extraídos',
         ),
         const SizedBox(height: 18),
-        const Text('Documento de identidad (DNI, cédula o pasaporte)', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+        Text('Documento de identidad (DNI, cédula o pasaporte)', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
         const SizedBox(height: 4),
-        const Text('Sube una foto clara de tu documento de identidad personal, para confirmar quién eres.',
+        Text('Sube una foto clara de tu documento de identidad personal, para confirmar quién eres.',
             style: TextStyle(fontSize: 12, color: AppColors.grisM, height: 1.4)),
         const SizedBox(height: 14),
         UploadZone(
@@ -423,9 +423,9 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         if (_esTransportista) ...[
           const SizedBox(height: 18),
-          const Text('Comprobante de seguro (opcional)', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+          Text('Comprobante de seguro (opcional)', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
           const SizedBox(height: 4),
-          const Text('Si tienes seguro para tu vehículo o para ingresar carga a otro país, súbelo aquí — útil sobre todo en fletes internacionales.',
+          Text('Si tienes seguro para tu vehículo o para ingresar carga a otro país, súbelo aquí — útil sobre todo en fletes internacionales.',
               style: TextStyle(fontSize: 12, color: AppColors.grisM, height: 1.4)),
           const SizedBox(height: 14),
           UploadZone(
@@ -453,9 +453,9 @@ class _AuthScreenState extends State<AuthScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text('Selfie para reconocimiento facial', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+        Text('Selfie para reconocimiento facial', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
         const SizedBox(height: 4),
-        const Text('Tómate una selfie clara mirando de frente. Nuestra IA la comparará con tu documento para confirmar tu identidad.',
+        Text('Tómate una selfie clara mirando de frente. Nuestra IA la comparará con tu documento para confirmar tu identidad.',
             style: TextStyle(fontSize: 12, color: AppColors.grisM, height: 1.4)),
         const SizedBox(height: 14),
         UploadZone(
@@ -478,15 +478,15 @@ class _AuthScreenState extends State<AuthScreen> {
             child: Padding(
               padding: const EdgeInsets.only(top: 2),
               child: Wrap(children: [
-                const Text('Acepto los ', style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
+                Text('Acepto los ', style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
                 InkWell(
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LegalScreen(esTerminos: true))),
-                  child: const Text('Términos de Uso', style: TextStyle(fontSize: 11.5, color: AppColors.blue, fontWeight: FontWeight.w700)),
+                  child: Text('Términos de Uso', style: TextStyle(fontSize: 11.5, color: AppColors.blue, fontWeight: FontWeight.w700)),
                 ),
-                const Text(' y la ', style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
+                Text(' y la ', style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
                 InkWell(
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LegalScreen(esTerminos: false))),
-                  child: const Text('Política de Privacidad', style: TextStyle(fontSize: 11.5, color: AppColors.blue, fontWeight: FontWeight.w700)),
+                  child: Text('Política de Privacidad', style: TextStyle(fontSize: 11.5, color: AppColors.blue, fontWeight: FontWeight.w700)),
                 ),
               ]),
             ),
@@ -518,7 +518,7 @@ class _AuthScreenState extends State<AuthScreen> {
           const SizedBox(height: 4),
           Text(label, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: selected ? AppColors.navy : AppColors.grisM)),
           const SizedBox(height: 2),
-          Text(sub, textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, color: AppColors.grisM)),
+          Text(sub, textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: AppColors.grisM)),
         ]),
       ),
     );

@@ -38,6 +38,13 @@ class NexCargApp extends StatelessWidget {
           theme: buildAppTheme(),
           darkTheme: buildAppDarkTheme(),
           themeMode: app.themeMode,
+          // Las pantallas se pintan con `AppColors`, que necesita saber qué
+          // tema quedó elegido. Esto corre antes que el resto del árbol, así
+          // que para cuando se dibuja algo la paleta ya es la correcta.
+          builder: (context, child) {
+            AppColors.usarTema(Theme.of(context).brightness);
+            return child!;
+          },
           home: const _RootWithToast(),
         ),
       ),
@@ -82,7 +89,7 @@ class _ToastOverlay extends StatelessWidget {
                   top: false,
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 16),
-                    decoration: BoxDecoration(color: AppColors.navy, borderRadius: BorderRadius.circular(AppRadius.lg), boxShadow: floatingShadow),
+                    decoration: BoxDecoration(color: AppColors.marcaFondo, borderRadius: BorderRadius.circular(AppRadius.lg), boxShadow: floatingShadow),
                     child: Row(mainAxisSize: MainAxisSize.min, children: [
                       const Icon(Icons.check_circle, size: 18, color: Color(0xFF4ADE80)),
                       const SizedBox(width: 10),

@@ -44,14 +44,14 @@ class AdminResumenScreen extends StatelessWidget {
             for (final u in users.reversed.take(5))
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 9),
-                decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
+                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
                 child: Row(children: [
                   Icon(tipoIcon[u.tipo], size: 16, color: AppColors.navy),
                   const SizedBox(width: 8),
                   Expanded(child: Text.rich(TextSpan(children: [
                     TextSpan(text: u.nombre, style: const TextStyle(fontWeight: FontWeight.w700)),
                     TextSpan(text: ' · ${u.subtipo}'),
-                  ]), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, color: AppColors.texto))),
+                  ]), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, color: AppColors.texto))),
                   const SizedBox(width: 8),
                   AppBadge(tone: u.verificado ? 'verificado' : 'sinVerificar', label: u.verificado ? 'Verificado' : 'Sin verificar'),
                 ]),
@@ -64,12 +64,12 @@ class AdminResumenScreen extends StatelessWidget {
             for (final c in app.cargas.reversed.take(5))
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 9),
-                decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
+                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
                 child: Row(children: [
                   Expanded(child: Text.rich(TextSpan(children: [
                     TextSpan(text: c.tipoCarga, style: const TextStyle(fontWeight: FontWeight.w700)),
                     TextSpan(text: ' · ${c.ciudadOrigen}, ${c.paisOrigen} → ${c.ciudadDestino}, ${c.paisDestino}'),
-                  ]), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, color: AppColors.texto))),
+                  ]), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, color: AppColors.texto))),
                   AppBadge(tone: c.estado.value),
                 ]),
               ),
@@ -84,8 +84,8 @@ class AdminResumenScreen extends StatelessWidget {
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.only(bottom: 10),
-          decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
-          child: Text(t, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.navy)),
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
+          child: Text(t, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.navy)),
         ),
       );
 }

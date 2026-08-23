@@ -50,7 +50,7 @@ class _AdminUsuarioDetalleModalState extends State<AdminUsuarioDetalleModal> {
       builder: (ctx) => AlertDialog(
         title: Text(titulo, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
         content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(ayuda, style: const TextStyle(fontSize: 12.5, color: AppColors.grisM, height: 1.4)),
+          Text(ayuda, style: TextStyle(fontSize: 12.5, color: AppColors.grisM, height: 1.4)),
           const SizedBox(height: 12),
           TextField(
             controller: ctrl,
@@ -69,7 +69,7 @@ class _AdminUsuarioDetalleModalState extends State<AdminUsuarioDetalleModal> {
               final t = ctrl.text.trim();
               if (t.isNotEmpty) Navigator.pop(ctx, t);
             },
-            child: Text(textoBoton, style: const TextStyle(color: AppColors.rojo, fontWeight: FontWeight.w700)),
+            child: Text(textoBoton, style: TextStyle(color: AppColors.rojo, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -106,9 +106,9 @@ class _AdminUsuarioDetalleModalState extends State<AdminUsuarioDetalleModal> {
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(u.nombre, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.navy)),
+                  Text(u.nombre, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.navy)),
                   const SizedBox(height: 2),
-                  Text(u.subtipo, style: const TextStyle(fontSize: 12.5, color: AppColors.grisM)),
+                  Text(u.subtipo, style: TextStyle(fontSize: 12.5, color: AppColors.grisM)),
                   const SizedBox(height: 4),
                   Stars(value: avgRating(app.historial, usuarioId: u.id, tipo: u.tipo)),
                 ]),
@@ -123,9 +123,9 @@ class _AdminUsuarioDetalleModalState extends State<AdminUsuarioDetalleModal> {
                 padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(color: AppColors.rojoBg, borderRadius: BorderRadius.circular(AppRadius.md)),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text('Motivo registrado', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.rojo)),
+                  Text('Motivo registrado', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.rojo)),
                   const SizedBox(height: 4),
-                  Text(u.motivoRechazo!, style: const TextStyle(fontSize: 12.5, color: AppColors.rojo, height: 1.4)),
+                  Text(u.motivoRechazo!, style: TextStyle(fontSize: 12.5, color: AppColors.rojo, height: 1.4)),
                 ]),
               ),
 
@@ -138,7 +138,7 @@ class _AdminUsuarioDetalleModalState extends State<AdminUsuarioDetalleModal> {
             if (u.placa != null) DetailRow(label: 'Placa', value: u.placa!),
             DetailRow(label: 'Registrado', value: fechaLarga(u.fechaRegistro)),
 
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: AppSpacing.lg, bottom: 8),
               child: Text('DOCUMENTOS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
             ),
@@ -147,7 +147,7 @@ class _AdminUsuarioDetalleModalState extends State<AdminUsuarioDetalleModal> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(color: AppColors.gris50, borderRadius: BorderRadius.circular(AppRadius.md)),
-                child: const Text('Este usuario no subió ningún documento.',
+                child: Text('Este usuario no subió ningún documento.',
                     style: TextStyle(fontSize: 12.5, color: AppColors.grisM)),
               )
             else
@@ -159,10 +159,10 @@ class _AdminUsuarioDetalleModalState extends State<AdminUsuarioDetalleModal> {
                     borderRadius: BorderRadius.circular(AppRadius.md),
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Row(children: [
-                        Expanded(child: Text(d.titulo, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
-                        const Icon(Icons.zoom_in, size: 16, color: AppColors.blue),
+                        Expanded(child: Text(d.titulo, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
+                        Icon(Icons.zoom_in, size: 16, color: AppColors.blue),
                         const SizedBox(width: 4),
-                        const Text('Ampliar', style: TextStyle(fontSize: 11.5, color: AppColors.blue, fontWeight: FontWeight.w600)),
+                        Text('Ampliar', style: TextStyle(fontSize: 11.5, color: AppColors.blue, fontWeight: FontWeight.w600)),
                       ]),
                       const SizedBox(height: 6),
                       ClipRRect(

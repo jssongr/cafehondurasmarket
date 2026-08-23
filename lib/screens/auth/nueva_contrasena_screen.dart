@@ -39,8 +39,8 @@ class _NuevaContrasenaScreenState extends State<NuevaContrasenaScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(colors: [AppColors.navy, AppColors.navyLight, AppColors.blue], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [AppColors.marcaFondo, AppColors.marcaFondo2, AppColors.blue], begin: Alignment.topLeft, end: Alignment.bottomRight),
             ),
           ),
           SafeArea(
@@ -58,7 +58,7 @@ class _NuevaContrasenaScreenState extends State<NuevaContrasenaScreen> {
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 30, horizontal: AppSpacing.xl),
-                          color: AppColors.navy,
+                          color: AppColors.marcaFondo,
                           child: const Column(
                             children: [
                               Icon(Icons.lock_reset, size: 34, color: Colors.white),
@@ -81,9 +81,9 @@ class _NuevaContrasenaScreenState extends State<NuevaContrasenaScreen> {
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(color: AppColors.rojoBg, borderRadius: BorderRadius.circular(AppRadius.sm)),
                                   child: Row(children: [
-                                    const Icon(Icons.warning, size: 14, color: AppColors.rojo),
+                                    Icon(Icons.warning, size: 14, color: AppColors.rojo),
                                     const SizedBox(width: 8),
-                                    Expanded(child: Text(_err, style: const TextStyle(color: AppColors.rojo, fontSize: 12))),
+                                    Expanded(child: Text(_err, style: TextStyle(color: AppColors.rojo, fontSize: 12))),
                                   ]),
                                 ),
                               AppTextField(label: 'Contraseña nueva', placeholder: 'Mínimo 8 caracteres', controller: _passCtrl, obscureText: true),

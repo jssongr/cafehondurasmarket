@@ -42,7 +42,7 @@ class _AppTextFieldState extends State<AppTextField> {
           if (widget.label != null)
             Padding(
               padding: const EdgeInsets.only(bottom: 5),
-              child: Text(widget.label!, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
+              child: Text(widget.label!, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
             ),
           TextField(
             controller: widget.controller,
@@ -56,7 +56,7 @@ class _AppTextFieldState extends State<AppTextField> {
             style: TextStyle(fontSize: 14.5, color: widget.enabled ? AppColors.texto : AppColors.grisM),
             decoration: InputDecoration(
               hintText: widget.placeholder,
-              hintStyle: const TextStyle(color: AppColors.grisM),
+              hintStyle: TextStyle(color: AppColors.grisM),
               filled: true,
               fillColor: widget.enabled ? AppColors.white : AppColors.gris50,
               contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
@@ -66,10 +66,10 @@ class _AppTextFieldState extends State<AppTextField> {
                       onPressed: () => setState(() => _obscured = !_obscured),
                     )
                   : null,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: const BorderSide(color: AppColors.gris100, width: 1.5)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: const BorderSide(color: AppColors.gris100, width: 1.5)),
-              disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: const BorderSide(color: AppColors.gris100, width: 1.5)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: const BorderSide(color: AppColors.amber, width: 1.5)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.gris100, width: 1.5)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.gris100, width: 1.5)),
+              disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.gris100, width: 1.5)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.amber, width: 1.5)),
             ),
           ),
         ],

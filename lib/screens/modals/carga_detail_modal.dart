@@ -35,13 +35,13 @@ class CargaDetailModal extends StatelessWidget {
             Container(
               padding: const EdgeInsets.only(bottom: AppSpacing.md),
               margin: const EdgeInsets.only(bottom: 4),
-              decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
+              decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
               child: Row(children: [
                 Avatar(uri: pub?.selfie, tipo: TipoUsuario.cliente, size: 40),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(c.cliente, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                    Text(c.cliente, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.navy)),
                     const SizedBox(height: 4),
                     Row(children: [
                       AppBadge(tone: (pub?.verificado ?? false) ? 'verificado' : 'sinVerificar', label: (pub?.verificado ?? false) ? 'Verificado' : 'Sin verificar'),
@@ -64,7 +64,7 @@ class CargaDetailModal extends StatelessWidget {
             if (c.peligrosa)
               DetailRow(
                 label: 'Mercancía peligrosa',
-                valueWidget: const Row(mainAxisSize: MainAxisSize.min, children: [
+                valueWidget: Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(Icons.warning_amber_rounded, size: 15, color: AppColors.rojo),
                   SizedBox(width: 4),
                   Text('Sí, requiere manejo especial', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.rojo)),
@@ -73,12 +73,12 @@ class CargaDetailModal extends StatelessWidget {
             DetailRow(
               label: 'Presupuesto',
               value: c.precioAcordado != null ? fmtMoneda(c.precioAcordado) : (c.presupuesto != null ? fmtMoneda(c.presupuesto) : 'Abierto a cotización'),
-              valueStyle: const TextStyle(fontSize: 17, color: AppColors.blue, fontWeight: FontWeight.w700),
+              valueStyle: TextStyle(fontSize: 17, color: AppColors.blue, fontWeight: FontWeight.w700),
             ),
             if (c.transportistaNombre != null) DetailRow(label: 'Transportista', value: c.transportistaNombre!),
             if (c.descripcion.isNotEmpty) DetailRow(label: 'Descripción', value: c.descripcion),
             if (c.fotos.isNotEmpty) ...[
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: AppSpacing.md, bottom: 8),
                 child: Text('FOTOS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
               ),
@@ -97,7 +97,7 @@ class CargaDetailModal extends StatelessWidget {
               ),
             ],
             if (c.pruebaFoto != null || c.pruebaFirma != null) ...[
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: AppSpacing.md, bottom: 8),
                 child: Text('PRUEBA DE ENTREGA', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
               ),
@@ -107,7 +107,7 @@ class CargaDetailModal extends StatelessWidget {
                 if (c.pruebaFoto != null)
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      const Text('Carga entregada', style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
+                      Text('Carga entregada', style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
                       const SizedBox(height: 5),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -119,7 +119,7 @@ class CargaDetailModal extends StatelessWidget {
                 if (c.pruebaFirma != null)
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      const Text('Firma de quien recibió', style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
+                      Text('Firma de quien recibió', style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
                       const SizedBox(height: 5),
                       Container(
                         decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.md), border: Border.all(color: AppColors.gris100)),

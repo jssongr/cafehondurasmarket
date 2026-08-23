@@ -52,13 +52,13 @@ class ClienteDashboard extends StatelessWidget {
             for (final c in mias.reversed.take(5))
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 9),
-                decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
+                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
                 child: Row(children: [
                   Icon(tci[c.tipoCarga] ?? Icons.inventory_2_outlined, size: 16, color: AppColors.navy),
                   const SizedBox(width: 8),
                   Expanded(child: Text.rich(TextSpan(children: [
-                    TextSpan(text: c.tipoCarga, style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.texto)),
-                    TextSpan(text: ' · ${c.ciudadOrigen}, ${c.paisOrigen} → ${c.ciudadDestino}, ${c.paisDestino}', style: const TextStyle(color: AppColors.texto)),
+                    TextSpan(text: c.tipoCarga, style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.texto)),
+                    TextSpan(text: ' · ${c.ciudadOrigen}, ${c.paisOrigen} → ${c.ciudadDestino}, ${c.paisDestino}', style: TextStyle(color: AppColors.texto)),
                   ]), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5))),
                   const SizedBox(width: 8),
                   AppBadge(tone: c.estado.value),
@@ -73,14 +73,14 @@ class ClienteDashboard extends StatelessWidget {
             for (final n in misNotifs.take(5))
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 9),
-                decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
+                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
                 child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Icon(_notifIcons[n.tipo] ?? Icons.campaign, size: 16, color: AppColors.navy),
                   const SizedBox(width: 10),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(n.titulo, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
-                    Text(n.sub, style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
-                    Text(fmtTime(n.ts), style: const TextStyle(fontSize: 10, color: AppColors.grisM)),
+                    Text(n.titulo, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                    Text(n.sub, style: TextStyle(fontSize: 11, color: AppColors.grisM)),
+                    Text(fmtTime(n.ts), style: TextStyle(fontSize: 10, color: AppColors.grisM)),
                   ])),
                 ]),
               ),
@@ -95,8 +95,8 @@ class ClienteDashboard extends StatelessWidget {
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.only(bottom: 10),
-          decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
-          child: Text(t, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.navy)),
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.gris100))),
+          child: Text(t, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.navy)),
         ),
       );
 }

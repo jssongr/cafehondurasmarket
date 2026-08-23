@@ -127,7 +127,7 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text('UNIDAD', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
+                  Text('UNIDAD', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
                   const SizedBox(height: 5),
                   Container(
                     padding: const EdgeInsets.all(3),
@@ -140,7 +140,7 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
                             borderRadius: BorderRadius.circular(AppRadius.sm),
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 10),
-                              decoration: BoxDecoration(color: _unidadPeso == u ? AppColors.navy : null, borderRadius: BorderRadius.circular(AppRadius.sm)),
+                              decoration: BoxDecoration(color: _unidadPeso == u ? AppColors.solido : null, borderRadius: BorderRadius.circular(AppRadius.sm)),
                               alignment: Alignment.center,
                               child: Text(u, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _unidadPeso == u ? Colors.white : AppColors.grisM)),
                             ),
@@ -163,7 +163,7 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
                 child: Row(children: [
                   Switch(value: _peligrosa, onChanged: (v) => setState(() => _peligrosa = v), activeTrackColor: AppColors.rojo),
                   const SizedBox(width: 10),
-                  const Expanded(child: Text('Mercancía peligrosa (requiere manejo especial)', style: TextStyle(fontSize: 12, color: AppColors.grisM))),
+                  Expanded(child: Text('Mercancía peligrosa (requiere manejo especial)', style: TextStyle(fontSize: 12, color: AppColors.grisM))),
                 ]),
               ),
             ),
@@ -183,12 +183,12 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
                 child: Row(children: [
                   Switch(value: _abierto, onChanged: (v) => setState(() => _abierto = v), activeTrackColor: AppColors.amber),
                   const SizedBox(width: 10),
-                  const Expanded(child: Text('Abierto a cotizaciones (sin precio fijo)', style: TextStyle(fontSize: 12, color: AppColors.grisM))),
+                  Expanded(child: Text('Abierto a cotizaciones (sin precio fijo)', style: TextStyle(fontSize: 12, color: AppColors.grisM))),
                 ]),
               ),
             ),
             AppTextField(label: 'Descripción', placeholder: 'Detalles de la carga, condiciones de manejo, etc.', controller: _descripcionCtrl, multiline: true),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(bottom: 5),
               child: Text('FOTOS DE LA CARGA (OPCIONAL)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
             ),
@@ -231,7 +231,7 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
                       alignment: Alignment.center,
                       child: _agregandoFoto
                           ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Icon(Icons.add_a_photo_outlined, color: AppColors.grisM),
+                          : Icon(Icons.add_a_photo_outlined, color: AppColors.grisM),
                     ),
                   ),
                 ],

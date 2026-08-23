@@ -38,13 +38,13 @@ class CargaListItem extends StatelessWidget {
                 children: [
                   Text('${carga.tipoCarga} · ${carga.peso.toStringAsFixed(carga.peso % 1 == 0 ? 0 : 1)} ${carga.unidadPeso}',
                       maxLines: 1, overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                      style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
                   const SizedBox(height: 3),
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     spacing: 8, runSpacing: 4,
                     children: [
-                      Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11.5, color: AppColors.grisM)),
+                      Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
                       AppBadge(tone: carga.estado.value),
                     ],
                   ),
@@ -64,10 +64,10 @@ class CargaListItem extends StatelessWidget {
                       carga.precioAcordado != null
                           ? fmtMoneda(carga.precioAcordado)
                           : (carga.presupuesto != null ? fmtMoneda(carga.presupuesto) : '—'),
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.blue),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.blue),
                     ),
                     if (carga.pago.estado != EstadoPago.pendiente)
-                      Text('Pago ${carga.pago.estado.value}', style: const TextStyle(fontSize: 9.5, color: AppColors.grisM)),
+                      Text('Pago ${carga.pago.estado.value}', style: TextStyle(fontSize: 9.5, color: AppColors.grisM)),
                   ],
                 ),
           ],

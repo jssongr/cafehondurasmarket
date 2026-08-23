@@ -24,7 +24,7 @@ class ConfiguracionScreen extends StatelessWidget {
       children: [
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('APARIENCIA', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
+            Text('APARIENCIA', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
             const SizedBox(height: 12),
             Row(children: [
               _themeChip(context, 'Claro', Icons.light_mode, ThemeMode.light, app.themeMode),
@@ -37,7 +37,7 @@ class ConfiguracionScreen extends StatelessWidget {
         ),
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('IDIOMA', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
+            Text('IDIOMA', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
             const SizedBox(height: 12),
             Row(children: [
               _idiomaChip(context, 'Español', 'ES', app.idioma),
@@ -45,7 +45,7 @@ class ConfiguracionScreen extends StatelessWidget {
               _idiomaChip(context, 'English', 'EN', app.idioma),
             ]),
             if (app.idioma == 'EN')
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 10),
                 child: Text('La traducción completa al inglés todavía no está disponible — por ahora el contenido sigue en español.',
                     style: TextStyle(fontSize: 11, color: AppColors.grisM, height: 1.4)),
@@ -81,7 +81,7 @@ class ConfiguracionScreen extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: on ? AppColors.navy : AppColors.gris50,
+            color: on ? AppColors.solido : AppColors.gris50,
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           child: Column(children: [
@@ -103,7 +103,7 @@ class ConfiguracionScreen extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: on ? AppColors.navy : AppColors.gris50,
+            color: on ? AppColors.solido : AppColors.gris50,
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           alignment: Alignment.center,
@@ -121,12 +121,12 @@ class ConfiguracionScreen extends StatelessWidget {
         child: Row(children: [
           Icon(icon, size: 19, color: AppColors.navy),
           const SizedBox(width: 12),
-          Expanded(child: Text(label, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppColors.navy))),
-          const Icon(Icons.chevron_right, size: 18, color: AppColors.grisM),
+          Expanded(child: Text(label, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppColors.navy))),
+          Icon(Icons.chevron_right, size: 18, color: AppColors.grisM),
         ]),
       ),
     );
   }
 
-  Widget _divider() => const Divider(height: 1, color: AppColors.gris100);
+  Widget _divider() => Divider(height: 1, color: AppColors.gris100);
 }

@@ -121,6 +121,25 @@ volver a correrlo salvo que se rehaga el proyecto de Supabase desde cero.
 decidir a mano quién la puede leer y agregarla a la política correspondiente.
 Por omisión, una carpeta nueva cae en "cualquier usuario con sesión".
 
+## Tema claro y oscuro
+
+La app viene en los dos, y cada quien elige el suyo en **Más → Configuración**:
+claro, oscuro o automático (sigue al teléfono o al navegador). La elección se
+guarda en el aparato, no en la cuenta, así que la misma persona puede tener la
+app oscura en el teléfono y clara en la computadora.
+
+Para quien toque el código: los colores viven en `lib/theme/theme.dart` y hay
+tres familias que no se pueden mezclar.
+
+| Familia | Ejemplos | Regla |
+| --- | --- | --- |
+| Tinta y superficies | `navy`, `texto`, `white`, `gris100` | Se dan vuelta con el tema. `navy` es el color del **texto**, no un fondo |
+| Relleno fuerte | `solido` | Fondo de lo seleccionado, siempre con contenido blanco encima |
+| Marca | `marcaFondo`, `marcaFondo2` | Los fondos oscuros del encabezado y de la presentación. No cambian nunca |
+
+El error fácil es usar `navy` como fondo de algo que lleva texto blanco: en tema
+oscuro `navy` es casi blanco y el texto desaparece. Para eso está `solido`.
+
 ## Límites que hay que vigilar
 
 ### Almacenamiento de archivos — el primero que se va a llenar

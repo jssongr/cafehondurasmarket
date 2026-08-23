@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/constants.dart';
 import '../models/models.dart';
@@ -43,9 +44,35 @@ class AppState extends ChangeNotifier {
   Timer? _toastTimer;
 
   ThemeMode themeMode = ThemeMode.system;
-  void setThemeMode(ThemeMode mode) {
+
+  static const _claveTema = 'tema';
+
+  /// El tema se guarda en el teléfono o el navegador, no en la cuenta: es una
+  /// preferencia del aparato. Alguien puede querer la app oscura en su teléfono
+  /// y clara en la computadora de la oficina.
+  Future<void> _cargarTema() async {
+    final prefs = await SharedPreferences.getInstance();
+    final guardado = prefs.getString(_claveTema);
+    final modo = switch (guardado) {
+      'claro' => ThemeMode.light,
+      'oscuro' => ThemeMode.dark,
+      _ => ThemeMode.system,
+    };
+    if (modo != themeMode) {
+      themeMode = modo;
+      notifyListeners();
+    }
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
     themeMode = mode;
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_claveTema, switch (mode) {
+      ThemeMode.light => 'claro',
+      ThemeMode.dark => 'oscuro',
+      ThemeMode.system => 'automatico',
+    });
   }
 
   String idioma = 'ES';
@@ -67,6 +94,7 @@ class AppState extends ChangeNotifier {
   List<Map<String, dynamic>> _rawMensajes = [];
 
   AppState() {
+    _cargarTema();
     _authSub = _sb.auth.onAuthStateChange.listen(_onAuthChange, onError: (_) => _dejarDeCargar());
     // Red de seguridad: si la sesión no se resuelve, mostrar el login en vez de
     // dejar al usuario mirando el spinner para siempre.

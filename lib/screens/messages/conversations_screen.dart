@@ -47,14 +47,14 @@ class ConversationsScreen extends StatelessWidget {
                     Expanded(
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Row(children: [
-                          Expanded(child: Text(o?.nombre ?? 'Usuario', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
-                          if (last != null) Text(fmtTime(last.ts), style: const TextStyle(fontSize: 10.5, color: AppColors.grisM)),
+                          Expanded(child: Text(o?.nombre ?? 'Usuario', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
+                          if (last != null) Text(fmtTime(last.ts), style: TextStyle(fontSize: 10.5, color: AppColors.grisM)),
                         ]),
                         const SizedBox(height: 2),
                         Text(
                           last == null ? 'Sin mensajes' : (last.esOferta ? 'Cotización: ${fmtMoneda(last.precio)}' : (last.texto ?? '')),
                           maxLines: 1, overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 12, color: AppColors.grisM),
+                          style: TextStyle(fontSize: 12, color: AppColors.grisM),
                         ),
                       ]),
                     ),

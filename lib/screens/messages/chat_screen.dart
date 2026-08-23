@@ -71,13 +71,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Row(children: [
                   Icon(tci[carga.tipoCarga] ?? Icons.inventory_2_outlined, size: 14, color: AppColors.navy),
                   const SizedBox(width: 8),
-                  Expanded(child: Text('${carga.tipoCarga} · ${carga.paisOrigen} → ${carga.paisDestino}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11.5, color: AppColors.navy, fontWeight: FontWeight.w600))),
+                  Expanded(child: Text('${carga.tipoCarga} · ${carga.paisOrigen} → ${carga.paisDestino}', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.5, color: AppColors.navy, fontWeight: FontWeight.w600))),
                   if (otro != null) Stars(value: avgRating(app.historial, usuarioId: otro.id, tipo: otro.tipo)),
                 ]),
               ),
             Expanded(
               child: convo.mensajes.isEmpty
-                  ? const Center(child: Text('Envía un mensaje para coordinar el viaje', style: TextStyle(color: AppColors.grisM, fontSize: 13)))
+                  ? Center(child: Text('Envía un mensaje para coordinar el viaje', style: TextStyle(color: AppColors.grisM, fontSize: 13)))
                   : ListView.builder(
                       controller: _scrollCtrl,
                       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -97,7 +97,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 padding: const EdgeInsets.all(10),
                 color: AppColors.bg,
                 child: Row(children: [
-                  const Text('\$', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                  Text('\$', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.navy)),
                   Expanded(
                     child: TextField(
                       controller: _ofertaCtrl,
@@ -106,7 +106,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       decoration: InputDecoration(
                         hintText: 'ej. 950', isDense: true, filled: true, fillColor: AppColors.white,
                         contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.sm), borderSide: const BorderSide(color: AppColors.gris100, width: 1.5)),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.sm), borderSide: BorderSide(color: AppColors.gris100, width: 1.5)),
                       ),
                     ),
                   ),
@@ -120,7 +120,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  InkWell(onTap: () => setState(() => _showOferta = false), child: const Icon(Icons.close, size: 20, color: AppColors.grisM)),
+                  InkWell(onTap: () => setState(() => _showOferta = false), child: Icon(Icons.close, size: 20, color: AppColors.grisM)),
                 ]),
               ),
             Container(
@@ -132,9 +132,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   customBorder: const CircleBorder(),
                   child: Container(
                     width: 40, height: 40,
-                    decoration: const BoxDecoration(color: AppColors.amberBg, shape: BoxShape.circle),
+                    decoration: BoxDecoration(color: AppColors.amberBg, shape: BoxShape.circle),
                     alignment: Alignment.center,
-                    child: const Icon(Icons.attach_money, size: 18, color: AppColors.blue),
+                    child: Icon(Icons.attach_money, size: 18, color: AppColors.blue),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -146,7 +146,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     decoration: InputDecoration(
                       hintText: 'Escribe un mensaje…', isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: const BorderSide(color: AppColors.gris100, width: 1.5)),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.gris100, width: 1.5)),
                     ),
                   ),
                 ),
@@ -156,7 +156,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   customBorder: const CircleBorder(),
                   child: Container(
                     width: 40, height: 40,
-                    decoration: const BoxDecoration(color: AppColors.navy, shape: BoxShape.circle),
+                    decoration: BoxDecoration(color: AppColors.solido, shape: BoxShape.circle),
                     alignment: Alignment.center,
                     child: const Icon(Icons.send, size: 16, color: Colors.white),
                   ),
@@ -176,7 +176,7 @@ class _ChatScreenState extends State<ChatScreen> {
         constraints: const BoxConstraints(maxWidth: 320),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: mine ? AppColors.navy : AppColors.white,
+          color: mine ? AppColors.solido : AppColors.white,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(AppRadius.lg),
             topRight: const Radius.circular(AppRadius.lg),
@@ -209,10 +209,10 @@ class _ChatScreenState extends State<ChatScreen> {
           Text(mine ? 'TU COTIZACIÓN ENVIADA' : 'COTIZACIÓN RECIBIDA', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: mine ? AppColors.navy : AppColors.amberText)),
           const SizedBox(height: 4),
           Text.rich(TextSpan(children: [
-            TextSpan(text: fmtMoneda(m.precio), style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800, color: AppColors.blue)),
-            const TextSpan(text: ' por el viaje', style: TextStyle(fontSize: 11, color: AppColors.grisM)),
+            TextSpan(text: fmtMoneda(m.precio), style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800, color: AppColors.blue)),
+            TextSpan(text: ' por el viaje', style: TextStyle(fontSize: 11, color: AppColors.grisM)),
           ])),
-          Text(fmtTime(m.ts), style: const TextStyle(fontSize: 10, color: AppColors.grisM)),
+          Text(fmtTime(m.ts), style: TextStyle(fontSize: 10, color: AppColors.grisM)),
           if (!mine && m.estadoOferta == 'pendiente')
             Padding(
               padding: const EdgeInsets.only(top: 8),
@@ -221,7 +221,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   onTap: () => app.responderOferta(m.id, 'aceptada'),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 12),
-                    decoration: BoxDecoration(color: AppColors.navy, borderRadius: BorderRadius.circular(AppRadius.sm)),
+                    decoration: BoxDecoration(color: AppColors.solido, borderRadius: BorderRadius.circular(AppRadius.sm)),
                     child: Row(mainAxisSize: MainAxisSize.min, children: const [
                       Icon(Icons.check, size: 13, color: Colors.white),
                       SizedBox(width: 4),
@@ -235,7 +235,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 12),
                     decoration: BoxDecoration(color: AppColors.rojoBg, borderRadius: BorderRadius.circular(AppRadius.sm)),
-                    child: Row(mainAxisSize: MainAxisSize.min, children: const [
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
                       Icon(Icons.close, size: 13, color: AppColors.rojo),
                       SizedBox(width: 4),
                       Text('Rechazar', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.rojo)),

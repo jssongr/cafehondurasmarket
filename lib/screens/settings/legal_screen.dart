@@ -60,9 +60,9 @@ class LegalScreen extends StatelessWidget {
         for (final s in secciones)
           AppCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(s.title, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+              Text(s.title, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
               const SizedBox(height: 6),
-              Text(s.body, style: const TextStyle(fontSize: 12.5, color: AppColors.grisM, height: 1.5)),
+              Text(s.body, style: TextStyle(fontSize: 12.5, color: AppColors.grisM, height: 1.5)),
             ]),
           ),
       ],

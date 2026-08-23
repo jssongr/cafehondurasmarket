@@ -23,7 +23,7 @@ class SelectField extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         constraints: const BoxConstraints(maxHeight: 460),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
         ),
@@ -41,7 +41,7 @@ class SelectField extends StatelessWidget {
             ),
             Text(
               label ?? 'Selecciona una opción',
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.navy, letterSpacing: 0.4),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.navy, letterSpacing: 0.4),
             ),
             const SizedBox(height: 8),
             Flexible(
@@ -68,7 +68,7 @@ class SelectField extends StatelessWidget {
                               ),
                             ),
                           ),
-                          if (selected) const Icon(Icons.check, size: 18, color: AppColors.navy),
+                          if (selected) Icon(Icons.check, size: 18, color: AppColors.navy),
                         ],
                       ),
                     ),
@@ -92,7 +92,7 @@ class SelectField extends StatelessWidget {
           if (label != null)
             Padding(
               padding: const EdgeInsets.only(bottom: 5),
-              child: Text(label!, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
+              child: Text(label!, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
             ),
           InkWell(
             onTap: () => _open(context),
@@ -114,7 +114,7 @@ class SelectField extends StatelessWidget {
                       style: TextStyle(fontSize: 14.5, color: value.isEmpty ? AppColors.grisM : AppColors.texto),
                     ),
                   ),
-                  const Icon(Icons.keyboard_arrow_down, size: 18, color: AppColors.grisM),
+                  Icon(Icons.keyboard_arrow_down, size: 18, color: AppColors.grisM),
                 ],
               ),
             ),

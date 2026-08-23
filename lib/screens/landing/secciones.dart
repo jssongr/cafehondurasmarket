@@ -11,15 +11,17 @@ import '../../theme/theme.dart';
 /// pantalla de escritorio el texto cruza 1900 px y se vuelve ilegible.
 class Seccion extends StatelessWidget {
   final bool amplio;
-  final Color fondo;
+  /// Nulo = el fondo normal de página. No se puede dejar `AppColors.white` como
+  /// valor por omisión porque ahora depende del tema y ya no es constante.
+  final Color? fondo;
   final Widget child;
-  const Seccion({super.key, required this.amplio, required this.child, this.fondo = AppColors.white});
+  const Seccion({super.key, required this.amplio, required this.child, this.fondo});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      color: fondo,
+      color: fondo ?? AppColors.white,
       padding: EdgeInsets.symmetric(horizontal: amplio ? 40 : 22, vertical: amplio ? 72 : 48),
       child: Center(
         child: ConstrainedBox(
@@ -74,7 +76,7 @@ class TituloSeccion extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(ante.toUpperCase(),
-          style: const TextStyle(
+          style: TextStyle(
               fontSize: 11.5, fontWeight: FontWeight.w800, color: AppColors.blue, letterSpacing: 1.1)),
       const SizedBox(height: 10),
       // Los títulos traen el corte de línea puesto a mano para que en escritorio
@@ -92,7 +94,7 @@ class TituloSeccion extends StatelessWidget {
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 640),
           child: Text(bajada!,
-              style: const TextStyle(fontSize: 15, height: 1.6, color: AppColors.grisM)),
+              style: TextStyle(fontSize: 15, height: 1.6, color: AppColors.grisM)),
         ),
       ],
     ]);
@@ -140,7 +142,7 @@ class Corredor extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1120),
           child: Column(children: [
-            const Text('OPERAMOS EN EL CORREDOR CENTROAMERICANO',
+            Text('OPERAMOS EN EL CORREDOR CENTROAMERICANO',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.grisM, letterSpacing: 1.2)),
@@ -160,7 +162,7 @@ class Corredor extends StatelessWidget {
                       boxShadow: cardShadow,
                     ),
                     child: Text(p,
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
                   ),
               ],
@@ -261,7 +263,7 @@ class _TarjetaPaso extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
-              gradient: const LinearGradient(
+              gradient: LinearGradient(
                 colors: [AppColors.blueLight, AppColors.blue],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -282,9 +284,9 @@ class _TarjetaPaso extends StatelessWidget {
         ]),
         const SizedBox(height: 16),
         Text(titulo,
-            style: const TextStyle(fontSize: 16.5, fontWeight: FontWeight.w800, color: AppColors.navy)),
+            style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w800, color: AppColors.navy)),
         const SizedBox(height: 8),
-        Text(texto, style: const TextStyle(fontSize: 13.5, height: 1.55, color: AppColors.grisM)),
+        Text(texto, style: TextStyle(fontSize: 13.5, height: 1.55, color: AppColors.grisM)),
       ]),
     );
   }
@@ -368,8 +370,8 @@ class _TarjetaPublico extends StatelessWidget {
       decoration: BoxDecoration(
         color: oscuro ? null : AppColors.white,
         gradient: oscuro
-            ? const LinearGradient(
-                colors: [AppColors.navyLight, AppColors.navy],
+            ? LinearGradient(
+                colors: [AppColors.marcaFondo2, AppColors.marcaFondo],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
@@ -459,14 +461,14 @@ class TiposDeCarga extends StatelessWidget {
                   Icon(tci[t] ?? Icons.inventory_2_outlined, size: 19, color: AppColors.blue),
                   const SizedBox(width: 9),
                   Text(t,
-                      style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                      style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
                 ]),
               ),
           ],
         ),
         const SizedBox(height: 26),
         Text('Vehículos disponibles: ${tiposVehiculo.join(' · ')}.',
-            style: const TextStyle(fontSize: 13, height: 1.6, color: AppColors.grisM)),
+            style: TextStyle(fontSize: 13, height: 1.6, color: AppColors.grisM)),
       ]),
     );
   }
@@ -542,9 +544,9 @@ class PorQueConfiar extends StatelessWidget {
                   Icon(icono, size: 24, color: AppColors.blue),
                   const SizedBox(height: 14),
                   Text(titulo,
-                      style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800, color: AppColors.navy)),
+                      style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800, color: AppColors.navy)),
                   const SizedBox(height: 7),
-                  Text(texto, style: const TextStyle(fontSize: 13, height: 1.55, color: AppColors.grisM)),
+                  Text(texto, style: TextStyle(fontSize: 13, height: 1.55, color: AppColors.grisM)),
                 ]),
               ),
           ],
@@ -622,7 +624,7 @@ class _TarjetaContacto extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Icon(icono, size: 22, color: AppColors.blue),
         const SizedBox(height: 12),
-        Text(titulo, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.grisM)),
+        Text(titulo, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.grisM)),
         const SizedBox(height: 4),
         Text(valor,
             style: TextStyle(

@@ -87,7 +87,7 @@ class _FirmaPadState extends State<FirmaPad> {
             child: Stack(
               children: [
                 if (_trazos.isEmpty)
-                  const Center(
+                  Center(
                     child: Text('Firmá acá con el dedo', style: TextStyle(fontSize: 12.5, color: AppColors.grisM)),
                   ),
                 GestureDetector(

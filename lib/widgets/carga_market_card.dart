@@ -8,12 +8,16 @@ import 'badge.dart';
 import 'app_button.dart';
 import 'stars.dart';
 
+// Ya no es `const`: los colores de marca cambian con el tema claro/oscuro.
+// Fijos a propósito: encima siempre va contenido blanco, así que estos
+// degradados no siguen al tema. Si siguieran a la tinta, en oscuro quedaría
+// blanco sobre blanco.
 const Map<String, List<Color>> _headGradients = {
-  'publicada': [AppColors.navy, AppColors.navyLight],
-  'asignada': [AppColors.amber, AppColors.blue],
-  'en_transito': [AppColors.indigo, Color(0xFF6366F1)],
-  'entregada': [AppColors.verde, Color(0xFF22C55E)],
-  'cancelada': [Color(0xFF7F1D1D), AppColors.rojo],
+  'publicada': [AppColors.marcaFondo, AppColors.marcaFondo2],
+  'asignada': [Color(0xFFFFB800), Color(0xFF0D47FF)],
+  'en_transito': [Color(0xFF4338CA), Color(0xFF6366F1)],
+  'entregada': [Color(0xFF15803D), Color(0xFF22C55E)],
+  'cancelada': [Color(0xFF7F1D1D), Color(0xFFB91C1C)],
 };
 
 class CargaMarketCard extends StatelessWidget {
@@ -93,7 +97,7 @@ class CargaMarketCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(carga.cliente, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                          Text(carga.cliente, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
                           const SizedBox(height: 3),
                           Row(children: [
                             AppBadge(tone: (cliente?.verificado ?? false) ? 'verificado' : 'sinVerificar', label: (cliente?.verificado ?? false) ? 'Verificado' : 'Sin verificar'),
@@ -110,13 +114,13 @@ class CargaMarketCard extends StatelessWidget {
                   decoration: BoxDecoration(color: AppColors.bg, borderRadius: BorderRadius.circular(AppRadius.sm)),
                   child: Row(
                     children: [
-                      const Icon(Icons.location_on, size: 13, color: AppColors.blue),
+                      Icon(Icons.location_on, size: 13, color: AppColors.blue),
                       const SizedBox(width: 4),
-                      Flexible(child: Text('${carga.ciudadOrigen}, ${carga.paisOrigen}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
+                      Flexible(child: Text('${carga.ciudadOrigen}, ${carga.paisOrigen}', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
                       const SizedBox(width: 6),
-                      const Icon(Icons.arrow_forward, size: 12, color: AppColors.blue),
+                      Icon(Icons.arrow_forward, size: 12, color: AppColors.blue),
                       const SizedBox(width: 6),
-                      Flexible(child: Text('${carga.ciudadDestino}, ${carga.paisDestino}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
+                      Flexible(child: Text('${carga.ciudadDestino}, ${carga.paisDestino}', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.navy))),
                     ],
                   ),
                 ),
@@ -127,7 +131,7 @@ class CargaMarketCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     carga.presupuesto != null ? fmtMoneda(carga.presupuesto) : 'Abierto a cotización',
-                    style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800, color: AppColors.blue),
+                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800, color: AppColors.blue),
                   ),
                 ),
                 Row(
@@ -150,9 +154,9 @@ class CargaMarketCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(fontSize: 11.5, color: AppColors.grisM)),
+            Text(label, style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
             const SizedBox(width: 8),
-            Flexible(child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.right, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.navy))),
+            Flexible(child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.right, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.navy))),
           ],
         ),
       );

@@ -25,15 +25,15 @@ class MapaFlota extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.xl),
         decoration: BoxDecoration(color: AppColors.gris50, borderRadius: BorderRadius.circular(AppRadius.lg)),
         child: Column(children: [
-          const Icon(Icons.map_outlined, size: 30, color: AppColors.grisM),
+          Icon(Icons.map_outlined, size: 30, color: AppColors.grisM),
           const SizedBox(height: 8),
           Text(
             cargas.isEmpty ? 'No hay viajes en tránsito ahora mismo' : 'Ningún viaje ha enviado su ubicación todavía',
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.navy),
+            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.navy),
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             'La ubicación llega del teléfono del transportista mientras tiene la app abierta.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11, color: AppColors.grisM, height: 1.35),
@@ -88,16 +88,16 @@ class MapaFlota extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           color: AppColors.white,
           child: Row(children: [
-            const Icon(Icons.circle, size: 8, color: AppColors.verde),
+            Icon(Icons.circle, size: 8, color: AppColors.verde),
             const SizedBox(width: 6),
             Expanded(
               child: Text(
                 '${conGps.length} en el mapa'
                 '${sinGps > 0 ? ' · $sinGps sin señal GPS' : ''}',
-                style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.navy),
+                style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.navy),
               ),
             ),
-            const Text('Tocá un camión para ver el viaje',
+            Text('Tocá un camión para ver el viaje',
                 style: TextStyle(fontSize: 10.5, color: AppColors.grisM)),
           ]),
         ),
@@ -123,7 +123,9 @@ class _MarcadorCamion extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
-            color: AppColors.navy,
+            // El mapa de OpenStreetMap es claro en los dos temas, así que esta
+            // etiqueta se queda oscura para que el nombre blanco se lea encima.
+            color: AppColors.marcaFondo,
             borderRadius: BorderRadius.circular(999),
           ),
           child: Text(

@@ -19,7 +19,7 @@ class StepIndicator extends StatelessWidget {
           Container(
             width: 22, height: 22,
             decoration: BoxDecoration(
-              color: done ? AppColors.navy : (active ? AppColors.amber : AppColors.gris100),
+              color: done ? AppColors.solido : (active ? AppColors.amber : AppColors.gris100),
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
@@ -36,7 +36,7 @@ class StepIndicator extends StatelessWidget {
           child: Container(
             height: 2,
             margin: const EdgeInsets.symmetric(horizontal: 6),
-            color: current > n ? AppColors.navy : AppColors.gris100,
+            color: current > n ? AppColors.solido : AppColors.gris100,
           ),
         ));
       }

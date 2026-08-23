@@ -36,7 +36,7 @@ class _CalificarModalState extends State<CalificarModal> {
             ModalHeader(title: 'Calificar a $contraparte', onClose: () => Navigator.of(context).pop()),
             Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              child: Text('${h.tipoCarga} · ${h.ruta}', style: const TextStyle(fontSize: 12, color: AppColors.grisM)),
+              child: Text('${h.tipoCarga} · ${h.ruta}', style: TextStyle(fontSize: 12, color: AppColors.grisM)),
             ),
             StarPicker(value: _estrellas, onChanged: (v) => setState(() => _estrellas = v)),
             AppTextField(label: 'Comentario (opcional)', placeholder: '¿Cómo fue tu experiencia?', controller: _comentarioCtrl, multiline: true),

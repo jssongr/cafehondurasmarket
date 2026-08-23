@@ -100,9 +100,9 @@ class _AdminUsuariosScreenState extends State<AdminUsuariosScreen> {
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(u.nombre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                      Text(u.nombre, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
                       const SizedBox(height: 2),
-                      Text('${u.subtipo} · ${u.email}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
+                      Text('${u.subtipo} · ${u.email}', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: AppColors.grisM)),
                       const SizedBox(height: 4),
                       Stars(value: avgRating(app.historial, usuarioId: u.id, tipo: u.tipo)),
                     ]),
@@ -111,7 +111,7 @@ class _AdminUsuariosScreenState extends State<AdminUsuariosScreen> {
                   Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
                     AppBadge(tone: u.estadoCuenta.tono, label: u.estadoCuenta.etiqueta),
                     const SizedBox(height: 6),
-                    const Icon(Icons.chevron_right, size: 18, color: AppColors.grisM),
+                    Icon(Icons.chevron_right, size: 18, color: AppColors.grisM),
                   ]),
                 ]),
               ),
@@ -120,7 +120,7 @@ class _AdminUsuariosScreenState extends State<AdminUsuariosScreen> {
         Padding(
           padding: const EdgeInsets.only(top: AppSpacing.sm),
           child: Text('Sesión de administrador · ${yo.email}',
-              textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
+              textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: AppColors.grisM)),
         ),
       ],
     );
@@ -134,7 +134,7 @@ class _AdminUsuariosScreenState extends State<AdminUsuariosScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
             decoration: BoxDecoration(
-              color: on ? AppColors.navy : AppColors.gris100,
+              color: on ? AppColors.solido : AppColors.gris100,
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(label,

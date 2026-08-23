@@ -41,7 +41,7 @@ class CorridorTrack extends StatelessWidget {
                     ),
                     Positioned(
                       top: -2, left: (w * pct - 10).clamp(0.0, w - 20),
-                      child: const Icon(Icons.local_shipping, size: 20, color: AppColors.blue),
+                      child: Icon(Icons.local_shipping, size: 20, color: AppColors.blue),
                     ),
                   ],
                 ),
@@ -80,8 +80,8 @@ class CorridorTrack extends StatelessWidget {
 
   Widget _meta(String label, String value) => Text.rich(
         TextSpan(children: [
-          TextSpan(text: label, style: const TextStyle(fontSize: 11.5, color: AppColors.grisM)),
-          TextSpan(text: value, style: const TextStyle(fontSize: 11.5, color: AppColors.navy, fontWeight: FontWeight.w700)),
+          TextSpan(text: label, style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
+          TextSpan(text: value, style: TextStyle(fontSize: 11.5, color: AppColors.navy, fontWeight: FontWeight.w700)),
         ]),
       );
 }

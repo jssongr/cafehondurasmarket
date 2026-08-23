@@ -59,7 +59,7 @@ class ContratoModal extends StatelessWidget {
                 child: AppButton(title: 'Firmar contrato', fullWidth: true, onPressed: () => app.firmarContrato(c.id, yo.tipo)),
               ),
             if (yaFirme && !ambos)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: AppSpacing.lg),
                 child: Text('Ya firmaste. Esperando la firma de la otra parte.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.grisM, fontSize: 12)),
               ),
@@ -69,5 +69,5 @@ class ContratoModal extends StatelessWidget {
     );
   }
 
-  Widget _p(String t) => Text(t, style: const TextStyle(fontSize: 12.5, height: 1.45, color: AppColors.texto));
+  Widget _p(String t) => Text(t, style: TextStyle(fontSize: 12.5, height: 1.45, color: AppColors.texto));
 }

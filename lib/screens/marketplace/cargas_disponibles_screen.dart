@@ -63,7 +63,7 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
               child: Row(children: [
                 Switch(value: _ocultarPeligrosas, onChanged: (v) => setState(() => _ocultarPeligrosas = v), activeTrackColor: AppColors.rojo),
                 const SizedBox(width: 8),
-                const Expanded(child: Text('Ocultar mercancía peligrosa', style: TextStyle(fontSize: 12, color: AppColors.grisM))),
+                Expanded(child: Text('Ocultar mercancía peligrosa', style: TextStyle(fontSize: 12, color: AppColors.grisM))),
               ]),
             ),
             if (_paisOrigen.isNotEmpty || _paisDestino.isNotEmpty || _tipoCarga.isNotEmpty || _buscar.isNotEmpty || _ocultarPeligrosas)
@@ -71,7 +71,7 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
                 alignment: Alignment.centerRight,
                 child: InkWell(
                   onTap: () => setState(() { _paisOrigen = ''; _paisDestino = ''; _tipoCarga = ''; _buscar = ''; _buscarCtrl.clear(); _ocultarPeligrosas = false; }),
-                  child: const Text('Limpiar filtros', style: TextStyle(fontSize: 12, color: AppColors.blue, fontWeight: FontWeight.w700)),
+                  child: Text('Limpiar filtros', style: TextStyle(fontSize: 12, color: AppColors.blue, fontWeight: FontWeight.w700)),
                 ),
               ),
           ]),

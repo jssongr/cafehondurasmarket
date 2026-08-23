@@ -28,7 +28,9 @@ class AppButton extends StatelessWidget {
   Color get _bg {
     switch (variant) {
       case AppButtonVariant.primary:
-        return AppColors.navy;
+        // `solido` y no `navy`: el texto va en blanco encima, y `navy` en tema
+        // oscuro es casi blanco.
+        return AppColors.solido;
       case AppButtonVariant.accent:
         return AppColors.blue;
       case AppButtonVariant.ghost:
@@ -82,7 +84,7 @@ class AppButton extends StatelessWidget {
       color: _bg,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        side: variant == AppButtonVariant.outline ? const BorderSide(color: AppColors.navy, width: 1.5) : BorderSide.none,
+        side: variant == AppButtonVariant.outline ? BorderSide(color: AppColors.navy, width: 1.5) : BorderSide.none,
       ),
       child: InkWell(
         onTap: disabled ? null : onPressed,

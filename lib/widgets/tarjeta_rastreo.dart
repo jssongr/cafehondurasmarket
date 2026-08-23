@@ -35,22 +35,22 @@ class _TarjetaRastreoState extends State<TarjetaRastreo> {
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(color: AppColors.verdeBg, borderRadius: BorderRadius.circular(AppRadius.lg)),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Icon(Icons.my_location, size: 18, color: AppColors.verde),
+          Icon(Icons.my_location, size: 18, color: AppColors.verde),
           const SizedBox(width: 10),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Compartiendo tu ubicación',
+              Text('Compartiendo tu ubicación',
                   style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.verde)),
               const SizedBox(height: 2),
               Text(
                 'El cliente de ${app.viajesEnRuta.length == 1 ? 'tu viaje' : 'tus ${app.viajesEnRuta.length} viajes'} '
                 'puede ver dónde vas. Se corta solo al confirmar la entrega.',
-                style: const TextStyle(fontSize: 11, color: AppColors.verde, height: 1.35),
+                style: TextStyle(fontSize: 11, color: AppColors.verde, height: 1.35),
               ),
               const SizedBox(height: 6),
               InkWell(
                 onTap: app.detenerRastreo,
-                child: const Text('Dejar de compartir',
+                child: Text('Dejar de compartir',
                     style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.rojo)),
               ),
             ]),
@@ -65,15 +65,15 @@ class _TarjetaRastreoState extends State<TarjetaRastreo> {
         decoration: BoxDecoration(color: AppColors.amberBg, borderRadius: BorderRadius.circular(AppRadius.lg)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            const Icon(Icons.location_off, size: 18, color: AppColors.amberText),
+            Icon(Icons.location_off, size: 18, color: AppColors.amberText),
             const SizedBox(width: 10),
-            const Expanded(
+            Expanded(
               child: Text('No estás compartiendo tu ubicación',
                   style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.amberText)),
             ),
           ]),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Tenés un viaje en curso. Al activarlo, el cliente de esa carga verá tu posición en el mapa '
             'mientras tengas la app abierta. Nadie más la ve, y deja de compartirse en cuanto confirmás la entrega '
             'o tocás "Dejar de compartir".',
@@ -86,7 +86,7 @@ class _TarjetaRastreoState extends State<TarjetaRastreo> {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(color: AppColors.rojoBg, borderRadius: BorderRadius.circular(AppRadius.sm)),
               child: Text(app.rastreoError!,
-                  style: const TextStyle(fontSize: 11.5, color: AppColors.rojo, height: 1.35)),
+                  style: TextStyle(fontSize: 11.5, color: AppColors.rojo, height: 1.35)),
             ),
           ],
           const SizedBox(height: 10),
@@ -103,7 +103,7 @@ class _TarjetaRastreoState extends State<TarjetaRastreo> {
           ),
           const SizedBox(height: 6),
           Text('Podés consultar qué hacemos con estos datos en la Política de privacidad, o escribirnos a $soporteEmail.',
-              style: const TextStyle(fontSize: 10.5, color: AppColors.amberText, height: 1.3)),
+              style: TextStyle(fontSize: 10.5, color: AppColors.amberText, height: 1.3)),
         ]),
       );
 }

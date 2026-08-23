@@ -37,9 +37,9 @@ class Screen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(17),
                         child: Container(
                           width: 34, height: 34,
-                          decoration: const BoxDecoration(color: AppColors.gris50, shape: BoxShape.circle),
+                          decoration: BoxDecoration(color: AppColors.gris50, shape: BoxShape.circle),
                           alignment: Alignment.center,
-                          child: const Icon(Icons.chevron_left, color: AppColors.navy),
+                          child: Icon(Icons.chevron_left, color: AppColors.navy),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -48,11 +48,11 @@ class Screen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(title!, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.navy, letterSpacing: -0.4)),
+                          Text(title!, style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.navy, letterSpacing: -0.4)),
                           if (subtitle != null)
                             Padding(
                               padding: const EdgeInsets.only(top: 2),
-                              child: Text(subtitle!, style: const TextStyle(fontSize: 12.5, color: AppColors.grisM)),
+                              child: Text(subtitle!, style: TextStyle(fontSize: 12.5, color: AppColors.grisM)),
                             ),
                         ],
                       ),

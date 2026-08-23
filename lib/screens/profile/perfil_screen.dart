@@ -88,9 +88,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                 decoration: BoxDecoration(color: AppColors.gris100, borderRadius: BorderRadius.circular(AppRadius.md)),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  const Icon(Icons.camera_alt, size: 13, color: AppColors.navy),
+                  Icon(Icons.camera_alt, size: 13, color: AppColors.navy),
                   const SizedBox(width: 5),
-                  const Text('Cambiar foto', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.navy)),
+                  Text('Cambiar foto', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.navy)),
                 ]),
               ),
             ),
@@ -112,7 +112,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               padding: const EdgeInsets.only(top: 8),
               child: Text(
                 'Miembro desde ${yo.fechaRegistro.year} · ${_aniosEnPlataforma(yo.fechaRegistro)}',
-                style: const TextStyle(fontSize: 11.5, color: AppColors.grisM),
+                style: TextStyle(fontSize: 11.5, color: AppColors.grisM),
               ),
             ),
             if (!yo.verificado)
@@ -121,7 +121,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 padding: const EdgeInsets.all(12),
                 width: double.infinity,
                 decoration: BoxDecoration(color: AppColors.amberBg, borderRadius: BorderRadius.circular(AppRadius.md)),
-                child: const Text(
+                child: Text(
                   'Tu cuenta está en revisión. Un administrador va a validar tus documentos antes de habilitar todas las funciones.',
                   style: TextStyle(fontSize: 11.5, color: AppColors.amberText, height: 1.4),
                 ),
@@ -150,7 +150,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
         ),
         AppButton(
           title: 'Cerrar sesión', variant: AppButtonVariant.outline, fullWidth: true,
-          icon: const Icon(Icons.logout, size: 16, color: AppColors.navy),
+          icon: Icon(Icons.logout, size: 16, color: AppColors.navy),
           onPressed: () => app.logout(),
         ),
       ],

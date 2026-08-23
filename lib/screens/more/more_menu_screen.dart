@@ -51,7 +51,7 @@ class MoreMenuScreen extends StatelessWidget {
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(yo.nombre, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                Text(yo.nombre, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.navy)),
                 const SizedBox(height: 3),
                 Row(children: [
                   AppBadge(tone: yo.verificado ? 'verificado' : 'sinVerificar', label: yo.verificado ? 'Verificado' : 'En verificación'),
@@ -82,12 +82,12 @@ class MoreMenuScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text(item.label, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                          Text(item.label, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
                           const SizedBox(height: 2),
-                          Text(item.sub, style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
+                          Text(item.sub, style: TextStyle(fontSize: 11, color: AppColors.grisM)),
                         ]),
                       ),
-                      const Icon(Icons.chevron_right, size: 18, color: AppColors.grisM),
+                      Icon(Icons.chevron_right, size: 18, color: AppColors.grisM),
                     ]),
                   ),
                 ),
@@ -102,9 +102,9 @@ class MoreMenuScreen extends StatelessWidget {
             decoration: BoxDecoration(color: AppColors.rojoBg, borderRadius: BorderRadius.circular(AppRadius.md)),
             alignment: Alignment.center,
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              const Icon(Icons.logout, size: 17, color: AppColors.rojo),
+              Icon(Icons.logout, size: 17, color: AppColors.rojo),
               const SizedBox(width: 8),
-              const Text('Cerrar sesión', style: TextStyle(color: AppColors.rojo, fontWeight: FontWeight.w700, fontSize: 13)),
+              Text('Cerrar sesión', style: TextStyle(color: AppColors.rojo, fontWeight: FontWeight.w700, fontSize: 13)),
             ]),
           ),
         ),

@@ -44,8 +44,8 @@ class _TabShellState extends State<TabShell> {
               children: [for (final d in widget.destinations) d.page],
             ),
             bottomNavigationBar: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: AppColors.white,
                 border: Border(top: BorderSide(color: AppColors.gris100)),
               ),
               child: SafeArea(

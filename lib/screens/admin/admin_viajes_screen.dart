@@ -59,7 +59,7 @@ class _AdminViajesScreenState extends State<AdminViajesScreen> {
         ),
         const SizedBox(height: AppSpacing.lg),
         if (enTransito.isNotEmpty) ...[
-          const Text('EN RUTA AHORA',
+          Text('EN RUTA AHORA',
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
           const SizedBox(height: 8),
           for (final c in enTransito)
@@ -80,22 +80,22 @@ class _AdminViajesScreenState extends State<AdminViajesScreen> {
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text('${c.transportistaNombre ?? "Sin asignar"} · ${c.tipoCarga}',
                             maxLines: 1, overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
                         const SizedBox(height: 2),
                         Text('${c.ciudadOrigen} → ${c.ciudadDestino} · ${frescuraGps(c)}',
                             maxLines: 1, overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 11, color: AppColors.grisM)),
+                            style: TextStyle(fontSize: 11, color: AppColors.grisM)),
                       ]),
                     ),
                     Text('${c.progreso.round()}%',
-                        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.blue)),
+                        style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.blue)),
                   ]),
                 ),
               ),
             ),
           const SizedBox(height: AppSpacing.lg),
         ],
-        const Text('TODOS LOS VIAJES',
+        Text('TODOS LOS VIAJES',
             style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blue, letterSpacing: 0.4)),
         const SizedBox(height: 8),
         AppTextField(
@@ -136,7 +136,7 @@ class _AdminViajesScreenState extends State<AdminViajesScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
             decoration: BoxDecoration(
-              color: on ? AppColors.navy : AppColors.gris100,
+              color: on ? AppColors.solido : AppColors.gris100,
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(label,

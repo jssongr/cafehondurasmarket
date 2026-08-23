@@ -34,16 +34,16 @@ class AyudaScreen extends StatelessWidget {
         for (final f in _faqs)
           AppCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(f.q, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+              Text(f.q, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
               const SizedBox(height: 6),
-              Text(f.a, style: const TextStyle(fontSize: 12.5, color: AppColors.grisM, height: 1.45)),
+              Text(f.a, style: TextStyle(fontSize: 12.5, color: AppColors.grisM, height: 1.45)),
             ]),
           ),
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('¿No encontraste lo que buscabas?', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
+            Text('¿No encontraste lo que buscabas?', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navy)),
             const SizedBox(height: 6),
-            Text('Escribinos a $soporteEmail y te respondemos en menos de 24 horas.', style: const TextStyle(fontSize: 12.5, color: AppColors.grisM, height: 1.45)),
+            Text('Escribinos a $soporteEmail y te respondemos en menos de 24 horas.', style: TextStyle(fontSize: 12.5, color: AppColors.grisM, height: 1.45)),
             const SizedBox(height: 12),
             Row(children: [
               Expanded(

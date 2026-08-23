@@ -13,13 +13,13 @@ class DetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.gris100)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(label, style: const TextStyle(fontSize: 12.5, color: AppColors.grisM)),
+          Text(label, style: TextStyle(fontSize: 12.5, color: AppColors.grisM)),
           const SizedBox(width: 12),
           Expanded(
             child: Align(
@@ -30,7 +30,7 @@ class DetailRow extends StatelessWidget {
                     textAlign: TextAlign.right,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: valueStyle ?? const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.navy),
+                    style: valueStyle ?? TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.navy),
                   ),
             ),
           ),

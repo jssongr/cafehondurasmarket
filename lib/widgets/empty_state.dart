@@ -16,15 +16,15 @@ class EmptyState extends StatelessWidget {
         children: [
           Container(
             width: 64, height: 64,
-            decoration: const BoxDecoration(color: AppColors.gris50, shape: BoxShape.circle),
+            decoration: BoxDecoration(color: AppColors.gris50, shape: BoxShape.circle),
             alignment: Alignment.center,
             child: Icon(icon, size: 30, color: AppColors.grisM),
           ),
           const SizedBox(height: 12),
-          Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.texto)),
+          Text(title, textAlign: TextAlign.center, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.texto)),
           if (sub != null) ...[
             const SizedBox(height: 4),
-            Text(sub!, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12.5, color: AppColors.grisM)),
+            Text(sub!, textAlign: TextAlign.center, style: TextStyle(fontSize: 12.5, color: AppColors.grisM)),
           ],
         ],
       ),
