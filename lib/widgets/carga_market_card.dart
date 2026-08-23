@@ -44,19 +44,37 @@ class CargaMarketCard extends StatelessWidget {
     final rating = cliente != null ? avgRating(historial, usuarioId: cliente!.id, tipo: TipoUsuario.cliente) : null;
 
     return Container(
-      decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(AppRadius.lg), boxShadow: cardShadow),
+      decoration: BoxDecoration(
+        gradient: degradadoSuperficie,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: bordeSuperficie,
+        boxShadow: cardShadow,
+      ),
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           InkWell(
             onTap: onPressed,
-            child: Container(
+            child: Stack(children: [
+              Container(
               padding: const EdgeInsets.all(AppSpacing.lg),
               decoration: BoxDecoration(gradient: LinearGradient(colors: grad, begin: Alignment.topLeft, end: Alignment.bottomRight)),
               child: Row(
                 children: [
-                  Icon(tci[carga.tipoCarga] ?? Icons.inventory_2_outlined, size: 30, color: Colors.white),
+                  // Vidrio sobre el degradado: el icono deja de flotar suelto y
+                  // el encabezado gana una capa más de profundidad.
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(13),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(tci[carga.tipoCarga] ?? Icons.inventory_2_outlined, size: 22, color: Colors.white),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -83,6 +101,27 @@ class CargaMarketCard extends StatelessWidget {
                 ],
               ),
             ),
+              // Brillo en diagonal sobre el encabezado, como el reflejo de una
+              // superficie curva. Es lo que separa un bloque de color de algo
+              // que parece tener forma.
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        stops: const [0, 0.55],
+                        colors: [
+                          Colors.white.withValues(alpha: 0.14),
+                          Colors.white.withValues(alpha: 0),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ]),
           ),
           Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -110,8 +149,12 @@ class CargaMarketCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Container(
-                  padding: const EdgeInsets.all(9),
-                  decoration: BoxDecoration(color: AppColors.bg, borderRadius: BorderRadius.circular(AppRadius.sm)),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.gris50,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                    border: Border.all(color: AppColors.gris100),
+                  ),
                   child: Row(
                     children: [
                       Icon(Icons.location_on, size: 13, color: AppColors.blue),

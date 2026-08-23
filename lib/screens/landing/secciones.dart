@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../data/constants.dart';
 import '../../theme/theme.dart';
+import '../../widgets/panel.dart';
 
 /// Piezas de la página de presentación. Viven aparte de `landing_screen.dart`
 /// porque son texto de marketing que se va a retocar seguido, y no conviene
@@ -156,10 +157,10 @@ class Corredor extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
                     decoration: BoxDecoration(
-                      color: AppColors.white,
+                      gradient: degradadoSuperficie,
                       borderRadius: BorderRadius.circular(999),
-                      border: Border.all(color: AppColors.gris100),
-                      boxShadow: cardShadow,
+                      border: bordeSuperficie,
+                      boxShadow: sombraApoyo,
                     ),
                     child: Text(p,
                         style: TextStyle(
@@ -251,29 +252,14 @@ class _TarjetaPaso extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        gradient: degradadoSuperficie,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: AppColors.gris100),
+        border: bordeSuperficie,
         boxShadow: cardShadow,
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              gradient: LinearGradient(
-                colors: [AppColors.blueLight, AppColors.blue],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(color: AppColors.blue.withValues(alpha: 0.32), blurRadius: 14, offset: const Offset(0, 6)),
-              ],
-            ),
-            child: Icon(icono, color: Colors.white, size: 22),
-          ),
+          IconoRelieve(icono: icono, color: AppColors.blue, tamano: 44),
           const Spacer(),
           Text('$numero',
               style: TextStyle(
@@ -368,28 +354,19 @@ class _TarjetaPublico extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(26),
       decoration: BoxDecoration(
-        color: oscuro ? null : AppColors.white,
         gradient: oscuro
             ? LinearGradient(
                 colors: [AppColors.marcaFondo2, AppColors.marcaFondo],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
-            : null,
+            : degradadoSuperficie,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: oscuro ? Colors.transparent : AppColors.gris100),
+        border: oscuro ? Border.all(color: Colors.white.withValues(alpha: 0.08)) : bordeSuperficie,
         boxShadow: oscuro ? floatingShadow : cardShadow,
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: oscuro ? Colors.white.withValues(alpha: 0.12) : AppColors.azulBg,
-          ),
-          child: Icon(icono, size: 25, color: oscuro ? Colors.white : AppColors.blue),
-        ),
+        IconoRelieve(icono: icono, color: AppColors.blue, tamano: 50),
         const SizedBox(height: 18),
         Text(titulo, style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800, color: fg, letterSpacing: -0.4)),
         const SizedBox(height: 10),
@@ -536,9 +513,10 @@ class PorQueConfiar extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(22),
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  gradient: degradadoSuperficie,
                   borderRadius: BorderRadius.circular(AppRadius.xl),
-                  border: Border.all(color: AppColors.gris100),
+                  border: bordeSuperficie,
+                  boxShadow: sombraApoyo,
                 ),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Icon(icono, size: 24, color: AppColors.blue),
@@ -616,9 +594,9 @@ class _TarjetaContacto extends StatelessWidget {
       width: 300,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        gradient: degradadoSuperficie,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.gris100),
+        border: bordeSuperficie,
         boxShadow: cardShadow,
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

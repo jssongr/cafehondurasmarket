@@ -20,7 +20,21 @@ class Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.bg,
+      // Un fondo de un solo color plano es lo que hace que una app se vea
+      // barata. Este tiñe apenas la parte de arriba con el azul de marca, de
+      // modo que la pantalla tiene aire arriba y peso abajo.
+      decoration: BoxDecoration(
+        color: AppColors.bg,
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: const [0, 0.42],
+          colors: [
+            Color.alphaBlend(AppColors.blue.withValues(alpha: 0.055), AppColors.bg),
+            AppColors.bg,
+          ],
+        ),
+      ),
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -36,8 +50,13 @@ class Screen extends StatelessWidget {
                         onTap: onBack,
                         borderRadius: BorderRadius.circular(17),
                         child: Container(
-                          width: 34, height: 34,
-                          decoration: BoxDecoration(color: AppColors.gris50, shape: BoxShape.circle),
+                          width: 36, height: 36,
+                          decoration: BoxDecoration(
+                            gradient: degradadoSuperficie,
+                            shape: BoxShape.circle,
+                            border: bordeSuperficie,
+                            boxShadow: sombraApoyo,
+                          ),
                           alignment: Alignment.center,
                           child: Icon(Icons.chevron_left, color: AppColors.navy),
                         ),

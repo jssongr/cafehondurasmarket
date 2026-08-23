@@ -5,7 +5,11 @@ enum AppButtonVariant { primary, accent, ghost, danger, outline }
 
 enum AppButtonSize { md, sm }
 
-class AppButton extends StatelessWidget {
+/// Botón con volumen: degradado, filo de luz arriba, resplandor de su propio
+/// color, y un hundido al presionar. Ese hundido —la sombra se achica y la
+/// pieza baja un pixel— es lo que hace que se sienta como un botón físico y no
+/// como un rectángulo que cambia de tono.
+class AppButton extends StatefulWidget {
   final String title;
   final VoidCallback? onPressed;
   final AppButtonVariant variant;
@@ -25,83 +29,127 @@ class AppButton extends StatelessWidget {
     this.fullWidth = false,
   });
 
-  Color get _bg {
-    switch (variant) {
-      case AppButtonVariant.primary:
-        // `solido` y no `navy`: el texto va en blanco encima, y `navy` en tema
-        // oscuro es casi blanco.
-        return AppColors.solido;
-      case AppButtonVariant.accent:
-        return AppColors.blue;
-      case AppButtonVariant.ghost:
-        return AppColors.gris100;
-      case AppButtonVariant.danger:
-        return AppColors.rojoBg;
-      case AppButtonVariant.outline:
-        return Colors.transparent;
-    }
-  }
+  @override
+  State<AppButton> createState() => _AppButtonState();
+}
 
-  Color get _fg {
-    switch (variant) {
-      case AppButtonVariant.primary:
-      case AppButtonVariant.accent:
-        return Colors.white;
-      case AppButtonVariant.ghost:
-        return AppColors.texto;
-      case AppButtonVariant.danger:
-        return AppColors.rojo;
-      case AppButtonVariant.outline:
-        return AppColors.navy;
-    }
+class _AppButtonState extends State<AppButton> {
+  bool _presionado = false;
+
+  bool get _deshabilitado => widget.onPressed == null || widget.loading;
+
+  /// Los que se rellenan con un color fuerte llevan contenido blanco encima.
+  bool get _relleno =>
+      widget.variant == AppButtonVariant.primary || widget.variant == AppButtonVariant.accent;
+
+  Gradient? get _degradado => switch (widget.variant) {
+        AppButtonVariant.primary => LinearGradient(
+            colors: [Color.lerp(AppColors.solido, Colors.white, 0.16)!, AppColors.solido],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        AppButtonVariant.accent => degradadoAzul,
+        _ => null,
+      };
+
+  Color? get _fondo => switch (widget.variant) {
+        AppButtonVariant.ghost => AppColors.gris50,
+        AppButtonVariant.danger => AppColors.rojoBg,
+        AppButtonVariant.outline => Colors.transparent,
+        _ => null,
+      };
+
+  Color get _fg => switch (widget.variant) {
+        AppButtonVariant.primary || AppButtonVariant.accent => Colors.white,
+        AppButtonVariant.ghost => AppColors.texto,
+        AppButtonVariant.danger => AppColors.rojo,
+        AppButtonVariant.outline => AppColors.navy,
+      };
+
+  List<BoxShadow> get _sombra {
+    if (_deshabilitado || _presionado) return const [];
+    return switch (widget.variant) {
+      AppButtonVariant.primary => cardShadow,
+      AppButtonVariant.accent => resplandor(AppColors.blue, fuerza: 0.42),
+      _ => const [],
+    };
   }
 
   @override
   Widget build(BuildContext context) {
-    final disabled = onPressed == null || loading;
-    final child = loading
+    final radio = BorderRadius.circular(AppRadius.md);
+    final pequeno = widget.size == AppButtonSize.sm;
+
+    final contenido = widget.loading
         ? SizedBox(
-            width: 16, height: 16,
+            width: 16,
+            height: 16,
             child: CircularProgressIndicator(strokeWidth: 2, color: _fg),
           )
         : Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (icon != null) ...[icon!, const SizedBox(width: 6)],
+              if (widget.icon != null) ...[widget.icon!, const SizedBox(width: 6)],
               Text(
-                title,
+                widget.title,
                 style: TextStyle(
                   color: _fg,
-                  fontSize: size == AppButtonSize.sm ? 12.5 : 14,
+                  fontSize: pequeno ? 12.5 : 14,
                   fontWeight: FontWeight.w700,
+                  letterSpacing: 0.1,
                 ),
               ),
             ],
           );
 
-    final button = Material(
-      color: _bg,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        side: variant == AppButtonVariant.outline ? BorderSide(color: AppColors.navy, width: 1.5) : BorderSide.none,
+    final boton = AnimatedContainer(
+      duration: const Duration(milliseconds: 110),
+      curve: Curves.easeOut,
+      // Baja un pixel al presionarse. Sin esto el botón cambia de sombra pero
+      // no se mueve, y el efecto se lee como un parpadeo en vez de un empuje.
+      transform: Matrix4.translationValues(0, _presionado ? 1.5 : 0, 0),
+      decoration: BoxDecoration(
+        color: _fondo,
+        gradient: _degradado,
+        borderRadius: radio,
+        border: widget.variant == AppButtonVariant.outline
+            ? Border.all(color: AppColors.gris300, width: 1.5)
+            : (_relleno
+                // Filo claro arriba y oscuro abajo: es el canto del botón.
+                ? Border(
+                    top: BorderSide(color: Colors.white.withValues(alpha: 0.22), width: 1),
+                    bottom: BorderSide(color: Colors.black.withValues(alpha: 0.16), width: 1),
+                  )
+                : null),
+        boxShadow: _sombra,
       ),
-      child: InkWell(
-        onTap: disabled ? null : onPressed,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: Opacity(
-          opacity: disabled ? 0.5 : 1,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: size == AppButtonSize.sm ? 9 : 13,
-              horizontal: size == AppButtonSize.sm ? 14 : 20,
-            ),
-            child: child,
-          ),
+      child: Padding(
+        // El contorno lleva un borde de 1.5 que suma 3 px de alto. Sin quitarlos
+        // del relleno, un botón de contorno al lado de uno normal queda más alto
+        // y la fila se ve desalineada.
+        padding: EdgeInsets.symmetric(
+          vertical: (pequeno ? 9 : 13) - (widget.variant == AppButtonVariant.outline ? 1.5 : 0),
+          horizontal: pequeno ? 14 : 20,
         ),
+        child: contenido,
       ),
     );
 
-    return fullWidth ? SizedBox(width: double.infinity, child: button) : button;
+    final envuelto = Opacity(opacity: _deshabilitado ? 0.45 : 1, child: boton);
+
+    final tocable = Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _deshabilitado ? null : widget.onPressed,
+        onTapDown: (_) => setState(() => _presionado = true),
+        onTapUp: (_) => setState(() => _presionado = false),
+        onTapCancel: () => setState(() => _presionado = false),
+        borderRadius: radio,
+        child: envuelto,
+      ),
+    );
+
+    return widget.fullWidth ? SizedBox(width: double.infinity, child: tocable) : tocable;
   }
 }

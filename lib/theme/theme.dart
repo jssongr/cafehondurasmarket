@@ -135,25 +135,76 @@ class AppRadius {
   static const pill = 999.0;
 }
 
-// Getters y no `final`: una lista `final` de nivel superior se calcula una sola
-// vez, con el tema que hubiera en ese momento, y se quedaría con esa sombra
-// para siempre. Además la sombra tiene que ser bastante más marcada en oscuro,
-// porque sobre fondo negro una sombra suave no se ve y las tarjetas se aplanan.
-List<BoxShadow> get cardShadow => [
-      BoxShadow(
-        color: AppColors.marcaFondo.withValues(alpha: AppColors._oscuro ? 0.45 : 0.08),
-        offset: const Offset(0, 4),
-        blurRadius: 12,
-      ),
+// --- Profundidad -----------------------------------------------------------
+//
+// Cada nivel son DOS sombras, no una. La de arriba es corta y cerrada: es el
+// contacto de la pieza con lo que tiene debajo, y es la que hace que se lea
+// como un objeto y no como un rectángulo pintado. La segunda es amplia y
+// difusa, y da la distancia. Una sola sombra difusa se ve borrosa; una sola
+// sombra dura se ve recortada.
+//
+// Son getters y no listas `final` porque una lista de nivel superior se calcula
+// una sola vez, con el tema que hubiera en ese momento, y se quedaría con esa
+// sombra para siempre.
+
+List<BoxShadow> _sombra({required double alto, required double difuso, required double fuerza}) {
+  final base = AppColors._oscuro ? Colors.black : AppColors.marcaFondo;
+  final f = AppColors._oscuro ? fuerza * 2.6 : fuerza;
+  return [
+    BoxShadow(color: base.withValues(alpha: f * 0.55), offset: Offset(0, alto * 0.25), blurRadius: difuso * 0.3),
+    BoxShadow(color: base.withValues(alpha: f), offset: Offset(0, alto), blurRadius: difuso),
+  ];
+}
+
+/// Apoyado en la superficie: filas, campos, pastillas.
+List<BoxShadow> get sombraApoyo => _sombra(alto: 2, difuso: 6, fuerza: 0.05);
+
+/// Tarjetas y paneles.
+List<BoxShadow> get cardShadow => _sombra(alto: 6, difuso: 18, fuerza: 0.07);
+
+/// Lo que está por encima de todo: modales, avisos, botones principales.
+List<BoxShadow> get floatingShadow => _sombra(alto: 14, difuso: 34, fuerza: 0.13);
+
+/// Resplandor del color propio de un botón. Es lo que hace que un botón se vea
+/// encendido en vez de simplemente pintado.
+List<BoxShadow> resplandor(Color color, {double fuerza = 0.4}) => [
+      BoxShadow(color: color.withValues(alpha: fuerza), offset: const Offset(0, 8), blurRadius: 22, spreadRadius: -4),
     ];
 
-List<BoxShadow> get floatingShadow => [
-      BoxShadow(
-        color: AppColors.marcaFondo.withValues(alpha: AppColors._oscuro ? 0.6 : 0.18),
-        offset: const Offset(0, 10),
-        blurRadius: 24,
-      ),
-    ];
+/// Degradado apenas perceptible para una superficie: arriba un punto más claro
+/// que abajo, como si le diera luz de arriba. En claro se logra aclarando; en
+/// oscuro, al revés, oscureciendo el borde de abajo.
+LinearGradient get degradadoSuperficie => LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: AppColors._oscuro
+          ? [const Color(0xFF1B2937), const Color(0xFF141F29)]
+          : [Colors.white, const Color(0xFFFAFBFD)],
+    );
+
+/// Borde de una tarjeta. Arriba se aclara para simular el canto iluminado.
+Border get bordeSuperficie => Border.all(
+      color: AppColors._oscuro
+          ? Colors.white.withValues(alpha: 0.06)
+          : AppColors.marcaFondo.withValues(alpha: 0.06),
+    );
+
+/// Degradado de marca, para encabezados y piezas destacadas.
+LinearGradient get degradadoMarca => const LinearGradient(
+      colors: [AppColors.marcaFondo2, AppColors.marcaFondo],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+
+/// Degradado del azul de acción. Se aclara arriba para que el botón tenga
+/// volumen en vez de ser un bloque plano de color.
+LinearGradient get degradadoAzul => LinearGradient(
+      colors: AppColors._oscuro
+          ? [const Color(0xFF6E93FF), const Color(0xFF3F6BF5)]
+          : [const Color(0xFF3A6BFF), const Color(0xFF0D3FE8)],
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+    );
 
 ThemeData buildAppTheme() {
   final base = ThemeData(useMaterial3: true, fontFamily: 'AppSans');

@@ -5,6 +5,7 @@ import '../../theme/theme.dart';
 import '../auth/auth_screen.dart';
 import '../settings/legal_screen.dart';
 import 'secciones.dart';
+import 'viaje_vivo.dart';
 
 /// Lo primero que ve alguien que llega desde un anuncio. Antes caía directo en
 /// el formulario de acceso, sin saber qué es NexCarg ni por qué darle sus datos.
@@ -171,57 +172,77 @@ class HeroPrincipal extends StatelessWidget {
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1120),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                // La lista completa de países se repite abajo en su propia
-                // franja; en el teléfono ocupaba dos renglones acá arriba.
-                Etiqueta(
-                  texto: amplio
-                      ? 'Panamá · Costa Rica · Nicaragua · Honduras · El Salvador · Guatemala · México'
-                      : 'De Panamá a México · 7 países',
-                ),
-                const SizedBox(height: 22),
-                Text(
-                  // El corte de línea solo se fuerza en pantalla ancha: en el
-                  // teléfono el texto ya se acomoda solo y el salto le abría un
-                  // hueco raro en medio del titular.
-                  amplio
-                      ? 'Tu carga, de Panamá a México,\ncon quien puedas verificar.'
-                      : 'Tu carga, de Panamá a México, con quien puedas verificar.',
-                  style: TextStyle(
-                    fontSize: amplio ? 52 : 31,
-                    height: 1.12,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                    letterSpacing: -1.2,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 620),
-                  child: Text(
-                    'NexCarg conecta a las empresas que necesitan mover mercancía con transportistas '
-                    'verificados del corredor centroamericano. Publicás tu carga, recibís ofertas, '
-                    'firmás un contrato digital y el pago queda retenido hasta que la entrega esté probada.',
-                    style: TextStyle(
-                      fontSize: amplio ? 17 : 14.5,
-                      height: 1.6,
-                      color: Colors.white.withValues(alpha: 0.82),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                Wrap(spacing: 12, runSpacing: 12, children: [
-                  _BotonRelieve(texto: 'Publicar mi primera carga', grande: true, onTap: () => onEntrar(registro: true)),
-                  _BotonBorde(texto: 'Soy transportista', onTap: () => onEntrar(registro: true)),
-                ]),
-                const SizedBox(height: 40),
-                const CifrasClave(),
-              ]),
+              child: amplio
+                  // En pantalla ancha, el texto solo dejaba la mitad derecha
+                  // vacía. La pieza del viaje llena ese lado y de paso muestra
+                  // el producto, que es lo que de verdad convence.
+                  ? Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                      Expanded(flex: 6, child: _Texto(amplio: amplio, onEntrar: onEntrar)),
+                      const SizedBox(width: 48),
+                      Expanded(flex: 5, child: ViajeVivo(amplio: amplio)),
+                    ])
+                  : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      _Texto(amplio: amplio, onEntrar: onEntrar),
+                      const SizedBox(height: 36),
+                      ViajeVivo(amplio: amplio),
+                    ]),
             ),
           ),
         ),
       ]),
     );
+  }
+}
+
+class _Texto extends StatelessWidget {
+  final bool amplio;
+  final void Function({bool registro}) onEntrar;
+  const _Texto({required this.amplio, required this.onEntrar});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      // La lista completa de países se repite abajo en su propia
+      // franja; en el teléfono ocupaba dos renglones acá arriba.
+      const Etiqueta(texto: 'De Panamá a México · 7 países'),
+      const SizedBox(height: 22),
+      Text(
+        // El corte de línea solo se fuerza en pantalla ancha: en el
+        // teléfono el texto ya se acomoda solo y el salto le abría un
+        // hueco raro en medio del titular.
+        amplio
+            ? 'Tu carga, de Panamá\na México, con quien\npuedas verificar.'
+            : 'Tu carga, de Panamá a México, con quien puedas verificar.',
+        style: TextStyle(
+          fontSize: amplio ? 44 : 31,
+          height: 1.12,
+          fontWeight: FontWeight.w800,
+          color: Colors.white,
+          letterSpacing: -1.2,
+        ),
+      ),
+      const SizedBox(height: 18),
+      ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 620),
+        child: Text(
+          'NexCarg conecta a las empresas que necesitan mover mercancía con transportistas '
+          'verificados del corredor centroamericano. Publicás tu carga, recibís ofertas, '
+          'firmás un contrato digital y el pago queda retenido hasta que la entrega esté probada.',
+          style: TextStyle(
+            fontSize: amplio ? 17 : 14.5,
+            height: 1.6,
+            color: Colors.white.withValues(alpha: 0.82),
+          ),
+        ),
+      ),
+      const SizedBox(height: 30),
+      Wrap(spacing: 12, runSpacing: 12, children: [
+        _BotonRelieve(texto: 'Publicar mi primera carga', grande: true, onTap: () => onEntrar(registro: true)),
+        _BotonBorde(texto: 'Soy transportista', onTap: () => onEntrar(registro: true)),
+      ]),
+      const SizedBox(height: 40),
+      const CifrasClave(),
+    ]);
   }
 }
 
