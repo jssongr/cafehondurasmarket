@@ -4,7 +4,7 @@
 
 El asta izquierda y la diagonal forman la **N** de NexCarg. El trazo derecho no
 cierra la letra: **asciende y termina en punta de flecha**, porque el corredor
-que cubre la plataforma va de sur a norte, de Panamá hacia México.
+que cubre la plataforma va de sur a norte, de Panamá hacia Guatemala.
 
 ## Colores
 

@@ -205,15 +205,15 @@ class _Texto extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // La lista completa de países se repite abajo en su propia
       // franja; en el teléfono ocupaba dos renglones acá arriba.
-      const Etiqueta(texto: 'De Panamá a México · 7 países'),
+      Etiqueta(texto: 'De Panamá a Guatemala · ${paises.length} países'),
       const SizedBox(height: 22),
       Text(
         // El corte de línea solo se fuerza en pantalla ancha: en el
         // teléfono el texto ya se acomoda solo y el salto le abría un
         // hueco raro en medio del titular.
         amplio
-            ? 'Tu carga, de Panamá\na México, con quien\npuedas verificar.'
-            : 'Tu carga, de Panamá a México, con quien puedas verificar.',
+            ? 'Tu carga por toda\nCentroamérica, con quien\npuedas verificar.'
+            : 'Tu carga por toda Centroamérica, con quien puedas verificar.',
         style: TextStyle(
           fontSize: amplio ? 44 : 31,
           height: 1.12,
@@ -352,7 +352,7 @@ class _PieDePagina extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        Text('© ${DateTime.now().year} NexCarg. Transporte de carga terrestre en el corredor Panamá–México.',
+        Text('© ${DateTime.now().year} NexCarg. Transporte de carga terrestre en el corredor centroamericano.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11.5, color: Colors.white.withValues(alpha: 0.5), height: 1.4)),
       ]),

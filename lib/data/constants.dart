@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 
-const List<String> paises = ['Panamá', 'Costa Rica', 'Nicaragua', 'Honduras', 'El Salvador', 'Guatemala', 'México'];
+// México queda fuera a propósito. Su cabotaje está cerrado a transportistas
+// extranjeros: un camión centroamericano no puede entregar dentro de México,
+// y el tramo mexicano exige permiso de la SICT, licencia federal, seguro
+// mexicano y Carta Porte del SAT. Dejarlo en la lista permitía cotizar
+// viajes que después nadie podía cumplir. Se atiende cuando haya
+// transportistas mexicanos verificados y el traspaso en frontera modelado.
+const List<String> paises = ['Panamá', 'Costa Rica', 'Nicaragua', 'Honduras', 'El Salvador', 'Guatemala'];
 
 final Map<String, int> paisIdx = {for (var i = 0; i < paises.length; i++) paises[i]: i};
 
@@ -12,7 +18,6 @@ const Map<String, List<String>> ciudades = {
   'Honduras': ['Tegucigalpa', 'San Pedro Sula', 'Puerto Cortés'],
   'El Salvador': ['San Salvador', 'Santa Ana', 'Acajutla'],
   'Guatemala': ['Ciudad de Guatemala', 'Puerto Barrios', 'Quetzaltenango'],
-  'México': ['Tapachula', 'Ciudad de México', 'Veracruz'],
 };
 
 const List<String> tiposCarga = [

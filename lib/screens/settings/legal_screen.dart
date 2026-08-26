@@ -11,7 +11,7 @@ class _Section {
 
 const _terminos = [
   _Section('1. Qué es NexCarg',
-      'NexCarg es una plataforma que conecta a clientes que necesitan transportar carga con transportistas independientes y empresas de transporte en el corredor Panamá–Costa Rica–Nicaragua–Honduras–El Salvador–Guatemala–México. NexCarg actúa como intermediario tecnológico: no es transportista ni propietario de la carga, y no se hace responsable por el transporte físico de la mercancía.'),
+      'NexCarg es una plataforma que conecta a clientes que necesitan transportar carga con transportistas independientes y empresas de transporte en el corredor Panamá–Costa Rica–Nicaragua–Honduras–El Salvador–Guatemala. NexCarg actúa como intermediario tecnológico: no es transportista ni propietario de la carga, y no se hace responsable por el transporte físico de la mercancía.'),
   _Section('2. Cuentas y verificación',
       'Para usar NexCarg debes registrarte con datos reales, incluyendo un documento de identidad y una selfie de verificación. Un administrador revisa manualmente estos documentos antes de habilitar todas las funciones de tu cuenta. Eres responsable de mantener la confidencialidad de tu contraseña y de toda actividad que ocurra en tu cuenta.'),
   _Section('3. Publicación y aceptación de cargas',

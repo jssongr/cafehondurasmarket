@@ -196,7 +196,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             children: [
                               Image(image: AssetImage('assets/logo-blanco.png'), height: 34),
                               SizedBox(height: 10),
-                              Text('El transporte de carga terrestre de Panamá a México, en un solo lugar',
+                              Text('El transporte de carga terrestre de Centroamérica, en un solo lugar',
                                   textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Color(0xA6FFFFFF))),
                             ],
                           ),

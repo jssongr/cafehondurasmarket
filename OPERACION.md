@@ -121,6 +121,36 @@ volver a correrlo salvo que se rehaga el proyecto de Supabase desde cero.
 decidir a mano quién la puede leer y agregarla a la política correspondiente.
 Por omisión, una carpeta nueva cae en "cualquier usuario con sesión".
 
+## Por qué México no está en la lista de países
+
+La plataforma cubre seis países: Panamá, Costa Rica, Nicaragua, Honduras, El
+Salvador y Guatemala. México **se sacó a propósito**, no es un olvido.
+
+México tiene el cabotaje cerrado a transportistas extranjeros: un camión
+centroamericano no puede entregar dentro de territorio mexicano. El tramo
+mexicano exige permiso de autotransporte federal de la SICT (que se otorga a
+empresas constituidas en México), Licencia Federal de Conductor, seguro
+mexicano y el complemento Carta Porte del SAT en cada viaje.
+
+Mientras México estuvo en la lista, la app dejaba cotizar viajes de Panamá a
+Ciudad de México que en la práctica nadie podía cumplir.
+
+**Para atenderlo algún día** hacen falta tres cosas, y en este orden:
+
+1. Transportistas mexicanos verificados en la plataforma, con su permiso de la
+   SICT al día.
+2. Modelar el **relevo en frontera**: el viaje se parte en dos tramos —uno
+   centroamericano hasta Tecún Umán o El Carmen, y uno mexicano hacia
+   adentro—, cada uno con su transportista, su contrato y la prueba de quién
+   tenía la carga en cada momento.
+3. Resolver el régimen de plataformas digitales del SAT: cobrar comisión a
+   usuarios mexicanos probablemente obliga a registrarse ante el SAT y cobrar
+   IVA. Eso es tema de contador, y va antes de tener el primer usuario
+   mexicano, no después.
+
+Nada de esto es consejo legal. Antes de invertir en la entrada a México hay que
+confirmarlo con un abogado aduanero mexicano.
+
 ## Tema claro y oscuro
 
 La app viene en los dos, y cada quien elige el suyo en **Más → Configuración**:

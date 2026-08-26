@@ -1,6 +1,6 @@
 # NexCarg
 
-Plataforma tecnológica que conecta empresas que necesitan transportar mercancías con transportistas y empresas de transporte, en el corredor Panamá–Costa Rica–Nicaragua–Honduras–El Salvador–Guatemala–México. App nativa para **iPhone, Android y Web** construida con **Flutter** (un solo código para las tres plataformas).
+Plataforma tecnológica que conecta empresas que necesitan transportar mercancías con transportistas y empresas de transporte, en el corredor Panamá–Costa Rica–Nicaragua–Honduras–El Salvador–Guatemala. App nativa para **iPhone, Android y Web** construida con **Flutter** (un solo código para las tres plataformas).
 
 Digitaliza la contratación de transporte terrestre: las empresas publican cargas, los transportistas las aceptan o cotizan, ambas partes firman un contrato digital, el pago queda en garantía (escrow) dentro de la plataforma y se libera automáticamente al confirmarse la entrega vía seguimiento GPS.
 
@@ -11,7 +11,7 @@ Digitaliza la contratación de transporte terrestre: las empresas publican carga
 - **Negociación**: aceptar al precio publicado o enviar/recibir cotizaciones por chat interno.
 - **Contrato digital**: se genera al asignar un viaje; ambas partes deben firmarlo antes de que el transportista pueda iniciar el trayecto.
 - **Pago en garantía (escrow)**: el monto se retiene y se libera al transportista, descontando la comisión de la plataforma, al confirmarse la entrega.
-- **Seguimiento GPS real** del transportista mientras la app está abierta, mostrado en un mapa en vivo (además del progreso estimado sobre el corredor Panamá–México).
+- **Seguimiento GPS real** del transportista mientras la app está abierta, mostrado en un mapa en vivo (además del progreso estimado sobre el corredor centroamericano).
 - **Calificaciones** mutuas entre cliente y transportista al finalizar cada viaje.
 - **Facturación** automática con desglose de comisión en cada viaje completado.
 - **Panel administrativo**: resumen de usuarios, viajes e ingresos por comisión, listado de usuarios y de todos los viajes.
