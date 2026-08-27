@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/storage_service.dart';
+import '../utils/accion.dart';
 import '../theme/theme.dart';
 import 'app_image.dart';
 
@@ -46,15 +46,10 @@ class _UploadZoneState extends State<UploadZone> {
       final url = await pickAndUploadImage(carpeta: widget.carpeta);
       if (url != null) widget.onPicked(url);
     } catch (e) {
-      if (mounted) setState(() => _error = 'No se pudo subir el archivo: ${_detalle(e)}');
+      if (mounted) setState(() => _error = 'No se pudo subir el archivo. ${mensajeDeError(e)}');
     } finally {
       if (mounted) setState(() => _subiendo = false);
     }
-  }
-
-  String _detalle(Object e) {
-    if (e is StorageException) return e.message;
-    return e.toString();
   }
 
   @override

@@ -4,6 +4,7 @@ import '../../data/constants.dart';
 import '../../models/models.dart';
 import '../../services/storage_service.dart';
 import '../../state/app_state.dart';
+import '../../utils/accion.dart';
 import '../../theme/theme.dart';
 import '../../utils/format.dart';
 import '../../widgets/app_button.dart';
@@ -141,10 +142,12 @@ class _PerfilScreenState extends State<PerfilScreen> {
             ],
             AppButton(
               title: 'Guardar cambios', fullWidth: true,
-              onPressed: () async {
-                await app.actualizarPerfil(yo.id, nombre: _nombreCtrl.text, telefono: _telefonoCtrl.text, selfie: _selfie);
-                if (context.mounted) app.showToast('Perfil actualizado');
-              },
+              onPressed: () => ejecutar(
+                context,
+                () => app.actualizarPerfil(yo.id, nombre: _nombreCtrl.text, telefono: _telefonoCtrl.text, selfie: _selfie),
+                exito: 'Perfil actualizado',
+                fallo: 'No se pudo guardar el perfil',
+              ),
             ),
           ]),
         ),

@@ -12,6 +12,7 @@ import '../../widgets/empty_state.dart';
 import '../../widgets/screen.dart';
 import '../../widgets/select_field.dart';
 import '../../widgets/verification_banner.dart';
+import '../../utils/accion.dart';
 import '../../utils/format.dart';
 
 class CargasDisponiblesScreen extends StatefulWidget {
@@ -65,7 +66,7 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
       // y antes eso no decía absolutamente nada.
       _aviso('No se pudo aceptar el viaje',
           'Puede que otro transportista la haya tomado antes que vos. Actualizá la '
-          'lista y revisá.\n\n$e');
+          'lista y revisá.\n\n${mensajeDeError(e)}');
     }
   }
 
@@ -78,7 +79,7 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
       openChat(context, convoId);
     } catch (e) {
       if (!mounted) return;
-      _aviso('No se pudo abrir la conversación', '$e');
+      _aviso('No se pudo abrir la conversación', mensajeDeError(e));
     }
   }
 

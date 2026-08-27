@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../models/models.dart';
 import '../../state/app_state.dart';
 import '../../theme/theme.dart';
+import '../../utils/accion.dart';
 import '../../utils/format.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_image.dart';
@@ -137,10 +138,15 @@ class CargaDetailModal extends StatelessWidget {
                   title: 'Contactar', fullWidth: true,
                   onPressed: () async {
                     final yoTipo = yo.tipo == TipoUsuario.cliente ? TipoUsuario.cliente : TipoUsuario.transportista;
-                    final convoId = await app.abrirOCrearConvo(c, yo.id, yoTipo);
-                    if (!context.mounted) return;
+                    int? convoId;
+                    final ok = await ejecutar(
+                      context,
+                      () async => convoId = await app.abrirOCrearConvo(c, yo.id, yoTipo),
+                      fallo: 'No se pudo abrir la conversación',
+                    );
+                    if (!ok || convoId == null || !context.mounted) return;
                     Navigator.of(context).pop();
-                    Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (_) => ChatScreen(convoId: convoId)));
+                    Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (_) => ChatScreen(convoId: convoId!)));
                   },
                 ),
               ),

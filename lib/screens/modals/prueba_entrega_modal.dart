@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/storage_service.dart';
 import '../../state/app_state.dart';
+import '../../utils/accion.dart';
 import '../../theme/theme.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
@@ -69,7 +70,7 @@ class _PruebaEntregaModalState extends State<PruebaEntregaModal> {
       if (mounted) {
         setState(() {
           _enviando = false;
-          _err = 'No se pudo confirmar la entrega: $e';
+          _err = 'No se pudo confirmar la entrega. ${mensajeDeError(e)}';
         });
       }
     }

@@ -30,7 +30,6 @@ class _AuthScreenState extends State<AuthScreen> {
 
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
-  bool _recordarme = true;
 
   final _nombreCtrl = TextEditingController();
   final _regEmailCtrl = TextEditingController();
@@ -166,6 +165,35 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  /// Devuelve el primer problema del paso 1, o null si está todo bien.
+  ///
+  /// Nombra el campo que falta en vez de decir "completá todos los campos":
+  /// en un formulario de siete campos, ese mensaje obliga a buscar cuál es.
+  /// Y valida el correo acá y no al final, porque quien lo escribe mal sube
+  /// documentos y se toma una selfie antes de enterarse.
+  String? _revisarPaso1() {
+    if (_nombreCtrl.text.trim().isEmpty) return 'Escribí tu nombre completo o el de la empresa.';
+    if (_regEmailCtrl.text.trim().isEmpty) return 'Escribí tu correo electrónico.';
+    if (!_correoValido(_regEmailCtrl.text.trim())) {
+      return 'Ese correo no parece válido. Revisá que esté completo, como nombre@empresa.com';
+    }
+    if (_regPassCtrl.text.isEmpty) return 'Elegí una contraseña.';
+    if (_regPassCtrl.text.length < 8) return 'La contraseña debe tener al menos 8 caracteres.';
+    if (_telefonoCtrl.text.trim().isEmpty) return 'Escribí tu teléfono, para poder coordinar los viajes.';
+    if (_pais.isEmpty) return 'Elegí tu país.';
+    if (_tipo == null) return 'Indicá si necesitás transportar carga o si tenés camión.';
+    if (_subtipo.isEmpty) return 'Elegí qué tipo de ${_esTransportista ? 'transportista' : 'cliente'} sos.';
+    if (_esTransportista && _capacidadCtrl.text.trim().isEmpty) {
+      return 'Indicá la capacidad de tu vehículo en toneladas.';
+    }
+    return null;
+  }
+
+  /// Comprobación deliberadamente simple: algo, arroba, algo, punto, algo. No
+  /// intenta validar el estándar completo —eso rechaza correos legítimos— solo
+  /// atrapa los errores de tipeo obvios.
+  bool _correoValido(String v) => RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]{2,}$').hasMatch(v);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -275,16 +303,14 @@ class _AuthScreenState extends State<AuthScreen> {
         AppTextField(label: 'Contraseña', placeholder: '••••••', controller: _passCtrl, obscureText: true),
         Padding(
           padding: const EdgeInsets.only(bottom: 4),
+          // Acá había una casilla "Recordarme" que no estaba conectada a nada:
+          // marcarla o no daba exactamente lo mismo, porque la sesión queda
+          // guardada igual. Una casilla que miente es peor que no tenerla.
           child: Row(children: [
-            SizedBox(
-              width: 22, height: 22,
-              child: Checkbox(
-                value: _recordarme, onChanged: (v) => setState(() => _recordarme = v ?? true),
-                activeColor: AppColors.navy, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text('Recordarme', style: TextStyle(fontSize: 12, color: AppColors.grisM)),
+            Icon(Icons.lock_outline, size: 13, color: AppColors.grisM),
+            const SizedBox(width: 5),
+            Text('Tu sesión queda abierta en este aparato',
+                style: TextStyle(fontSize: 11.5, color: AppColors.grisM)),
             const Spacer(),
             InkWell(
               onTap: _recuperarContrasena,
@@ -372,12 +398,11 @@ class _AuthScreenState extends State<AuthScreen> {
         AppButton(
           title: 'Siguiente →', fullWidth: true,
           onPressed: () {
-            if (_nombreCtrl.text.isEmpty || _regEmailCtrl.text.isEmpty || _regPassCtrl.text.isEmpty || _tipo == null || _subtipo.isEmpty || _telefonoCtrl.text.isEmpty || _pais.isEmpty) {
-              setState(() => _err = 'Completa todos los campos.');
+            final problema = _revisarPaso1();
+            if (problema != null) {
+              setState(() => _err = problema);
               return;
             }
-            if (_regPassCtrl.text.length < 8) { setState(() => _err = 'La contraseña debe tener al menos 8 caracteres.'); return; }
-            if (_esTransportista && _capacidadCtrl.text.isEmpty) { setState(() => _err = 'Indica la capacidad del vehículo.'); return; }
             setState(() { _err = ''; _step = 2; });
           },
         ),

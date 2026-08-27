@@ -4,6 +4,7 @@ import '../../data/constants.dart';
 import '../../services/storage_service.dart';
 import '../../state/app_state.dart';
 import '../../theme/theme.dart';
+import '../../utils/accion.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/app_image.dart';
@@ -108,7 +109,7 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      _alert('No se pudo publicar la carga', '$e');
+      _alert('No se pudo publicar la carga', mensajeDeError(e));
     } finally {
       if (mounted) setState(() => _publicando = false);
     }
