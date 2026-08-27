@@ -11,6 +11,8 @@ import '../../widgets/carga_market_card.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/screen.dart';
 import '../../widgets/select_field.dart';
+import '../../widgets/verification_banner.dart';
+import '../../utils/format.dart';
 
 class CargasDisponiblesScreen extends StatefulWidget {
   const CargasDisponiblesScreen({super.key});
@@ -26,6 +28,78 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
   final _buscarCtrl = TextEditingController();
   String _buscar = '';
   bool _ocultarPeligrosas = false;
+
+  /// Aceptar un viaje compromete el camión a una ruta y a un precio, así que
+  /// se confirma antes. Un toque por error en una lista de tarjetas es fácil.
+  Future<void> _aceptar(Carga c, Usuario yo) async {
+    if (!await _cuentaLista(yo)) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('¿Aceptar este viaje?'),
+        content: Text(
+          '${c.tipoCarga} · ${c.peso.toStringAsFixed(0)} ${c.unidadPeso}\n'
+          '${c.ciudadOrigen}, ${c.paisOrigen} → ${c.ciudadDestino}, ${c.paisDestino}\n'
+          'Recogida: ${c.fecha}\n\n'
+          'Te comprometés por ${fmtMoneda(c.presupuesto)}. Se genera el contrato y '
+          'el cliente queda notificado.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Aceptar viaje')),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+
+    final app = context.read<AppState>();
+    try {
+      await app.asignarCarga(c.id, yo.id, yo.nombre, c.presupuesto!);
+      await app.abrirOCrearConvo(c, yo.id, TipoUsuario.transportista);
+      if (!mounted) return;
+      app.showToast('¡Viaje aceptado! Coordina la recogida en Mensajes.');
+      context.read<TabShellController>().goTo(Pestana.propias);
+    } catch (e) {
+      if (!mounted) return;
+      // Lo más común acá es que otro transportista la haya tomado primero,
+      // y antes eso no decía absolutamente nada.
+      _aviso('No se pudo aceptar el viaje',
+          'Puede que otro transportista la haya tomado antes que vos. Actualizá la '
+          'lista y revisá.\n\n$e');
+    }
+  }
+
+  Future<void> _cotizar(Carga c, Usuario yo) async {
+    if (!await _cuentaLista(yo)) return;
+    final app = context.read<AppState>();
+    try {
+      final convoId = await app.abrirOCrearConvo(c, yo.id, TipoUsuario.transportista);
+      if (!mounted) return;
+      openChat(context, convoId);
+    } catch (e) {
+      if (!mounted) return;
+      _aviso('No se pudo abrir la conversación', '$e');
+    }
+  }
+
+  /// La base rechaza estas acciones si la cuenta no está aprobada. Decirlo acá
+  /// evita que la persona toque el botón y no pase nada visible.
+  Future<bool> _cuentaLista(Usuario yo) async {
+    if (yo.verificado) return true;
+    await _aviso('Tu cuenta todavía está en revisión',
+        'Podés mirar el mercado, pero para aceptar o cotizar cargas hace falta que un '
+        'administrador apruebe tus documentos. Te avisamos apenas quede lista.');
+    return false;
+  }
+
+  Future<void> _aviso(String titulo, String texto) => showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(titulo),
+          content: Text(texto),
+          actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Entendido'))],
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +121,7 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
       title: 'Cargas Disponibles',
       subtitle: 'NexCarg — ${yo.subtipo}',
       children: [
+        const VerificationBanner(),
         Container(
           padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(AppRadius.lg), boxShadow: cardShadow),
@@ -76,7 +151,21 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
               ),
           ]),
         ),
-        if (res.isEmpty) const EmptyState(icon: Icons.search, title: 'Sin cargas disponibles con esos filtros'),
+        if (res.isEmpty)
+          EmptyState(
+            icon: Icons.search_off,
+            title: 'Ninguna carga coincide con esos filtros',
+            sub: 'Probá quitando alguno, o revisá más tarde: las cargas van apareciendo a lo largo del día.',
+            accion: 'Quitar los filtros',
+            onAccion: () => setState(() {
+              _paisOrigen = '';
+              _paisDestino = '';
+              _tipoCarga = '';
+              _buscar = '';
+              _buscarCtrl.clear();
+              _ocultarPeligrosas = false;
+            }),
+          ),
         for (final c in res)
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.lg),
@@ -85,18 +174,8 @@ class _CargasDisponiblesScreenState extends State<CargasDisponiblesScreen> {
               cliente: app.perfilDe(c.clienteId),
               historial: app.historial,
               onPressed: () => openCargaDetail(context, c.id),
-              onAceptar: () async {
-                await app.asignarCarga(c.id, yo.id, yo.nombre, c.presupuesto!);
-                await app.abrirOCrearConvo(c, yo.id, TipoUsuario.transportista);
-                if (!context.mounted) return;
-                app.showToast('¡Viaje aceptado! Coordina la recogida en Mensajes.');
-                context.read<TabShellController>().goTo(2);
-              },
-              onCotizar: () async {
-                final convoId = await app.abrirOCrearConvo(c, yo.id, TipoUsuario.transportista);
-                if (!context.mounted) return;
-                openChat(context, convoId);
-              },
+              onAceptar: () => _aceptar(c, yo),
+              onCotizar: () => _cotizar(c, yo),
             ),
           ),
       ],

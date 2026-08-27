@@ -11,6 +11,7 @@ import '../../widgets/app_text_field.dart';
 import '../../widgets/screen.dart';
 import '../../widgets/select_field.dart';
 import '../../widgets/upload_zone.dart';
+import '../../widgets/verification_banner.dart';
 
 class PublicarCargaScreen extends StatefulWidget {
   const PublicarCargaScreen({super.key});
@@ -61,9 +62,18 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
       _alert('Campos requeridos', "Indica un presupuesto o activa 'Abierto a cotizaciones'.");
       return;
     }
-    setState(() => _publicando = true);
     final app = context.read<AppState>();
     final yo = app.usuario!;
+    // La base rechaza la publicación de una cuenta sin aprobar. Sin esta
+    // comprobación, la persona llena el formulario entero y recibe un error
+    // de base de datos que no le dice nada.
+    if (!yo.verificado) {
+      _alert('Tu cuenta todavía está en revisión',
+          'Podés preparar la carga, pero para publicarla hace falta que un administrador '
+          'apruebe tus documentos. Te avisamos apenas quede lista.');
+      return;
+    }
+    setState(() => _publicando = true);
     try {
       await app.publicarCarga(
         clienteId: yo.id, cliente: yo.nombre, tipoCarga: _tipoCarga,
@@ -96,6 +106,9 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
         _fotos.clear();
         _documento = null;
       });
+    } catch (e) {
+      if (!mounted) return;
+      _alert('No se pudo publicar la carga', '$e');
     } finally {
       if (mounted) setState(() => _publicando = false);
     }
@@ -118,6 +131,7 @@ class _PublicarCargaScreenState extends State<PublicarCargaScreen> {
       title: 'Publicar Carga',
       subtitle: 'Completa los datos de tu envío',
       children: [
+        const VerificationBanner(),
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             SelectField(label: 'Tipo de mercancía', value: _tipoCarga, options: tiposCarga, onChanged: (v) => setState(() => _tipoCarga = v)),
