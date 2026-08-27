@@ -5,6 +5,7 @@ import '../../navigation/app_routes.dart';
 import '../../state/app_state.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/carga_list_item.dart';
+import '../../navigation/tab_shell.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/screen.dart';
 
@@ -21,7 +22,14 @@ class MisViajesScreen extends StatelessWidget {
       title: 'Mis Viajes',
       subtitle: 'NexCarg — ${yo.subtipo}',
       children: [
-        if (mios.isEmpty) const EmptyState(icon: Icons.local_shipping_outlined, title: 'Aún no tienes viajes asignados', sub: 'Acepta o cotiza una carga en "Cargas Disponibles"'),
+        if (mios.isEmpty)
+          const EmptyState(
+            icon: Icons.local_shipping_outlined,
+            title: 'Todavía no tenés viajes asignados',
+            sub: 'Mirá las cargas publicadas en tus rutas, cotizá la que te sirva y acá te aparece el viaje.',
+            accion: 'Ver cargas disponibles',
+            irA: Pestana.accion,
+          ),
         for (final c in mios)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),

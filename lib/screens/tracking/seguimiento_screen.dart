@@ -33,7 +33,12 @@ class SeguimientoScreen extends StatelessWidget {
       onBack: showBack ? () => Navigator.of(context).pop() : null,
       children: [
         const TarjetaRastreo(),
-        if (mios.isEmpty) const EmptyState(icon: Icons.location_on_outlined, title: 'No tienes viajes en curso', sub: 'Aquí verás el seguimiento GPS en tiempo real de tus cargas asignadas'),
+        if (mios.isEmpty)
+          const EmptyState(
+            icon: Icons.location_on_outlined,
+            title: 'No tenés viajes en curso',
+            sub: 'Cuando una carga salga, acá vas a ver dónde está en el mapa, en vivo.',
+          ),
         for (final c in mios)
           Builder(builder: (context) {
             final firmado = c.contrato?.ambosFirmaron ?? false;

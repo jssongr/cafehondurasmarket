@@ -27,7 +27,12 @@ class HistorialScreen extends StatelessWidget {
       subtitle: 'NexCarg — ${yo.subtipo}',
       onBack: showBack ? () => Navigator.of(context).pop() : null,
       children: [
-        if (mis.isEmpty) const EmptyState(icon: Icons.access_time, title: 'Sin viajes completados', sub: 'Las entregas confirmadas aparecerán aquí'),
+        if (mis.isEmpty)
+          const EmptyState(
+            icon: Icons.access_time,
+            title: 'Sin viajes completados todavía',
+            sub: 'Cada entrega confirmada queda acá con su prueba y su calificación.',
+          ),
         for (final h in mis)
           Builder(builder: (context) {
             final miCal = yo.tipo == TipoUsuario.cliente ? h.calTransportista : h.calCliente;

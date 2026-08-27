@@ -51,7 +51,14 @@ class TransportistaDashboard extends StatelessWidget {
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             _cardTitle('Últimas cargas publicadas'),
-            if (disponibles.isEmpty) const EmptyState(icon: Icons.storefront_outlined, title: 'No hay cargas disponibles ahora'),
+            if (disponibles.isEmpty)
+              const EmptyState(
+                icon: Icons.storefront_outlined,
+                title: 'No hay cargas publicadas ahora',
+                sub: 'Van apareciendo a lo largo del día. Revisá el mercado o activá tus notificaciones.',
+                accion: 'Ver el mercado',
+                irA: Pestana.accion,
+              ),
             for (final c in disponibles.reversed.take(5))
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 9),

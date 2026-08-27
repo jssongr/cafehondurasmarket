@@ -5,6 +5,7 @@ import '../../navigation/app_routes.dart';
 import '../../state/app_state.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/carga_list_item.dart';
+import '../../navigation/tab_shell.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/screen.dart';
 
@@ -21,7 +22,14 @@ class MisCargasScreen extends StatelessWidget {
       title: 'Mis Cargas',
       subtitle: 'NexCarg — ${yo.subtipo}',
       children: [
-        if (mias.isEmpty) const EmptyState(icon: Icons.description_outlined, title: 'No tienes cargas publicadas', sub: 'Crea tu primera en "Publicar Carga"'),
+        if (mias.isEmpty)
+          const EmptyState(
+            icon: Icons.description_outlined,
+            title: 'Todavía no publicaste ninguna carga',
+            sub: 'Publicar no cuesta nada y la ven todos los transportistas verificados de la ruta.',
+            accion: 'Publicar mi primera carga',
+            irA: Pestana.accion,
+          ),
         for (final c in mias)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),

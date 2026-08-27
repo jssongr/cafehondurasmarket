@@ -7,6 +7,7 @@ import '../../theme/theme.dart';
 import '../../utils/format.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/badge.dart';
+import '../../navigation/tab_shell.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/notif_bell.dart';
 import '../../widgets/screen.dart';
@@ -48,7 +49,14 @@ class ClienteDashboard extends StatelessWidget {
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             _cardTitle('Mis cargas recientes'),
-            if (mias.isEmpty) const EmptyState(icon: Icons.inventory_2_outlined, title: 'Aún no has publicado cargas'),
+            if (mias.isEmpty)
+              const EmptyState(
+                icon: Icons.inventory_2_outlined,
+                title: 'Todavía no publicaste cargas',
+                sub: 'Publicar es gratis. Recibís cotizaciones de transportistas verificados.',
+                accion: 'Publicar una carga',
+                irA: Pestana.accion,
+              ),
             for (final c in mias.reversed.take(5))
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 9),

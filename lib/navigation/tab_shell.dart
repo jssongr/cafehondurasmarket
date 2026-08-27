@@ -2,6 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../theme/theme.dart';
 
+/// Índices de las pestañas, con nombre.
+///
+/// Los dos roles tienen la misma estructura de cinco pestañas, pero cada
+/// posición significa algo distinto según quién sea. Viven acá y no escritos a
+/// mano en cada pantalla porque un estado vacío que manda a la pestaña
+/// equivocada es peor que no tener botón.
+class Pestana {
+  Pestana._();
+
+  static const panel = 0;
+
+  /// Cliente: "Publicar". Transportista: "Cargas disponibles".
+  static const accion = 1;
+
+  /// Cliente: "Mis Cargas". Transportista: "Mis Viajes".
+  static const propias = 2;
+
+  static const mensajes = 3;
+  static const mas = 4;
+}
+
 class TabShellController extends ChangeNotifier {
   int index = 0;
   void goTo(int i) {

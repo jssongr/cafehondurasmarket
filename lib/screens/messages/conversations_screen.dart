@@ -28,7 +28,12 @@ class ConversationsScreen extends StatelessWidget {
       title: 'Mensajes',
       subtitle: '${mis.length} conversaciones',
       children: [
-        if (mis.isEmpty) const EmptyState(icon: Icons.chat_bubble_outline, title: 'Sin conversaciones', sub: 'Contacta desde el mercado de cargas'),
+        if (mis.isEmpty)
+          const EmptyState(
+            icon: Icons.chat_bubble_outline,
+            title: 'Sin conversaciones todavía',
+            sub: 'Cuando contactes a alguien por una carga, la conversación queda guardada acá.',
+          ),
         for (final c in mis)
           Builder(builder: (context) {
             final o = otro(c);

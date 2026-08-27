@@ -34,7 +34,12 @@ class FacturacionScreen extends StatelessWidget {
             const SizedBox(width: 12),
             StatTile(label: 'Ingresos comisión', value: fmtMoneda(totalComision), sub: '$comisionTexto% por viaje', icon: Icons.attach_money, accent: AppColors.verde),
           ]),
-        if (mias.isEmpty) const EmptyState(icon: Icons.receipt_long_outlined, title: 'Sin facturas todavía', sub: 'Se generan automáticamente al liberarse el pago de un viaje'),
+        if (mias.isEmpty)
+          const EmptyState(
+            icon: Icons.receipt_long_outlined,
+            title: 'Sin facturas todavía',
+            sub: 'Se generan solas al liberarse el pago de cada viaje entregado.',
+          ),
         for (final f in mias)
           Container(
             margin: const EdgeInsets.only(bottom: 12),

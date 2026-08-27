@@ -144,27 +144,32 @@ class HeroPrincipal extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.marcaFondo, AppColors.marcaFondo2, AppColors.marcaFondo3],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
+      color: AppColors.marcaFondo,
       child: Stack(children: [
-        // Halo de luz detrás del texto: da profundidad sin cargar la pantalla.
-        Positioned(
-          right: -120,
-          top: -80,
-          child: Container(
-            width: 420,
-            height: 420,
+        // Fondo en alta resolución. Va debajo de todo y con un velo encima:
+        // una imagen a pleno contraste detrás de un titular lo vuelve ilegible,
+        // y quien llega desde un anuncio no se queda a descifrarlo.
+        Positioned.fill(
+          child: Image.asset(
+            'assets/fondo-portada.jpg',
+            fit: BoxFit.cover,
+            alignment: Alignment.centerRight,
+            // Mientras carga se ve el navy de fondo, no un hueco blanco.
+            errorBuilder: (_, _, _) => const SizedBox.shrink(),
+          ),
+        ),
+        Positioned.fill(
+          child: DecoratedBox(
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(colors: [
-                AppColors.blue.withValues(alpha: 0.35),
-                AppColors.blue.withValues(alpha: 0),
-              ]),
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.marcaFondo.withValues(alpha: 0.90),
+                  AppColors.marcaFondo.withValues(alpha: 0.58),
+                  AppColors.marcaFondo2.withValues(alpha: 0.22),
+                ],
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+              ),
             ),
           ),
         ),
