@@ -45,7 +45,14 @@ class ContratoModal extends StatelessWidget {
                     'para el transporte de ${c.tipoCarga} (${c.peso} ${c.unidadPeso}) desde ${c.ciudadOrigen}, ${c.paisOrigen} hasta ${c.ciudadDestino}, ${c.paisDestino}, '
                     'con fecha de recogida ${c.fecha}.'),
                 const SizedBox(height: 10),
-                _p('El monto acordado es de ${fmtMoneda(c.precioAcordado)}, retenido en garantía (escrow) por NexCarg y liberado al Transportista al confirmarse la entrega. '
+                // El contrato describe el procedimiento tal como ocurre hoy: el
+                // depósito se hace por fuera y NexCarg lo confirma a mano. Poner
+                // "escrow automático" sería prometer algo que todavía no pasa.
+                _p('El monto acordado es de ${fmtMoneda(c.precioAcordado)}. El Cliente lo deposita en la cuenta que NexCarg le indica, '
+                    'y NexCarg lo retiene en garantía. El Transportista queda habilitado para iniciar el viaje únicamente después de que '
+                    'NexCarg confirme la recepción del depósito.'),
+                const SizedBox(height: 10),
+                _p('El monto retenido se libera al Transportista una vez que la entrega quede probada con fotografía y firma de quien recibe. '
                     'NexCarg retiene una comisión de servicio del $comisionTexto% sobre el monto del viaje.'),
                 const SizedBox(height: 10),
                 _p('Ambas partes se comprometen a coordinar la recogida y entrega dentro de los plazos acordados, y a calificarse mutuamente al finalizar el viaje.'),

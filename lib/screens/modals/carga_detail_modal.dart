@@ -10,6 +10,7 @@ import '../../widgets/app_image.dart';
 import '../../widgets/avatar.dart';
 import '../../widgets/badge.dart';
 import '../../widgets/detail_row.dart';
+import '../../widgets/estado_pago_card.dart';
 import '../../widgets/modal_header.dart';
 import '../../widgets/stars.dart';
 import '../messages/chat_screen.dart';
@@ -52,6 +53,10 @@ class CargaDetailModal extends StatelessWidget {
                   ]),
                 ),
               ]),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: EstadoPagoCard(carga: c),
             ),
             if (c.contrato != null) DetailRow(label: 'Contrato digital', value: c.contrato!.ambosFirmaron ? 'Firmado por ambas partes' : 'Pendiente de firma'),
             DetailRow(label: 'Ruta', value: '${c.ciudadOrigen}, ${c.paisOrigen} → ${c.ciudadDestino}, ${c.paisDestino}'),

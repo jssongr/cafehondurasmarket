@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../models/models.dart';
 import '../../navigation/app_routes.dart';
 import '../../state/app_state.dart';
+import '../../utils/accion.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/carga_list_item.dart';
 import '../../navigation/tab_shell.dart';
@@ -43,10 +44,26 @@ class MisViajesScreen extends StatelessWidget {
                   AppButton(title: 'Ver', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onPressed: () => openCargaDetail(context, c.id)),
                   if (c.contrato != null)
                     AppButton(title: 'Contrato', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onPressed: () => openContrato(context, c.id)),
+                  // Tres estados, no dos: falta firmar, falta que entre el
+                  // pago, o ya se puede salir. Antes el botón decía "Iniciar
+                  // viaje" aunque el dinero no estuviera asegurado, y el
+                  // transportista se llevaba un error al tocarlo.
                   if (c.estado == EstadoCarga.asignada)
-                    firmado
-                        ? AppButton(title: 'Iniciar viaje', size: AppButtonSize.sm, onPressed: () { app.iniciarViaje(c.id); app.showToast('Viaje iniciado — seguimiento GPS activado'); })
-                        : AppButton(title: 'Firmar para iniciar', size: AppButtonSize.sm, variant: AppButtonVariant.accent, onPressed: () => openContrato(context, c.id)),
+                    if (!firmado)
+                      AppButton(title: 'Firmar para iniciar', size: AppButtonSize.sm, variant: AppButtonVariant.accent, onPressed: () => openContrato(context, c.id))
+                    else if (c.pago.estado != EstadoPago.retenido)
+                      AppButton(title: 'Esperando el pago', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onPressed: null)
+                    else
+                      AppButton(
+                        title: 'Iniciar viaje',
+                        size: AppButtonSize.sm,
+                        onPressed: () => ejecutar(
+                          context,
+                          () => app.iniciarViaje(c.id),
+                          exito: 'Viaje iniciado — seguimiento GPS activado',
+                          fallo: 'No se pudo iniciar el viaje',
+                        ),
+                      ),
                   if (c.estado == EstadoCarga.enTransito) ...[
                     AppButton(title: 'Seguimiento', size: AppButtonSize.sm, variant: AppButtonVariant.accent, onPressed: () => openSeguimiento(context)),
                     AppButton(title: 'Confirmar entrega', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onPressed: () => openPruebaEntrega(context, c.id)),

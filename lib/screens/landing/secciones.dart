@@ -200,7 +200,7 @@ class ComoFunciona extends StatelessWidget {
     (
       Icons.lock_outline,
       'El pago queda retenido',
-      'El dinero se guarda en garantía. El transportista sabe que existe y está reservado; vos sabés que no sale hasta que la carga llegue.',
+      'Depositás el monto y NexCarg lo retiene en garantía. El transportista recién sale cuando confirmamos que entró, y el dinero no se mueve hasta que la carga llegue.',
     ),
     (
       Icons.my_location_outlined,
@@ -702,10 +702,11 @@ class _PreguntasState extends State<Preguntas> {
     ),
     (
       'Soy transportista, ¿cuándo me pagan?',
-      'El cliente deposita antes de que salgas y el dinero queda retenido en '
-          'garantía. Al entregar la carga tomás la foto y la firma de quien recibe, y '
-          'con esa prueba el pago se libera automáticamente. No dependés de que el '
-          'cliente se acuerde de pagarte.',
+      'El cliente deposita antes de que salgas, y NexCarg te confirma dentro de la app '
+          'cuando el dinero ya está retenido. Hasta ese momento no tenés que salir con la '
+          'carga. Al entregar tomás la foto y la firma de quien recibe, y con esa prueba se '
+          'libera el pago a tu favor, menos la comisión. No dependés de que el cliente se '
+          'acuerde de pagarte.',
     ),
     (
       '¿Qué pasa si la carga no llega o llega dañada?',

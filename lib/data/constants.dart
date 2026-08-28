@@ -60,6 +60,21 @@ final String comisionTexto =
 const String urlApp = 'https://nexcarg.com';
 
 const String soporteEmail = 'soporte@nexcarg.com';
+
+/// Cuenta donde el cliente deposita el pago del viaje, que NexCarg retiene
+/// hasta que la entrega esté probada.
+///
+/// **Hay que llenar esto antes de lanzar.** Mientras esté vacío, la app le dice
+/// al cliente que escriba a soporte para pedir los datos, en vez de inventarse
+/// un número de cuenta. Formato libre: banco, tipo de cuenta, número y a nombre
+/// de quién.
+const List<String> datosDeposito = [
+  // 'Banco Atlántida — Cuenta de ahorro en lempiras',
+  // 'No. 0000-0000-0000',
+  // 'A nombre de: Grupo Groantz S. de R.L.',
+];
+
+bool get hayDatosDeposito => datosDeposito.isNotEmpty;
 // Número de WhatsApp de soporte en formato internacional sin signos (ej: '50499998888').
 // Se deja vacío hasta tener un número real; el botón de WhatsApp no se muestra mientras esté vacío.
 const String soporteWhatsapp = '';

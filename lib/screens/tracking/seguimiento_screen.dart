@@ -4,6 +4,7 @@ import '../../data/constants.dart';
 import '../../models/models.dart';
 import '../../navigation/app_routes.dart';
 import '../../state/app_state.dart';
+import '../../utils/accion.dart';
 import '../../theme/theme.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_card.dart';
@@ -64,9 +65,22 @@ class SeguimientoScreen extends StatelessWidget {
                 if (yo.tipo == TipoUsuario.transportista && c.estado == EstadoCarga.asignada)
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
-                    child: firmado
-                        ? AppButton(title: 'Iniciar viaje', size: AppButtonSize.sm, onPressed: () => app.iniciarViaje(c.id))
-                        : AppButton(title: 'Firmar contrato para iniciar', size: AppButtonSize.sm, variant: AppButtonVariant.accent, onPressed: () => openContrato(context, c.id)),
+                    child: !firmado
+                        ? AppButton(title: 'Firmar contrato para iniciar', size: AppButtonSize.sm, variant: AppButtonVariant.accent, onPressed: () => openContrato(context, c.id))
+                        : c.pago.estado != EstadoPago.retenido
+                            // No sale hasta que el pago esté asegurado: es la
+                            // garantía que se le prometió.
+                            ? AppButton(title: 'Esperando el pago', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onPressed: null)
+                            : AppButton(
+                                title: 'Iniciar viaje',
+                                size: AppButtonSize.sm,
+                                onPressed: () => ejecutar(
+                                  context,
+                                  () => app.iniciarViaje(c.id),
+                                  exito: 'Viaje iniciado — seguimiento GPS activado',
+                                  fallo: 'No se pudo iniciar el viaje',
+                                ),
+                              ),
                   ),
                 if (yo.tipo == TipoUsuario.transportista && c.estado == EstadoCarga.enTransito)
                   Padding(

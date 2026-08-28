@@ -485,6 +485,10 @@ class Factura {
   final double montoTransportista;
   final String fecha;
 
+  /// Cuándo NexCarg le transfirió de verdad al transportista. Nulo = todavía
+  /// se le debe. Es la diferencia entre "el viaje terminó" y "ya le pagamos".
+  final DateTime? pagadoAt;
+
   Factura({
     required this.id,
     required this.numero,
@@ -499,6 +503,7 @@ class Factura {
     required this.comisionPct,
     required this.comision,
     required this.montoTransportista,
+    this.pagadoAt,
     required this.fecha,
   });
 
@@ -517,5 +522,6 @@ class Factura {
         comision: (m['comision'] as num).toDouble(),
         montoTransportista: (m['monto_transportista'] as num).toDouble(),
         fecha: m['fecha'] as String,
+        pagadoAt: m['pagado_at'] != null ? DateTime.parse(m['pagado_at'] as String).toLocal() : null,
       );
 }

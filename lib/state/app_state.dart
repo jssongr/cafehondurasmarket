@@ -589,6 +589,18 @@ class AppState extends ChangeNotifier {
     await _sb.from('usuarios').update(updates).eq('id', usuarioId);
   }
 
+  /// El administrador confirma que el depósito del cliente entró de verdad.
+  /// Hasta ese momento el transportista no puede salir con la carga: es lo que
+  /// convierte la promesa de "pago en garantía" en algo cierto.
+  Future<void> confirmarPagoRecibido(int cargaId) async {
+    await _sb.rpc('confirmar_pago_recibido', params: {'p_carga_id': cargaId});
+  }
+
+  /// El administrador marca que ya le transfirió al transportista.
+  Future<void> marcarFacturaPagada(int facturaId) async {
+    await _sb.rpc('marcar_factura_pagada', params: {'p_factura_id': facturaId});
+  }
+
   Future<void> aprobarUsuario(String usuarioId) async {
     await _sb.rpc('aprobar_usuario', params: {'p_usuario_id': usuarioId});
   }
