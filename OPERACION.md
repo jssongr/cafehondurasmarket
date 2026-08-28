@@ -121,6 +121,53 @@ volver a correrlo salvo que se rehaga el proyecto de Supabase desde cero.
 decidir a mano quién la puede leer y agregarla a la política correspondiente.
 Por omisión, una carpeta nueva cae en "cualquier usuario con sesión".
 
+## Las funciones de negocio y por qué están cerradas
+
+Las operaciones que mueven el negocio —asignar una carga, firmar el contrato,
+iniciar el viaje, calificar— no son escrituras directas a la tabla: son
+funciones de base de datos declaradas `SECURITY DEFINER`, o sea que corren con
+permisos totales y se saltan las reglas de fila.
+
+Eso está bien **siempre que la función compruebe por su cuenta quién la llama**.
+Durante un tiempo varias no comprobaban nada y encima estaban abiertas al rol
+`anon`, así que cualquiera con la dirección del proyecto podía llamarlas desde
+una terminal, sin cuenta y sin sesión. Se arregló con
+`docs/sql/cerrar-funciones-de-negocio.sql`.
+
+**La regla, para cuando se agregue una función nueva:**
+
+1. Quién es el que llama sale de `auth.uid()`. **Nunca de un parámetro**: un
+   parámetro lo elige quien llama y se puede falsificar.
+2. Los montos se leen de la base, no se aceptan del cliente. Si el
+   transportista pudiera mandar el precio, se asignaría cargas por un lempira.
+3. Al terminar: `revoke all on function ... from public, anon` y
+   `grant execute ... to authenticated`. Quitárselo solo a `anon` no sirve —
+   mientras PUBLIC lo conserve, `anon` lo hereda igual.
+
+Para comprobar que no quedó ninguna abierta:
+
+```sql
+select p.proname, array_to_string(p.proacl::text[], ' | ') as permisos
+from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'public' and p.proacl::text like '%anon=%';
+```
+
+No debería devolver ninguna fila.
+
+## El pago en garantía todavía no mueve dinero
+
+La app marca la carga como `pago_estado = 'retenido'` al asignarse y la libera
+al confirmarse la entrega, y genera la factura con la comisión descontada. Pero
+**eso hoy es un estado en la base de datos, no una transacción bancaria**: no
+hay pasarela de pago conectada, así que ningún dinero entra ni sale de ninguna
+cuenta.
+
+Mientras siga así, el dinero se mueve por fuera —transferencia, depósito— y la
+app sirve de registro de lo acordado, no de custodio. La presentación dice "el
+pago queda retenido en garantía", que es lo que la plataforma hará; hasta que
+haya pasarela conectada conviene explicárselo así a los primeros clientes, de
+frente, en vez de que se enteren solos.
+
 ## Por qué México no está en la lista de países
 
 La plataforma cubre seis países: Panamá, Costa Rica, Nicaragua, Honduras, El
