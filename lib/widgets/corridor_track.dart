@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/constants.dart';
 import '../models/models.dart';
 import '../theme/theme.dart';
+import 'mapa_flota.dart' show frescuraGps;
 
 class CorridorTrack extends StatelessWidget {
   final Carga carga;
@@ -13,41 +14,12 @@ class CorridorTrack extends StatelessWidget {
     final di = paisIdx[carga.paisDestino] ?? 0;
     final lo = oi < di ? oi : di;
     final hi = oi > di ? oi : di;
-    final pos = oi + (di - oi) * (carga.progreso / 100);
-    final pct = (pos / (paises.length - 1)).clamp(0.0, 1.0);
-    final eta = carga.estado == EstadoCarga.enTransito ? ((100 - carga.progreso) / 10).round().clamp(1, 999) : null;
 
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: LayoutBuilder(builder: (ctx, constraints) {
-              final w = constraints.maxWidth;
-              return SizedBox(
-                height: 20,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Positioned(
-                      top: 7, left: 0, right: 0,
-                      child: Container(height: 6, decoration: BoxDecoration(color: AppColors.gris100, borderRadius: BorderRadius.circular(3))),
-                    ),
-                    Positioned(
-                      top: 7, left: 0,
-                      child: Container(width: w * pct, height: 6, decoration: BoxDecoration(color: AppColors.blue, borderRadius: BorderRadius.circular(3))),
-                    ),
-                    Positioned(
-                      top: -2, left: (w * pct - 10).clamp(0.0, w - 20),
-                      child: Icon(Icons.local_shipping, size: 20, color: AppColors.blue),
-                    ),
-                  ],
-                ),
-              );
-            }),
-          ),
           const SizedBox(height: 14),
           Row(
             children: List.generate(paises.length, (i) {
@@ -68,8 +40,12 @@ class CorridorTrack extends StatelessWidget {
           Wrap(
             spacing: AppSpacing.lg, runSpacing: 6,
             children: [
-              _meta('Progreso: ', '${carga.progreso.round()}%'),
-              if (eta != null) _meta('ETA: ', '~$eta h'),
+              _meta('Ruta: ', '${carga.ciudadOrigen} → ${carga.ciudadDestino}'),
+              // Antes acá decía "Progreso: 64%" y "ETA ~4 h", dos números que
+              // salían de un temporizador y no de dónde estaba el camión. Un
+              // camión parado en la frontera seguía "avanzando". Lo que sí se
+              // sabe es cuándo reportó por última vez.
+              if (carga.estado == EstadoCarga.enTransito) _meta('GPS: ', frescuraGps(carga)),
               _meta('Pago: ', carga.pago.estado.value),
             ],
           ),

@@ -6,6 +6,7 @@ import '../../state/app_state.dart';
 import '../../theme/theme.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/carga_list_item.dart';
+import '../../widgets/badge.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/mapa_flota.dart';
 import '../../widgets/screen.dart';
@@ -87,8 +88,10 @@ class _AdminViajesScreenState extends State<AdminViajesScreen> {
                             style: TextStyle(fontSize: 11, color: AppColors.grisM)),
                       ]),
                     ),
-                    Text('${c.progreso.round()}%',
-                        style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.blue)),
+                    // El porcentaje que iba acá lo calculaba un temporizador,
+                    // no el camión. El estado del pago sí es un dato real y es
+                    // lo que el administrador necesita vigilar.
+                    AppBadge(tone: c.estado.value),
                   ]),
                 ),
               ),
