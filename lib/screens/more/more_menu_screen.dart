@@ -11,6 +11,7 @@ import '../../widgets/stars.dart';
 import '../facturacion/facturacion_screen.dart';
 import '../historial/historial_screen.dart';
 import '../profile/perfil_screen.dart';
+import '../settings/alertas_screen.dart';
 import '../settings/configuracion_screen.dart';
 import '../tracking/seguimiento_screen.dart';
 
@@ -35,6 +36,11 @@ class MoreMenuScreen extends StatelessWidget {
       _MoreItem(Icons.location_on, 'Seguimiento GPS', 'Sigue tus viajes activos en el mapa del corredor', (_) => const SeguimientoScreen(showBack: true)),
       _MoreItem(Icons.access_time, 'Historial de viajes', 'Revisa y califica tus entregas completadas', (_) => const HistorialScreen(showBack: true)),
       _MoreItem(Icons.receipt, 'Facturación', 'Consulta tus facturas y comisiones', (_) => const FacturacionScreen(showBack: true)),
+      // Solo para transportistas: al cliente no le sirve de nada avisarle de
+      // cargas, es él quien las publica.
+      if (yo.tipo == TipoUsuario.transportista)
+        _MoreItem(Icons.notifications_active_outlined, 'Avisos de carga',
+            'Te escribimos cuando publiquen carga en tus rutas', (_) => const AlertasScreen()),
       _MoreItem(Icons.person, 'Mi perfil', 'Datos personales, documentos y verificación', (_) => const PerfilScreen(showBack: true)),
       _MoreItem(Icons.settings, 'Configuración', 'Apariencia, idioma y ayuda', (_) => const ConfiguracionScreen()),
     ];

@@ -589,6 +589,17 @@ class AppState extends ChangeNotifier {
     await _sb.from('usuarios').update(updates).eq('id', usuarioId);
   }
 
+  /// Sobre qué rutas quiere que le avisen cuando se publique carga.
+  ///
+  /// Es lo que hace que un transportista que se registró un día sin cargas
+  /// vuelva: el día que aparezca algo en su ruta, le llega el correo.
+  Future<void> guardarAlertas(String usuarioId, {required bool activas, required List<String> paises}) async {
+    await _sb.from('usuarios').update({
+      'alertas_carga': activas,
+      'alertas_paises': paises,
+    }).eq('id', usuarioId);
+  }
+
   /// El administrador confirma que el depósito del cliente entró de verdad.
   /// Hasta ese momento el transportista no puede salir con la carga: es lo que
   /// convierte la promesa de "pago en garantía" en algo cierto.

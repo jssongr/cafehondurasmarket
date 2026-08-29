@@ -91,6 +91,12 @@ class Usuario {
   final String? placa;
   final DateTime fechaRegistro;
 
+  /// Avisos por correo cuando se publica carga en las rutas que le interesan.
+  final bool alertasCarga;
+
+  /// Países sobre los que quiere recibir avisos. Vacío = solo el suyo.
+  final List<String> alertasPaises;
+
   Usuario({
     required this.id,
     required this.nombre,
@@ -109,6 +115,8 @@ class Usuario {
     this.vehiculo,
     this.capacidad,
     this.placa,
+    this.alertasCarga = true,
+    this.alertasPaises = const [],
     DateTime? fechaRegistro,
   }) : fechaRegistro = fechaRegistro ?? DateTime.now();
 
@@ -132,6 +140,8 @@ class Usuario {
         capacidad: (m['capacidad'] as num?)?.toDouble(),
         placa: m['placa'] as String?,
         fechaRegistro: DateTime.parse(m['fecha_registro'] as String),
+        alertasCarga: m['alertas_carga'] as bool? ?? true,
+        alertasPaises: (m['alertas_paises'] as List?)?.cast<String>() ?? const [],
       );
 }
 
