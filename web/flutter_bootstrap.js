@@ -21,6 +21,16 @@ if (window.caches) {
 
 // Sin serviceWorkerSettings: el cargador no instala service worker.
 _flutter.loader.load({
+  // CanvasKit se sirve desde nexcarg.com y no desde gstatic.com de Google.
+  // Los archivos ya viajan en el despliegue, así que traerlos de un tercero
+  // solo agrega una resolución de DNS y un handshake más antes de que aparezca
+  // la primera pantalla, y deja el arranque a merced de un dominio que no
+  // controlamos. De paso, abrir la app no le avisa a nadie más.
+  //
+  // Va en `config` y no en `initializeEngine`: el cargador empieza a bajar
+  // CanvasKit antes de crear el motor, así que para entonces ya tiene que saber
+  // de dónde traerlo.
+  config: { canvasKitBaseUrl: 'canvaskit/' },
   onEntrypointLoaded: async function (engineInitializer) {
     const motor = await engineInitializer.initializeEngine();
     await motor.runApp();

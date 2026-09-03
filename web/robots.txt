@@ -1,0 +1,10 @@
+# nexcarg.com
+#
+# La raíz es la app Flutter: dibuja todo en un canvas, así que para un buscador
+# es una página en blanco. Lo que de verdad se indexa son las páginas estáticas
+# listadas en el sitemap.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://nexcarg.com/sitemap.xml
