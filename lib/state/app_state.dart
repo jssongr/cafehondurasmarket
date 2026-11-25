@@ -37,6 +37,15 @@ class AppState extends ChangeNotifier {
   List<Factura> facturas = [];
   bool loading = true;
 
+  /// El modo de pago con el que nacerán los viajes nuevos. Lo decide el
+  /// administrador en la tabla `ajustes` de la base, no una constante del
+  /// código, para poder cambiarlo sin publicar una versión de la app.
+  ///
+  /// Los viajes ya asignados llevan el suyo propio (`carga.pago.modo`); esto
+  /// sirve para los textos que explican cómo funciona el pago antes de que
+  /// exista un viaje — la ayuda, el detalle de una carga sin asignar.
+  ModoPago modoPago = ModoPago.garantia;
+
   String? _toastMsg;
   int _toastId = 0;
   String? get toastMsg => _toastMsg;
@@ -133,6 +142,7 @@ class AppState extends ChangeNotifier {
       final row = await _sb.from('usuarios').select().eq('id', userId).single();
       usuario = Usuario.fromMap(row);
       await _cargarPerfilesPublicos();
+      await _cargarModoPago();
       _setupRealtimeStreams();
     } catch (_) {
       // profile row not ready yet (rare race right after signup) — leave usuario null.
@@ -211,6 +221,17 @@ class AppState extends ChangeNotifier {
       facturas = rows.map(Factura.fromMap).toList()..sort((a, b) => b.id.compareTo(a.id));
       notifyListeners();
     });
+  }
+
+  Future<void> _cargarModoPago() async {
+    try {
+      final fila = await _sb.from('ajustes').select('valor').eq('clave', 'pago_modo').maybeSingle();
+      modoPago = modoPagoFromString(fila?['valor'] as String?);
+    } catch (_) {
+      // Ante la duda queda 'garantia', que es el modo que retiene el dinero:
+      // si algo falla, es mejor pedir un depósito de más que decirle a un
+      // transportista que salga sin respaldo.
+    }
   }
 
   Future<void> _cargarPerfilesPublicos() async {

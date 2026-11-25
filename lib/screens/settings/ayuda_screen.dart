@@ -20,9 +20,12 @@ class _Faq {
   const _Faq(this.q, this.a, [this.para = _Para.todos]);
 }
 
-// Getter y no constante: la comisión y el correo de soporte salen de
-// constants.dart, y $comisionTexto no es una constante de compilación.
-List<_Faq> get _faqs => [
+// Función y no constante por dos razones: la comisión y el correo de soporte
+// salen de constants.dart y $comisionTexto no es constante de compilación, y
+// las respuestas sobre el dinero dependen del modo de pago vigente. Contestar
+// "depositá en la cuenta de NexCarg" cuando no hay retención sería mandar a
+// alguien a hacer algo que no existe.
+List<_Faq> _faqsSegun(ModoPago modo) => [
   // --- Cuenta ---
   _Faq(
     '¿Cuánto tarda la verificación de mi cuenta?',
@@ -44,39 +47,73 @@ List<_Faq> get _faqs => [
   ),
 
   // --- Dinero ---
-  _Faq(
-    '¿Cómo funciona el pago en garantía?',
-    'Cuando se acuerda un viaje, el cliente deposita el monto en la cuenta de NexCarg. '
-        'Nosotros lo retenemos: no es del cliente ni del transportista mientras dure el viaje. '
-        'Al probarse la entrega con foto y firma, se libera al transportista descontando la '
-        'comisión.',
-  ),
-  _Faq(
-    '¿Cuándo puedo salir con la carga?',
-    'Cuando las dos partes firmaron el contrato Y NexCarg confirmó que el depósito del cliente '
-        'entró. Hasta ese momento el botón "Iniciar viaje" está apagado. No salgas antes: es '
-        'justamente la garantía de que vas a cobrar.',
-    _Para.transportista,
-  ),
-  _Faq(
-    '¿Cuándo me transfieren mi pago?',
-    'Al confirmar la entrega, el pago se libera a tu favor y se genera tu factura con el neto '
-        'de comisión. NexCarg te transfiere y la factura queda marcada como transferida. Podés '
-        'verlo en Más → Facturación.',
-    _Para.transportista,
-  ),
-  _Faq(
-    '¿Dónde deposito el pago del viaje?',
-    'En el detalle del viaje, apenas se asigna, aparecen los datos de la cuenta. Mandá el '
-        'comprobante por el chat del viaje: así lo confirmamos más rápido y el transportista '
-        'puede salir antes.',
-    _Para.cliente,
-  ),
-  _Faq(
-    '¿Qué cobra NexCarg?',
-    'Una comisión del $comisionTexto% sobre cada viaje completado, que se descuenta al liberarse el '
-        'pago. Publicar cargas y tener cuenta no cuesta nada.',
-  ),
+  if (modo == ModoPago.comision) ...[
+    _Faq(
+      '¿Cómo funciona el pago?',
+      'El cliente le paga directo al transportista, en la forma que los dos acuerden. NexCarg '
+          'no recibe ni retiene ese dinero: lo que hacemos es dejar por escrito el contrato, el '
+          'recorrido y la prueba de entrega, y cobrar nuestra comisión aparte.',
+    ),
+    _Faq(
+      '¿Cuándo puedo salir con la carga?',
+      'Apenas las dos partes firmen el contrato. Ojo: en estos viajes NexCarg no está '
+          'reteniendo el dinero, así que el cobro corre por tu cuenta. Acordá la forma de pago '
+          'con el cliente antes de cargar y dejala escrita en el chat del viaje.',
+      _Para.transportista,
+    ),
+    _Faq(
+      '¿Cuándo cobro mi viaje?',
+      'Se lo cobrás directo al cliente, como lo hayan acordado. Al confirmar la entrega se '
+          'genera tu factura con la comisión de NexCarg, que la ves en Más → Facturación.',
+      _Para.transportista,
+    ),
+    _Faq(
+      '¿Dónde pago el viaje?',
+      'Directo al transportista, como acuerden entre ustedes. NexCarg no cobra el monto del '
+          'viaje; te factura solo si corresponde. Dejá por escrito en el chat lo que acordaron: '
+          'si después hay un reclamo, eso es lo que sirve.',
+      _Para.cliente,
+    ),
+    _Faq(
+      '¿Qué cobra NexCarg?',
+      'Una comisión del $comisionTexto% sobre cada viaje completado, que se le factura al '
+          'transportista aparte del pago del viaje. Publicar cargas y tener cuenta no cuesta nada.',
+    ),
+  ] else ...[
+    _Faq(
+      '¿Cómo funciona el pago en garantía?',
+      'Cuando se acuerda un viaje, el cliente deposita el monto en la cuenta de NexCarg. '
+          'Nosotros lo retenemos: no es del cliente ni del transportista mientras dure el viaje. '
+          'Al probarse la entrega con foto y firma, se libera al transportista descontando la '
+          'comisión.',
+    ),
+    _Faq(
+      '¿Cuándo puedo salir con la carga?',
+      'Cuando las dos partes firmaron el contrato Y NexCarg confirmó que el depósito del cliente '
+          'entró. Hasta ese momento el botón "Iniciar viaje" está apagado. No salgas antes: es '
+          'justamente la garantía de que vas a cobrar.',
+      _Para.transportista,
+    ),
+    _Faq(
+      '¿Cuándo me transfieren mi pago?',
+      'Al confirmar la entrega, el pago se libera a tu favor y se genera tu factura con el neto '
+          'de comisión. NexCarg te transfiere y la factura queda marcada como transferida. Podés '
+          'verlo en Más → Facturación.',
+      _Para.transportista,
+    ),
+    _Faq(
+      '¿Dónde deposito el pago del viaje?',
+      'En el detalle del viaje, apenas se asigna, aparecen los datos de la cuenta. Mandá el '
+          'comprobante por el chat del viaje: así lo confirmamos más rápido y el transportista '
+          'puede salir antes.',
+      _Para.cliente,
+    ),
+    _Faq(
+      '¿Qué cobra NexCarg?',
+      'Una comisión del $comisionTexto% sobre cada viaje completado, que se descuenta al liberarse el '
+          'pago. Publicar cargas y tener cuenta no cuesta nada.',
+    ),
+  ],
 
   // --- Operación ---
   _Faq(
@@ -132,9 +169,10 @@ class AyudaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final yo = context.watch<AppState>().usuario;
+    final app = context.watch<AppState>();
+    final yo = app.usuario;
     final soyTransportista = yo?.tipo == TipoUsuario.transportista;
-    final mias = _faqs.where((f) =>
+    final mias = _faqsSegun(app.modoPago).where((f) =>
         f.para == _Para.todos ||
         (f.para == _Para.transportista) == soyTransportista).toList();
 

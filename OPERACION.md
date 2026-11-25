@@ -154,19 +154,61 @@ where n.nspname = 'public' and p.proacl::text like '%anon=%';
 
 No debería devolver ninguna fila.
 
-## El pago en garantía todavía no mueve dinero
+## Los dos modos de pago
 
-La app marca la carga como `pago_estado = 'retenido'` al asignarse y la libera
-al confirmarse la entrega, y genera la factura con la comisión descontada. Pero
-**eso hoy es un estado en la base de datos, no una transacción bancaria**: no
-hay pasarela de pago conectada, así que ningún dinero entra ni sale de ninguna
-cuenta.
+NexCarg sabe operar de dos formas, y el modo vigente cambia lo que la app le
+dice a cada parte, qué exige para que salga el camión y qué dice el contrato
+que firman.
 
-Mientras siga así, el dinero se mueve por fuera —transferencia, depósito— y la
-app sirve de registro de lo acordado, no de custodio. La presentación dice "el
-pago queda retenido en garantía", que es lo que la plataforma hará; hasta que
-haya pasarela conectada conviene explicárselo así a los primeros clientes, de
-frente, en vez de que se enteren solos.
+| | **comisión** | **garantía** |
+| --- | --- | --- |
+| Quién le paga al transportista | El cliente, directo | NexCarg, al liberarse |
+| NexCarg retiene dinero ajeno | No | Sí |
+| Para salir hace falta | Las dos firmas | Las dos firmas **y** el depósito confirmado |
+| La comisión del 5% | Se le factura al transportista aparte | Se descuenta al liberar el pago |
+| Hace falta cuenta bancaria configurada | No | Sí (`datosDeposito`) |
+
+**Hoy está en modo comisión**, que es el de arranque: se gana lo mismo sin
+manejar plata de terceros y sin resolver nada bancario antes del primer viaje.
+El modo garantía es la promesa fuerte de la plataforma y es a donde hay que
+llegar, pero conviene activarlo cuando haya pasarela de pago o al menos
+volumen que lo justifique.
+
+### Cómo cambiar de modo
+
+En Supabase → SQL Editor:
+
+```sql
+-- ver el modo actual
+select clave, valor from public.ajustes where clave = 'pago_modo';
+
+-- cambiarlo ('comision' o 'garantia')
+update public.ajustes set valor = 'garantia', actualizado = now()
+where clave = 'pago_modo';
+```
+
+Surte efecto de inmediato, sin publicar una versión nueva de la app.
+
+**Importante:** el cambio solo afecta a los viajes que se asignen de ahí en
+adelante. Cada viaje guarda en `cargas.pago_modo` bajo qué modo nació y lo
+conserva hasta terminar, así que cambiar el ajuste no deja a medio camino a
+nadie que ya esté rodando.
+
+Antes de pasar a `garantia` hay que tener llenos los `datosDeposito` en
+`lib/data/constants.dart`; si no, al cliente se le va a decir que escriba a
+soporte para pedir el número de cuenta.
+
+### En ninguno de los dos modos hay pasarela de pago
+
+En modo garantía la app marca `pago_estado = 'retenido'` y después
+`'liberado'`, pero **eso es un estado en la base de datos, no una transacción
+bancaria**: el depósito y la transferencia se hacen por fuera y un
+administrador los confirma a mano. En modo comisión el dinero del viaje no
+pasa por NexCarg en absoluto.
+
+En los dos casos la app sirve de registro de lo acordado. Conviene
+explicárselo así a los primeros clientes, de frente, en vez de que se enteren
+solos.
 
 ## Por qué México no está en la lista de países
 

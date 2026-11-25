@@ -48,10 +48,13 @@ class MisViajesScreen extends StatelessWidget {
                   // pago, o ya se puede salir. Antes el botón decía "Iniciar
                   // viaje" aunque el dinero no estuviera asegurado, y el
                   // transportista se llevaba un error al tocarlo.
+                  //
+                  // En modo comisión no hay depósito que esperar, así que el
+                  // paso del medio no existe y se sale con las dos firmas.
                   if (c.estado == EstadoCarga.asignada)
                     if (!firmado)
                       AppButton(title: 'Firmar para iniciar', size: AppButtonSize.sm, variant: AppButtonVariant.accent, onPressed: () => openContrato(context, c.id))
-                    else if (c.pago.estado != EstadoPago.retenido)
+                    else if (c.pago.esperandoDeposito)
                       AppButton(title: 'Esperando el pago', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onPressed: null)
                     else
                       AppButton(

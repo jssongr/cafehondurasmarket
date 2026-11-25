@@ -182,6 +182,21 @@ class Contrato {
   bool get ambosFirmaron => firmaCliente && firmaTransportista;
 }
 
+/// Cómo se mueve el dinero en un viaje.
+///
+/// `garantia` es la promesa fuerte de NexCarg: el cliente deposita, nosotros
+/// retenemos y liberamos contra la prueba de entrega. `comision` es el modo de
+/// arranque: el cliente le paga directo al transportista y NexCarg factura su
+/// 5% aparte — se gana lo mismo sin manejar dinero ajeno.
+///
+/// Lo elige el administrador en la base (tabla `ajustes`), y cada viaje guarda
+/// al asignarse bajo qué modo nació: cambiar el ajuste no reescribe un viaje
+/// que ya está en camino.
+enum ModoPago { comision, garantia }
+
+ModoPago modoPagoFromString(String? s) =>
+    s == 'comision' ? ModoPago.comision : ModoPago.garantia;
+
 enum EstadoPago { pendiente, retenido, liberado }
 
 EstadoPago estadoPagoFromString(String s) => EstadoPago.values.firstWhere((e) => e.value == s);
@@ -202,7 +217,19 @@ extension EstadoPagoX on EstadoPago {
 class Pago {
   EstadoPago estado;
   double? monto;
-  Pago({required this.estado, this.monto});
+  ModoPago modo;
+  Pago({required this.estado, this.monto, this.modo = ModoPago.garantia});
+
+  /// En modo comisión NexCarg nunca retiene el dinero, así que "pendiente" y
+  /// "liberado" significan otra cosa: antes y después de la entrega probada.
+  bool get entregado => estado == EstadoPago.liberado;
+
+  /// Si el viaje está detenido esperando que entre un depósito.
+  ///
+  /// Solo pasa en modo garantía. En modo comisión no hay nada que esperar, y
+  /// preguntarlo por el estado a secas dejaba al transportista con el botón
+  /// trabado en "Esperando el pago" para siempre.
+  bool get esperandoDeposito => modo == ModoPago.garantia && estado == EstadoPago.pendiente;
 }
 
 class Carga {
@@ -308,7 +335,11 @@ class Carga {
       transportistaNombre: m['transportista_nombre'] as String?,
       precioAcordado: (m['precio_acordado'] as num?)?.toDouble(),
       progreso: (m['progreso'] as num?)?.toDouble() ?? 0,
-      pago: Pago(estado: estadoPagoFromString(m['pago_estado'] as String? ?? 'pendiente'), monto: (m['pago_monto'] as num?)?.toDouble()),
+      pago: Pago(
+        estado: estadoPagoFromString(m['pago_estado'] as String? ?? 'pendiente'),
+        monto: (m['pago_monto'] as num?)?.toDouble(),
+        modo: modoPagoFromString(m['pago_modo'] as String?),
+      ),
       contrato: tieneContrato
           ? Contrato(
               firmaCliente: m['contrato_firma_cliente'] as bool? ?? false,

@@ -11,14 +11,22 @@ import 'panel.dart';
 
 /// Dónde está el dinero de un viaje, contado desde el lado de quien mira.
 ///
-/// El pago en garantía es la promesa central de NexCarg, y hasta ahora la app
-/// no la explicaba en ningún lado: el estado vivía en la base de datos y nadie
-/// lo veía. Al cliente hay que decirle que deposite; al transportista, si ya
-/// puede salir o no; al administrador, que confirme cuando entre el depósito.
+/// Hasta hace poco la app no lo explicaba en ningún lado: el estado vivía en
+/// la base de datos y nadie lo veía. Al cliente hay que decirle qué le toca
+/// hacer; al transportista, si ya puede salir y con qué respaldo; al
+/// administrador, qué tiene que confirmar.
 ///
-/// Mientras no haya pasarela de pago, el depósito se hace por fuera y el
-/// administrador lo confirma a mano. Eso no lo vuelve menos real —el dinero
-/// está retenido de verdad— pero sí obliga a decirlo tal cual es.
+/// Hay dos modos y cuentan historias distintas, así que la tarjeta se bifurca
+/// entera (ver [ModoPago]):
+///
+/// - **garantía** — el cliente deposita, NexCarg retiene y libera contra la
+///   prueba de entrega. Mientras no haya pasarela de pago, el depósito se hace
+///   por fuera y el administrador lo confirma a mano. Eso no lo vuelve menos
+///   real —el dinero está retenido de verdad— pero sí obliga a decirlo así.
+/// - **comisión** — el cliente le paga directo al transportista y NexCarg
+///   factura su 5% aparte. Acá hay que ser explícito en que **no hay
+///   retención**: un transportista que cree estar cubierto y no lo está es
+///   peor que uno que sabe que el cobro corre por su cuenta.
 class EstadoPagoCard extends StatelessWidget {
   final Carga carga;
   const EstadoPagoCard({super.key, required this.carga});
@@ -35,6 +43,10 @@ class EstadoPagoCard extends StatelessWidget {
     final soyTransportista = yo.id == carga.transportistaId;
     final soyAdmin = yo.tipo == TipoUsuario.admin;
     final monto = fmtMoneda(carga.pago.monto ?? carga.precioAcordado);
+
+    if (carga.pago.modo == ModoPago.comision) {
+      return _tarjetaComision(soyCliente: soyCliente, soyTransportista: soyTransportista, monto: monto);
+    }
 
     final (icono, color, titulo, texto) = switch (carga.pago.estado) {
       EstadoPago.pendiente when soyCliente => (
@@ -141,6 +153,87 @@ class EstadoPagoCard extends StatelessWidget {
             onPressed: () => _confirmar(context, app),
           ),
         ],
+      ]),
+    );
+  }
+
+  /// Modo comisión: NexCarg no toca el dinero del viaje.
+  ///
+  /// El estado de la base sigue siendo `pendiente` → `liberado`, pero acá no
+  /// significan "depositado" y "liberado" sino simplemente antes y después de
+  /// la entrega probada, que es lo que dispara la comisión.
+  Widget _tarjetaComision({
+    required bool soyCliente,
+    required bool soyTransportista,
+    required String monto,
+  }) {
+    final entregado = carga.pago.entregado;
+    final comision = fmtMoneda((carga.pago.monto ?? carga.precioAcordado ?? 0) * comisionPct / 100);
+    final quien = carga.transportistaNombre ?? 'el transportista';
+
+    final (icono, color, titulo, texto) = switch ((entregado, soyCliente, soyTransportista)) {
+      // --- antes de la entrega ---
+      (false, true, _) => (
+          Icons.handshake_outlined,
+          AppColors.blue,
+          'El pago lo arreglás directo con $quien',
+          'En este viaje NexCarg no retiene el dinero: acordá con $quien cómo y cuándo le '
+              'pagás, y dejalo por escrito en el chat del viaje. Nosotros cobramos nuestra '
+              'comisión del $comisionTexto% aparte, cuando la entrega quede probada.',
+        ),
+      (false, _, true) => (
+          Icons.info_outline,
+          AppColors.amberText,
+          'Cobrás directo al cliente: $monto',
+          'Ojo: en este viaje NexCarg no está reteniendo el dinero, así que el cobro corre '
+              'por tu cuenta. Acordá la forma de pago con el cliente antes de cargar y dejala '
+              'escrita en el chat. Al entregar te facturamos nuestra comisión de $comision.',
+        ),
+      (false, _, _) => (
+          Icons.handshake_outlined,
+          AppColors.blue,
+          'Modo comisión · $monto',
+          'El cliente le paga directo al transportista. No hay depósito que confirmar: '
+              'NexCarg factura $comision cuando la entrega quede probada.',
+        ),
+      // --- entregado ---
+      (true, true, _) => (
+          Icons.check_circle_outline,
+          AppColors.verde,
+          'Entregado — pagale a $quien',
+          'La entrega quedó probada con foto y firma. Lo acordado es $monto y se lo pagás '
+              'directo. Ya podés calificar el viaje.',
+        ),
+      (true, _, true) => (
+          Icons.check_circle_outline,
+          AppColors.verde,
+          'Entrega probada — cobrá $monto',
+          'Ya podés cobrarle al cliente lo acordado. La comisión de NexCarg por este viaje '
+              'es $comision y la ves en Más → Facturación.',
+        ),
+      (true, _, _) => (
+          Icons.request_quote_outlined,
+          AppColors.verde,
+          'Comisión por cobrar: $comision',
+          'El viaje se entregó con prueba. El cliente le paga $monto directo al '
+              'transportista; a NexCarg le corresponde $comision.',
+        ),
+    };
+
+    return Panel(
+      filo: color,
+      padding: const EdgeInsets.fromLTRB(AppSpacing.lg + 4, AppSpacing.lg, AppSpacing.lg, AppSpacing.lg),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Icon(icono, size: 19, color: color),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Text(titulo,
+                style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800, color: AppColors.navy)),
+          ),
+        ]),
+        const SizedBox(height: 7),
+        Text(texto, style: TextStyle(fontSize: 12.5, height: 1.5, color: AppColors.grisM)),
       ]),
     );
   }

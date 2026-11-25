@@ -67,9 +67,10 @@ class SeguimientoScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 10),
                     child: !firmado
                         ? AppButton(title: 'Firmar contrato para iniciar', size: AppButtonSize.sm, variant: AppButtonVariant.accent, onPressed: () => openContrato(context, c.id))
-                        : c.pago.estado != EstadoPago.retenido
-                            // No sale hasta que el pago esté asegurado: es la
-                            // garantía que se le prometió.
+                        : c.pago.esperandoDeposito
+                            // En modo garantía no sale hasta que el pago esté
+                            // asegurado: es lo que se le prometió. En modo
+                            // comisión no hay depósito, y este paso no existe.
                             ? AppButton(title: 'Esperando el pago', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onPressed: null)
                             : AppButton(
                                 title: 'Iniciar viaje',

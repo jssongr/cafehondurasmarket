@@ -66,7 +66,15 @@ class CargaListItem extends StatelessWidget {
                           : (carga.presupuesto != null ? fmtMoneda(carga.presupuesto) : '—'),
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.blue),
                     ),
-                    if (carga.pago.estado != EstadoPago.pendiente)
+                    // En modo comisión NexCarg no retiene ni libera nada, así
+                    // que "pago liberado" sería mentira: lo que cambió es que
+                    // la entrega quedó probada.
+                    if (carga.pago.modo == ModoPago.comision)
+                      if (carga.pago.entregado)
+                        Text('Entrega probada', style: TextStyle(fontSize: 9.5, color: AppColors.grisM))
+                      else
+                        const SizedBox.shrink()
+                    else if (carga.pago.estado != EstadoPago.pendiente)
                       Text('Pago ${carga.pago.estado.value}', style: TextStyle(fontSize: 9.5, color: AppColors.grisM)),
                   ],
                 ),

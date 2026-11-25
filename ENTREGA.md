@@ -106,7 +106,17 @@ DNI, licencias y selfies no son legibles públicamente; se abren con enlaces
 temporales que genera el administrador al verificar. Ver
 `docs/sql/documentos-privados.sql`.
 
-**3. Hay un trigger `proteger_campos_usuario`** que impide que alguien se
+**3. Hay dos modos de pago y el viaje recuerda el suyo.** La tabla `ajustes`
+guarda `pago_modo` (`comision` o `garantia`), y `asignar_carga` lo sella en
+`cargas.pago_modo` al asignar: cambiar el ajuste no toca los viajes que ya
+están rodando. El modo decide si `iniciar_viaje` exige un depósito confirmado,
+qué dice el contrato que las dos partes firman y qué textos muestra la app.
+En el código se lee por `carga.pago.modo`, nunca por el estado a secas — mirar
+solo `pago_estado` fue justamente el bug que dejaba el botón trabado en
+"Esperando el pago". Ver `docs/sql/modo-comision.sql` y la sección
+correspondiente de `OPERACION.md`.
+
+**4. Hay un trigger `proteger_campos_usuario`** que impide que alguien se
 ponga `tipo = 'admin'` o `verificado = true` por su cuenta. Para cambiar esos
 campos a mano hay que desactivarlo (`alter table … disable trigger user`),
 hacer el cambio y volver a activarlo. El procedimiento está en `OPERACION.md`.
@@ -141,15 +151,18 @@ las de despliegue en los secretos de GitHub y Vercel.
 
 ## Lo que falta para lanzar
 
-Ninguna de estas cuatro cosas es trabajo de programación; son datos y
-configuraciones que solo puede poner el dueño de las cuentas.
+Ninguna de estas cosas es trabajo de programación; son datos y configuraciones
+que solo puede poner el dueño de las cuentas. En modo comisión —el modo de
+arranque— solo la primera es imprescindible.
 
 1. **Clave de API de Brevo** en el secreto `BREVO_API_KEY` de Supabase Vault,
    con el remitente `soporte@nexcarg.com` verificado y el dominio
    `nexcarg.com` autenticado (DKIM/DMARC). Sin esto no sale ningún correo.
 2. **Datos de la cuenta bancaria** en `datosDeposito`, en
-   `lib/data/constants.dart`. Mientras esté vacío, la app le dice al cliente
-   que escriba a soporte en lugar de inventar un número de cuenta.
+   `lib/data/constants.dart`. Solo hace falta para el modo garantía; en modo
+   comisión NexCarg no recibe el monto del viaje. Mientras esté vacío y el
+   modo sea garantía, la app le dice al cliente que escriba a soporte en lugar
+   de inventar un número de cuenta.
 3. **Número de WhatsApp de soporte** en `soporteWhatsapp`, mismo archivo. Con
    el valor vacío el botón no aparece.
 4. **Leaked password protection** activado en Supabase → Authentication →
@@ -161,9 +174,10 @@ punta, antes de abrirlo al público.
 ## Lo que se decidió dejar para después
 
 - **Pasarela de pago.** Está previsto PixelPay, pero todavía no hay cuenta. Por
-  eso el depósito y la transferencia son manuales hoy. Cuando se integre, los
-  puntos a tocar son `confirmar_pago_recibido` en la base y
-  `lib/widgets/estado_pago_card.dart` en la app.
+  eso la plataforma arranca en modo comisión, y en modo garantía el depósito y
+  la transferencia son manuales. Cuando se integre, los puntos a tocar son
+  `confirmar_pago_recibido` en la base y `lib/widgets/estado_pago_card.dart` en
+  la app.
 - **México.** Se quitó de la lista de países a propósito: su cabotaje está
   cerrado a transportistas extranjeros y el tramo mexicano exige permiso de la
   SICT, licencia federal, seguro mexicano y Carta Porte del SAT. Dejarlo
